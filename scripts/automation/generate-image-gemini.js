@@ -3,20 +3,18 @@
 /**
  * generate-image-gemini.js — Google Gemini Image API (Nano Banana 계열)
  *
- * Google AI Studio의 Gemini 2.5/3 Flash Image 모델 사용.
- * "Nano Banana" = gemini-2.5-flash-image (stable)
- * "Nano Banana 2" = 최신 버전 (env GEMINI_IMAGE_MODEL로 지정)
+ * Google AI Studio의 Gemini 3.1 Flash Image Preview (Nano Banana 2) 모델 사용.
+ * 한국어 텍스트 렌더링, cartoon/illustration 품질이 FAL Recraft 계열 대비 우수.
  *
- * 한국어 텍스트 렌더링, cartoon/illustration 품질이 FAL 계열 대비 우수.
+ * v1.1 (2026-04-23): format/style-guide 자동 분기 + force flag 수정
  *
  * Usage:
- *   node generate-image-gemini.js --prompt "..." --out scene.png
- *   node generate-image-gemini.js --script 30_script.md --out-dir assets/images/
+ *   node generate-image-gemini.js --prompt "..." --out scene.png [--aspect 9:16|16:9]
+ *   node generate-image-gemini.js --script 30_script.md --out-dir assets/images/ [--force]
  *
  * 환경변수:
  *   GOOGLE_AI_API_KEY          (필수)
- *   GEMINI_IMAGE_MODEL         (선택, 기본: gemini-2.5-flash-image)
- *                              'gemini-2.5-flash-image' | 'gemini-3-flash-image' 등
+ *   GEMINI_IMAGE_MODEL         (선택, 기본: gemini-3.1-flash-image-preview)
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -24,7 +22,7 @@ import { join, resolve, dirname } from 'node:path';
 import { parse as parseYAML } from 'yaml';
 import { getSecret } from './config-loader.js';
 
-const DEFAULT_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image-preview'; // Nano Banana 2
+const DEFAULT_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image-preview';
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
 export async function generateImageGemini({ prompt, outPath, aspectRatio = '9:16', model = DEFAULT_MODEL }) {
@@ -33,9 +31,7 @@ export async function generateImageGemini({ prompt, outPath, aspectRatio = '9:16
 
   const url = `${API_BASE}/models/${model}:generateContent?key=${apiKey}`;
   const body = {
-    contents: [{
-      parts: [{ text: prompt }],
-    }],
+    contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
       responseModalities: ['IMAGE'],
       imageConfig: { aspectRatio },
@@ -83,6 +79,25 @@ function loadChannelStylePrefix(styleGuidePath) {
   return m[1].trim();
 }
 
+function resolveStylePrefix(channel, format) {
+  const suffix = format === 'long-3min' ? 'long' : 'shorts';
+  const candidates = [
+    resolve('workspace/channels', channel, `style-guide-${suffix}.md`),
+    resolve('workspace/channels', channel, 'style-guide.md'),
+  ];
+  for (const sg of candidates) {
+    if (existsSync(sg)) {
+      const prefix = loadChannelStylePrefix(sg);
+      if (prefix) return { prefix, path: sg };
+    }
+  }
+  return { prefix: '', path: null };
+}
+
+function aspectForFormat(format) {
+  return format === 'long-3min' ? '16:9' : '9:16';
+}
+
 // CLI
 if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
@@ -94,31 +109,34 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const next = args[i + 1];
     if (next === undefined || next.startsWith('--')) {
       opts[key] = true;
+      // boolean flag — do not consume next token
     } else {
       opts[key] = next;
       i++;
     }
   }
 
-  const aspectRatio = opts.aspect || '9:16';
-
   try {
     if (opts.prompt && opts.out) {
+      const aspectRatio = opts.aspect || '9:16';
       const r = await generateImageGemini({ prompt: opts.prompt, outPath: resolve(opts.out), aspectRatio });
       console.log(`✅ Image saved: ${opts.out} (${(r.bytes / 1024).toFixed(1)} KB, ${r.mime})`);
     } else if (opts.script && opts['out-dir']) {
       const meta = parseFrontmatter(opts.script);
       const outDir = resolve(opts['out-dir']);
-      let stylePrefix = opts['style-prefix'] || '';
-      if (!stylePrefix && meta.channel_id) {
-        const styleGuide = resolve('workspace/channels', meta.channel_id, 'style-guide.md');
-        if (existsSync(styleGuide)) {
-          stylePrefix = loadChannelStylePrefix(styleGuide);
-          if (stylePrefix) console.log(`📋 Style prefix loaded from channel: ${meta.channel_id}`);
-        }
-      }
+
+      const format = meta.format || 'shorts';
+      const aspectRatio = opts.aspect || aspectForFormat(format);
+      const { prefix: stylePrefix, path: stylePath } = opts['style-prefix']
+        ? { prefix: opts['style-prefix'], path: '(CLI override)' }
+        : resolveStylePrefix(meta.channel_id, format);
+
       mkdirSync(outDir, { recursive: true });
-      console.log(`🎨 Generating ${meta.scenes.length} images via Gemini (${DEFAULT_MODEL}, ${aspectRatio})...`);
+
+      console.log(`📐 Format=${format} → aspect=${aspectRatio}, model=${DEFAULT_MODEL}`);
+      if (stylePath) console.log(`📋 Style prefix: ${stylePath.replace(process.cwd() + '/', '')}`);
+      console.log(`🎨 Generating ${meta.scenes.length} images via Gemini...`);
+
       for (const scene of meta.scenes) {
         const outPath = join(outDir, `scene_${scene.scene_id}.png`);
         if (existsSync(outPath) && !opts.force) {
@@ -131,7 +149,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       }
       console.log(`\n🎨 All images saved in ${outDir}`);
     } else {
-      console.error('Usage: generate-image-gemini.js --prompt "..." --out path.png [--aspect 9:16]');
+      console.error('Usage: generate-image-gemini.js --prompt "..." --out path.png [--aspect 9:16|16:9]');
       console.error('   or: generate-image-gemini.js --script 30_script.md --out-dir assets/images/ [--force]');
       process.exit(1);
     }

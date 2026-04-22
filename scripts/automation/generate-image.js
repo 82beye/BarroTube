@@ -145,14 +145,26 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     } else if (opts.script && opts['out-dir']) {
       const meta = parseFrontmatter(opts.script);
       const outDir = resolve(opts['out-dir']);
+      const format = meta.format || 'shorts';
+
+      // Hybrid routing (option B, 2026-04-23): long-3min → Gemini, shorts → Recraft
+      // Override with --force-recraft to keep everything on Recraft
+      if (format === 'long-3min' && !opts['force-recraft']) {
+        console.log(`📺 Long-form detected → routing to Gemini 3.1 Flash Image Preview`);
+        const { execSync } = await import('node:child_process');
+        const geminiScript = join(import.meta.dirname, 'generate-image-gemini.js');
+        const flags = [`--script "${opts.script}"`, `--out-dir "${opts['out-dir']}"`];
+        if (opts.force) flags.push('--force');
+        execSync(`node "${geminiScript}" ${flags.join(' ')}`, { stdio: 'inherit' });
+        process.exit(0);
+      }
 
       // Auto-infer imageSize from script format if not specified
       if (!imageSize) {
-        const format = meta.format || 'shorts';
         imageSize = format === 'long-3min'
           ? { width: 1920, height: 1080 }   // 16:9
           : { width: 1080, height: 1920 };  // 9:16
-        console.log(`📐 Format=${format} → imageSize=${imageSize.width}x${imageSize.height}`);
+        console.log(`📐 Format=${format} → imageSize=${imageSize.width}x${imageSize.height} (Recraft V3)`);
       }
 
       // style-prefix 우선순위: CLI > channel style-guide-{format}.md > style-guide.md > 빈 문자열
