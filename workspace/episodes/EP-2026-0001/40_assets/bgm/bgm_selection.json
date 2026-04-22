@@ -1,0 +1,133 @@
+{
+  "episode_id": "EP-2026-0001",
+  "channel_id": "econ-daily",
+  "selection_date": "2026-04-19",
+  "style": "Korean economic news, cinematic, instrumental, professional",
+  "mood_arc": "tense_intro → calm_explain → dramatic_reveal → upbeat_energy → hopeful_outro",
+  "target_duration_seconds": 480,
+
+  "selected_track": {
+    "title": "Dramatic News",
+    "artist": "Bensound",
+    "source": "https://www.bensound.com/royalty-free-music/track/dramatic-news",
+    "license": "Royalty Free (Attribution Required)",
+    "duration_seconds": 120,
+    "bpm": 105,
+    "key": "D minor",
+    "mood_tags": ["cinematic", "tense", "news", "dramatic", "instrumental", "professional"],
+    "usage": "Primary track covering full episode arc with segments mapped per mood"
+  },
+
+  "alternative_tracks": [
+    {
+      "title": "Suspense",
+      "artist": "Bensound",
+      "source": "https://www.bensound.com/royalty-free-music/track/suspense",
+      "reason": "Backup if Dramatic News has copyright flag; maintains tension through middle sections"
+    },
+    {
+      "title": "Epic",
+      "artist": "Bensound",
+      "source": "https://www.bensound.com/royalty-free-music/track/epic",
+      "reason": "More intense option for dramatic reveals and climactic moments"
+    },
+    {
+      "title": "Sunny",
+      "artist": "Bensound",
+      "source": "https://www.bensound.com/royalty-free-music/track/sunny",
+      "reason": "Upbeat alternative for hopeful_outro sections (more optimistic tone)"
+    }
+  ],
+
+  "mood_selections": {
+    "tense_intro": {
+      "scenes": ["001", "002", "003", "004"],
+      "duration_seconds": 52,
+      "track_segment": "0:00-0:15",
+      "characteristics": ["measured tension", "subtle orchestration", "builds anticipation"],
+      "notes": "Sets serious tone for major economic data reveal; opening hook strategy"
+    },
+    "calm_explain": {
+      "scenes": ["005", "006", "007", "008", "009", "010", "011", "012", "015", "016", "017", "018", "019", "020", "021"],
+      "duration_seconds": 260,
+      "track_segment": "0:15-1:00 (primary), loop as needed",
+      "characteristics": ["steady rhythm", "analytical tone", "professional", "non-distracting"],
+      "notes": "Primary section (54%); BGM sits under TTS narration, supports data-heavy explanation with multiple subtopics: GDP analysis, industry breakdown, job transitions, call-to-action"
+    },
+    "dramatic_reveal": {
+      "scenes": ["013", "014"],
+      "duration_seconds": 26,
+      "track_segment": "1:00-1:15",
+      "characteristics": ["crescendo", "impact", "emphasis on turning points"],
+      "notes": "Marks shift from big-picture stats to specific industry impacts; psychological pivot"
+    },
+    "upbeat_energy": {
+      "scenes": ["022", "023", "024", "025"],
+      "duration_seconds": 68,
+      "track_segment": "0:45-1:00 (crescendo to climax)",
+      "characteristics": ["forward momentum", "positive direction", "energetic but measured"],
+      "notes": "Korea-focused segment; reflects competitive advantage and growth narrative in AI semiconductor sector"
+    },
+    "hopeful_outro": {
+      "scenes": ["026", "027", "028", "029", "030", "031"],
+      "duration_seconds": 84,
+      "track_segment": "1:00-1:20 (resolution + extended fade)",
+      "characteristics": ["resolution", "positive closure", "inspirational", "call-to-action"],
+      "notes": "17.5% of total; Concludes with summary recap, emotional reassurance, CTA (subscribe/comment), and brand signature. Extended outro with natural fade-out."
+    }
+  },
+
+  "scene_mapping": [
+    { "scene_id": "001", "mood": "tense_intro",    "duration_seconds": 10,  "track_start": "0:00", "track_end": "0:03" },
+    { "scene_id": "002", "mood": "tense_intro",    "duration_seconds": 12,  "track_start": "0:03", "track_end": "0:06" },
+    { "scene_id": "003", "mood": "tense_intro",    "duration_seconds": 22,  "track_start": "0:06", "track_end": "0:12" },
+    { "scene_id": "004", "mood": "tense_intro",    "duration_seconds": 8,   "track_start": "0:12", "track_end": "0:15" },
+    { "scene_id": "005", "mood": "calm_explain",   "duration_seconds": 16,  "track_start": "0:15", "track_end": "0:25" },
+    { "scene_id": "006", "mood": "calm_explain",   "duration_seconds": 12,  "track_start": "0:25", "track_end": "0:32" },
+    { "scene_id": "007", "mood": "calm_explain",   "duration_seconds": 16,  "track_start": "0:32", "track_end": "0:40" },
+    { "scene_id": "008", "mood": "calm_explain",   "duration_seconds": 14,  "track_start": "0:40", "track_end": "0:47" },
+    { "scene_id": "009", "mood": "calm_explain",   "duration_seconds": 24,  "track_start": "0:15", "track_end": "0:29" },
+    { "scene_id": "010", "mood": "calm_explain",   "duration_seconds": 18,  "track_start": "0:29", "track_end": "0:40" },
+    { "scene_id": "011", "mood": "calm_explain",   "duration_seconds": 20,  "track_start": "0:40", "track_end": "0:54" },
+    { "scene_id": "012", "mood": "calm_explain",   "duration_seconds": 14,  "track_start": "0:54", "track_end": "1:02 (loop)" },
+    { "scene_id": "013", "mood": "dramatic_reveal","duration_seconds": 12,  "track_start": "1:02", "track_end": "1:08" },
+    { "scene_id": "014", "mood": "dramatic_reveal","duration_seconds": 14,  "track_start": "1:08", "track_end": "1:15" },
+    { "scene_id": "015", "mood": "calm_explain",   "duration_seconds": 18,  "track_start": "0:20", "track_end": "0:33" },
+    { "scene_id": "016", "mood": "calm_explain",   "duration_seconds": 16,  "track_start": "0:33", "track_end": "0:45" },
+    { "scene_id": "017", "mood": "calm_explain",   "duration_seconds": 16,  "track_start": "0:45", "track_end": "0:57" },
+    { "scene_id": "018", "mood": "calm_explain",   "duration_seconds": 12,  "track_start": "0:57", "track_end": "1:05" },
+    { "scene_id": "019", "mood": "calm_explain",   "duration_seconds": 22,  "track_start": "0:15", "track_end": "0:32" },
+    { "scene_id": "020", "mood": "calm_explain",   "duration_seconds": 18,  "track_start": "0:32", "track_end": "0:45" },
+    { "scene_id": "021", "mood": "calm_explain",   "duration_seconds": 12,  "track_start": "0:45", "track_end": "0:53" },
+    { "scene_id": "022", "mood": "upbeat_energy", "duration_seconds": 10,  "track_start": "0:53", "track_end": "0:59" },
+    { "scene_id": "023", "mood": "upbeat_energy", "duration_seconds": 18,  "track_start": "0:59", "track_end": "1:10" },
+    { "scene_id": "024", "mood": "upbeat_energy", "duration_seconds": 16,  "track_start": "1:10", "track_end": "1:20 (crescendo)" },
+    { "scene_id": "025", "mood": "upbeat_energy", "duration_seconds": 24,  "track_start": "0:45", "track_end": "1:00 (loop, fade ending)" },
+    { "scene_id": "026", "mood": "hopeful_outro", "duration_seconds": 12,  "track_start": "1:00", "track_end": "1:08" },
+    { "scene_id": "027", "mood": "hopeful_outro", "duration_seconds": 16,  "track_start": "1:08", "track_end": "1:20" },
+    { "scene_id": "028", "mood": "hopeful_outro", "duration_seconds": 18,  "track_start": "0:45", "track_end": "0:59" },
+    { "scene_id": "029", "mood": "hopeful_outro", "duration_seconds": 10,  "track_start": "0:59", "track_end": "1:05" },
+    { "scene_id": "030", "mood": "hopeful_outro", "duration_seconds": 16,  "track_start": "1:05", "track_end": "1:16 (fade)" },
+    { "scene_id": "031", "mood": "hopeful_outro", "duration_seconds": 12,  "track_start": "1:16", "track_end": "1:20 (fadeout)" }
+  ],
+
+  "production_notes": {
+    "volume_level": "-12 dBFS (under TTS narration)",
+    "fade_in": "1.5s (intro section)",
+    "fade_out": "2.5s (outro section)",
+    "eq_settings": {
+      "note": "Optimize for clarity with TTS voice",
+      "high_pass_filter": "Cut below 80Hz (remove rumble)",
+      "mid_cut": "Reduce 200-400Hz (avoid muddiness with TTS fundamentals)",
+      "air_boost": "Gentle +2dB at 8kHz (presence without harshness)"
+    },
+    "file_format": "MP3 320kbps, 44100Hz stereo",
+    "delivery_format": "Pre-mixed stems + final mix .mp3"
+  },
+
+  "status": "selected",
+  "selected_by": "Voice Engineer (42b07f9e)",
+  "selection_rationale": "Single Bensound 'Dramatic News' track provides natural arc from measured tension through analytical calm to dramatic climax and hopeful resolution. Track structure aligns well with episode pacing and mood transitions. Bensound attribution compliance meets YouTube MCN requirements.",
+
+  "notes": "Track covers full 480s episode with mood-based segmentation. Alternative tracks provided for backup. Verify copyright clearance before final export. Ensure TTS mix level tested during composition."
+}

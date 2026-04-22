@@ -1,0 +1,26 @@
+{
+  "date": "2026-04-19",
+  "channel_id": "econ-daily",
+  "episodes_created": [
+    {
+      "id": "EP-2026-0003",
+      "topic": "증시 635조",
+      "title": "[머니플로우] 증시 대기·주변자금 635조…ETF 순자산 408조원",
+      "link": "https://www.yna.co.kr/view/AKR20260417130400008"
+    },
+    {
+      "id": "EP-2026-0004",
+      "topic": "집값 3",
+      "title": "“3년간 집값 안오르고 사겠단 사람도 없어요”…매물만 쏟아지는 세종",
+      "link": "<![CDATA[https://www.mk.co.kr/news/realestate/12020831]]>"
+    }
+  ],
+  "next_steps": [
+    "1. Claude Code에서 S2~S5 실행 (Research, Strategy, Script, Factcheck)",
+    "2. S6 Assets: generate-tts.js + sync-durations.js + generate-image-gemini.js",
+    "3. S7 Render: render-direct.js + build-capcut-from-episode.js",
+    "4. S9 Metadata: Claude Code agent",
+    "5. S10 Board 승인: approve-episode.js",
+    "6. S11 Publish: run-episode.js (SEO 자동 보강 포함)"
+  ]
+}

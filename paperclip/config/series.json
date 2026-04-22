@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "description": "시리즈 정의 — 연속된 롱폼 커리큘럼. 에피소드 단발과 구분되는 시리즈 단위 기획·승인·KPI.",
+  "series": [
+    {
+      "id": "sp500-basic",
+      "name": "S&P500 입문 5편",
+      "channel": "econ-daily",
+      "format": "long-3min",
+      "persona": "barro-teacher",
+      "total_episodes": 5,
+      "cadence": {
+        "days": ["tue", "thu", "sun"],
+        "time_kst": "19:00",
+        "estimated_completion_weeks": 1.7
+      },
+      "curriculum_path": "workspace/channels/econ-daily/series/sp500-basic/curriculum.md",
+      "brief_paths": [
+        "workspace/channels/econ-daily/series/sp500-basic/ep-01-brief.md",
+        "workspace/channels/econ-daily/series/sp500-basic/ep-02-brief.md",
+        "workspace/channels/econ-daily/series/sp500-basic/ep-03-brief.md",
+        "workspace/channels/econ-daily/series/sp500-basic/ep-04-brief.md",
+        "workspace/channels/econ-daily/series/sp500-basic/ep-05-brief.md"
+      ],
+      "learning_arc": ["WHAT", "WHY", "HOW", "RISK", "WHEN"],
+      "next_series": "nasdaq100-basic",
+      "required_disclaimer": true,
+      "auto_derive_shorts": true,
+      "kpi": {
+        "ep01_views_target": 3000,
+        "ep05_views_target": 2000,
+        "series_completion_rate_target": 0.25,
+        "avg_view_ratio_target": 0.5,
+        "derive_shorts_to_long_uplift_target": 0.05
+      },
+      "status": "planned",
+      "created_at": "2026-04-22"
+    }
+  ],
+  "planned_series": [
+    {
+      "id": "nasdaq100-basic",
+      "name": "NASDAQ 100 입문 5편",
+      "status": "queued",
+      "prerequisite": "sp500-basic:completed"
+    }
+  ],
+  "defaults": {
+    "required_disclaimer": true,
+    "auto_derive_shorts": true,
+    "learning_arc_recommended": ["WHAT", "WHY", "HOW", "RISK", "WHEN"]
+  }
+}

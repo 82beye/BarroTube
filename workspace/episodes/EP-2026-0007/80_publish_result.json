@@ -1,0 +1,21 @@
+{
+  "episode_id": "EP-2026-0007",
+  "published_at": "2026-04-21T15:43:14.551Z",
+  "targets": {
+    "youtube": {
+      "status": "uploaded",
+      "videoId": "g2J2SIE2K6g",
+      "url": "https://youtu.be/g2J2SIE2K6g",
+      "publishedAt": "2026-04-21T15:43:14.551Z",
+      "privacyStatus": "private"
+    },
+    "tiktok": {
+      "status": "pending_manual",
+      "package_path": "/Users/beye/youtube-co/workspace/episodes/EP-2026-0007/distribution/tiktok"
+    },
+    "reels": {
+      "status": "pending_manual",
+      "package_path": "/Users/beye/youtube-co/workspace/episodes/EP-2026-0007/distribution/reels"
+    }
+  }
+}

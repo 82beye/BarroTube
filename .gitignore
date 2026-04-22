@@ -1,0 +1,38 @@
+# Environment (API keys)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/audit/
+logs/budget/
+
+# OS
+.DS_Store
+
+# Paperclip runtime
+.paperclip/
+
+# Episode rendered outputs (large files — regeneratable)
+workspace/episodes/*/40_assets/images/
+workspace/episodes/*/40_assets/tts/
+workspace/episodes/*/40_assets/bgm.wav
+workspace/episodes/*/55_render/
+workspace/episodes/*/distribution/
+
+# Episode revision backups (regeneratable)
+workspace/episodes/*/_revision_*_backup/
+workspace/episodes/*/_backup*/
+
+# Legacy symlink (40_assets was renamed from assets in some episodes)
+workspace/episodes/*/assets
+
+# Episode runtime status cache
+workspace/episodes/*/.episode_status.json
+
+# Misc logs
+*.log
+logs/*.log

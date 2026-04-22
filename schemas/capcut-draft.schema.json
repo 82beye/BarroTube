@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "barrotube://schemas/capcut-draft.schema.json",
+  "title": "50_capcut_draft.json Schema",
+  "description": "CapCut PC 5.x 호환 draft_content.json 스키마",
+  "type": "object",
+  "required": ["materials", "tracks", "canvas_config"],
+  "properties": {
+    "materials": {
+      "type": "object",
+      "required": ["videos", "audios", "texts"],
+      "properties": {
+        "videos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "path", "width", "height"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^mat_img_\\d{3}$" },
+              "type": { "type": "string", "enum": ["photo", "video"] },
+              "path": { "type": "string" },
+              "width": { "type": "integer" },
+              "height": { "type": "integer" }
+            }
+          }
+        },
+        "audios": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "path", "duration"],
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "type": "string", "enum": ["audio"] },
+              "path": { "type": "string" },
+              "duration": { "type": "integer", "minimum": 0, "description": "Duration in microseconds" }
+            }
+          }
+        },
+        "texts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "content"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^mat_sub_\\d{3}$" },
+              "type": { "type": "string", "enum": ["subtitle"] },
+              "content": { "type": "string" },
+              "font": { "type": "string" },
+              "color": { "type": "string" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "tracks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "segments"],
+        "properties": {
+          "type": { "type": "string", "enum": ["video", "audio", "text"] },
+          "attribute": { "type": "string" },
+          "segments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["material_id", "target_timerange"],
+              "properties": {
+                "material_id": { "type": "string" },
+                "target_timerange": {
+                  "type": "object",
+                  "required": ["start", "duration"],
+                  "properties": {
+                    "start": { "type": "integer", "minimum": 0 },
+                    "duration": { "type": "integer", "minimum": 1 }
+                  }
+                },
+                "volume": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "extra_material_refs": {
+      "type": "object",
+      "properties": {
+        "subtitle_style": {
+          "type": "object",
+          "properties": {
+            "font_family": { "type": "string" },
+            "font_size": { "type": "integer" },
+            "font_color": { "type": "string" },
+            "stroke_color": { "type": "string" },
+            "stroke_width": { "type": "integer" },
+            "position": { "type": "string" },
+            "margin_bottom": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "canvas_config": {
+      "type": "object",
+      "required": ["width", "height", "ratio"],
+      "properties": {
+        "width": { "type": "integer", "const": 1920 },
+        "height": { "type": "integer", "const": 1080 },
+        "ratio": { "type": "string", "const": "16:9" }
+      }
+    }
+  }
+}

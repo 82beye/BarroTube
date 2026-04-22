@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "barrotube://schemas/asset-manifest.schema.json",
+  "title": "Asset Manifest Schema",
+  "description": "40_assets/asset_manifest.json - 자산 생성 결과 매니페스트",
+  "type": "object",
+  "required": ["episode_id", "total_scenes", "target_total_seconds", "actual_total_seconds", "assets", "all_complete", "length_check_pass"],
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "pattern": "^EP-\\d{4}-\\d{4}$"
+    },
+    "total_scenes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "target_total_seconds": {
+      "type": "number",
+      "minimum": 1
+    },
+    "actual_total_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "length_variance_pct": {
+      "type": "number",
+      "description": "목표 대비 실제 길이 차이(%)"
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scene_id", "image", "image_status", "tts", "tts_status", "tts_length_seconds"],
+        "properties": {
+          "scene_id": { "type": "string", "pattern": "^\\d{3}$" },
+          "image": { "type": "string" },
+          "image_status": { "type": "string", "enum": ["completed", "failed", "safe_rewrite_applied"] },
+          "tts": { "type": "string" },
+          "tts_status": { "type": "string", "enum": ["completed", "failed"] },
+          "tts_length_seconds": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "bgm": {
+      "type": "object",
+      "properties": {
+        "file": { "type": "string" },
+        "source": { "type": "string" },
+        "license": { "type": "string" },
+        "mood": { "type": "string" }
+      }
+    },
+    "all_complete": { "type": "boolean" },
+    "length_check_pass": {
+      "type": "boolean",
+      "description": "TTS 합계가 목표 ±15% 이내인지"
+    }
+  }
+}

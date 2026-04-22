@@ -1,0 +1,170 @@
+{
+  "governance": {
+    "version": "1.1",
+    "changelog": [
+      { "version": "1.0", "date": "2026-04-16", "change": "초기 릴리스" },
+      { "version": "1.1", "date": "2026-04-22", "change": "듀얼 라인(Shorts+Long-form) 운영 지원. batch_approval, persona_validation(warning_only), series_level_rules, S12_derive_shorts 추가." }
+    ],
+    "approval_gates": {
+      "S10_publish": {
+        "type": "board_approval_required",
+        "description": "업로드 직전 운영자 명시적 승인 필수. 자동 통과 금지. 운영자 결정: 매번 개별 승인, 단 여러 편을 화면에서 한 번에 일괄 승인 가능.",
+        "approver": "board",
+        "auto_approve": false,
+        "batch_approval_allowed": true,
+        "batch_approval_rules": {
+          "max_batch_size": 10,
+          "require_individual_review": true,
+          "note": "Board가 여러 에피소드를 체크리스트로 개별 확인 후 한 번의 액션으로 일괄 승인 가능. 자동 통과 아님."
+        },
+        "timeout_hours": 24,
+        "on_timeout": "notify_board_escalate"
+      },
+      "S0_episode_request": {
+        "type": "board_approval",
+        "description": "신규 에피소드 요청 승인",
+        "approver": "board",
+        "auto_approve": false,
+        "batch_approval_allowed": true,
+        "series_bulk_creation_allowed": true
+      },
+      "S12_derive_shorts": {
+        "type": "auto_approval_with_parent_inheritance",
+        "description": "롱폼 발행 후 파생 Shorts 자동 생성 단계. parent_ticket의 승인을 상속하므로 별도 board 승인 불필요. QA 실패 시에만 board 에스컬레이션.",
+        "approver": "producer",
+        "auto_approve": true,
+        "inherit_parent_approval": true,
+        "trigger_after": "S11_publish_parent_success",
+        "delay_hours": 3
+      }
+    },
+    "auto_approval_stages": {
+      "S2_market_research": { "approver": "producer", "auto": true, "skippable_for_format": ["shorts"] },
+      "S3_strategy": { "approver": "producer", "auto": true, "skippable_for_format": ["shorts"] },
+      "S4_script": { "approver": "producer", "auto": true },
+      "S5_factcheck": { "approver": "producer", "auto": true },
+      "S6_assets": { "approver": "asset-pm", "auto": true },
+      "S7_capcut": { "approver": "producer", "auto": true },
+      "S8_qa": { "approver": "producer", "auto": false },
+      "S9_metadata": { "approver": "producer", "auto": true }
+    },
+    "escalation_rules": [
+      {
+        "condition": "factcheck_high_risk_count > 0 AND rewrite_count >= 2",
+        "action": "escalate_to_board",
+        "message": "2회 재집필 후에도 HIGH 위험 항목 존재"
+      },
+      {
+        "condition": "agent_heartbeat_missing > 90_minutes",
+        "action": "pause_agent_notify_board",
+        "message": "에이전트 90분 이상 무응답"
+      },
+      {
+        "condition": "qa_score < 60 OR qa_blocker_count > 0",
+        "action": "block_publish_notify_producer",
+        "message": "QA 실패: 게시 차단"
+      },
+      {
+        "condition": "copyright_risk_high",
+        "action": "block_publish_notify_board",
+        "message": "저작권 HIGH 위험 - Board 승인 필요"
+      },
+      {
+        "condition": "persona_forbidden_pattern_matched",
+        "action": "warn_producer_log_audit",
+        "message": "페르소나 금기 표현 감지 — 차단하지 않고 WARNING만 발행. Producer가 최종 판단.",
+        "severity": "warning"
+      },
+      {
+        "condition": "persona_warnings_same_7days >= 5",
+        "action": "notify_board_review_persona_drift",
+        "message": "동일 페르소나에서 7일 내 5건 이상 경고 — 페르소나 드리프트 검토 필요",
+        "severity": "info"
+      },
+      {
+        "condition": "series_episode_gap_days > 7",
+        "action": "notify_producer_series_stall",
+        "message": "시리즈 에피소드 발행 간격 7일 초과 — 시리즈 완주율 하락 리스크",
+        "severity": "warning"
+      },
+      {
+        "condition": "derive_shorts_parent_unpublished",
+        "action": "block_derive_shorts",
+        "message": "모편이 발행되지 않은 상태에서 파생 Shorts 게시 시도 — 차단"
+      }
+    ],
+    "persona_validation": {
+      "enabled": true,
+      "mode": "warning_only",
+      "description": "페르소나(personas.json)의 forbidden_patterns 위반 시 차단하지 않고 WARNING만 발행. 운영자 결정: reject 아닌 경고 전용.",
+      "check_stages": ["S4_script", "S9_metadata"],
+      "warning_sink": {
+        "audit_log": true,
+        "notify": ["producer"],
+        "escalate_after_threshold": true
+      },
+      "config_path": "config/personas.json"
+    },
+    "series_rules": {
+      "enabled": true,
+      "config_path": "config/series.json",
+      "bulk_operations": {
+        "series_bulk_creation_allowed": true,
+        "series_bulk_approval_allowed": true,
+        "max_bulk_episodes": 10,
+        "require_curriculum_document": true,
+        "description": "시리즈 전체 에피소드를 한 번에 생성·일괄 승인 가능. 단 curriculum.md 필수."
+      },
+      "consistency_checks": {
+        "persona_locked_per_series": true,
+        "format_locked_per_series": true,
+        "series_tag_auto_append": true
+      },
+      "derive_inheritance": {
+        "enabled": true,
+        "child_inherits_parent_series_id": true,
+        "child_format_override": "shorts",
+        "child_persona_override": "barro-alert"
+      }
+    },
+    "format_rules": {
+      "enabled": true,
+      "config_path": "config/formats.json",
+      "qa_duration_enforcement": {
+        "shorts": { "target": 60, "tolerance": 2, "on_violation": "block_publish" },
+        "long-3min": { "target": 180, "tolerance": 10, "on_violation": "block_publish" }
+      },
+      "shorts_tag_auto_management": {
+        "enabled": true,
+        "rule": "If format=shorts THEN append #Shorts to description ELSE remove #Shorts"
+      }
+    },
+    "audit_log": {
+      "enabled": true,
+      "retention_days": 90,
+      "immutable": true,
+      "exportable_by": ["board"],
+      "includes": [
+        "ticket_creation",
+        "ticket_transition",
+        "tool_invocation",
+        "llm_call",
+        "file_write",
+        "approval_decision",
+        "budget_change"
+      ]
+    },
+    "security": {
+      "api_key_storage": "macOS Keychain",
+      "env_file_policy": "forbidden",
+      "domain_whitelist": {
+        "enabled": true,
+        "config_path": "config/domain-whitelist.json"
+      },
+      "publisher_bypass_prevention": {
+        "enabled": true,
+        "require_paperclip_approval_token": true
+      }
+    }
+  }
+}

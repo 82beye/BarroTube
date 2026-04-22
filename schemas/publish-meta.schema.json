@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "barrotube://schemas/publish-meta.schema.json",
+  "title": "70_publish_meta.json Schema",
+  "description": "PRD §8.3 - 배포 메타데이터 스키마",
+  "type": "object",
+  "required": ["episode_id", "channel_id", "titles", "selected_title_index", "description", "tags", "hashtags", "chapters", "thumbnail_candidates", "selected_thumbnail", "publish_at", "visibility"],
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "pattern": "^EP-\\d{4}-\\d{4}$"
+    },
+    "channel_id": {
+      "type": "string"
+    },
+    "titles": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 100 },
+      "minItems": 5,
+      "maxItems": 5,
+      "description": "제목 후보 5안"
+    },
+    "selected_title_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 5,
+      "maxItems": 30,
+      "description": "검색 태그"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^#"
+      },
+      "minItems": 3,
+      "maxItems": 5,
+      "description": "해시태그 (#으로 시작)"
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["t", "label"],
+        "properties": {
+          "t": { "type": "integer", "minimum": 0, "description": "시작 시간(초)" },
+          "label": { "type": "string", "description": "챕터 제목" }
+        }
+      },
+      "minItems": 2
+    },
+    "thumbnail_candidates": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "thumbnail_copy": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "썸네일 카피"
+    },
+    "selected_thumbnail": {
+      "type": "string"
+    },
+    "publish_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["public", "private", "unlisted"]
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "barrotube://schemas/script.schema.json",
+  "title": "30_script.md Frontmatter Schema",
+  "description": "PRD §8.1 - 장면 단위 대본 frontmatter 스키마",
+  "type": "object",
+  "required": ["episode_id", "channel_id", "target_total_seconds", "language", "scenes"],
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "pattern": "^EP-\\d{4}-\\d{4}$",
+      "description": "에피소드 ID (EP-YYYY-NNNN)"
+    },
+    "channel_id": {
+      "type": "string",
+      "description": "채널 식별자"
+    },
+    "target_total_seconds": {
+      "type": "integer",
+      "minimum": 60,
+      "maximum": 3600,
+      "description": "목표 영상 길이(초)"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ko", "en", "ja", "zh"],
+      "description": "대본 언어"
+    },
+    "writer": {
+      "type": "string",
+      "description": "작성 에이전트"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "작성 시각 (ISO 8601)"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "description": "재집필 횟수"
+    },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["scene_id", "narration", "image_prompt", "bgm_mood", "target_seconds", "emphasis_tokens"],
+        "properties": {
+          "scene_id": {
+            "type": "string",
+            "pattern": "^\\d{3}$",
+            "description": "장면 ID (3자리 숫자 문자열)"
+          },
+          "narration": {
+            "type": "string",
+            "minLength": 1,
+            "description": "나레이션 텍스트"
+          },
+          "image_prompt": {
+            "type": "string",
+            "minLength": 10,
+            "description": "이미지 생성 프롬프트 (영어)"
+          },
+          "bgm_mood": {
+            "type": "string",
+            "enum": ["tense_intro", "calm_explain", "dramatic_reveal", "hopeful_outro", "neutral_bg", "upbeat_energy"],
+            "description": "BGM 무드 태그"
+          },
+          "target_seconds": {
+            "type": "number",
+            "minimum": 3,
+            "maximum": 60,
+            "description": "장면 목표 길이(초)"
+          },
+          "emphasis_tokens": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 0,
+            "maxItems": 5,
+            "description": "강조할 단어/구 (자막 하이라이트용)"
+          }
+        }
+      }
+    }
+  }
+}

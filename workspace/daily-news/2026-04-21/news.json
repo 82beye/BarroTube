@@ -1,0 +1,705 @@
+{
+  "date": "2026-04-21",
+  "fetched_at": "2026-04-21T11:39:56.614Z",
+  "sources": [
+    {
+      "source": "naver",
+      "source_name": "네이버 증권",
+      "fetched_at": "2026-04-21T11:39:55.779Z",
+      "count": 20,
+      "items": [
+        {
+          "title": "������ ���� ��������",
+          "link": "https://finance.naver.com/news/news_search.naver?rcdate=&q=%BF%C0%B4%C3%C0%C7+%C1%F5%BD%C3%C0%CF%C1%A4&sm=title.basic&pd=1&stDateStart=",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "������ ��������",
+          "link": "https://finance.naver.com/news/news_search.naver?rcdate=&q=%BF%C0%B4%C3%C0%C7+%C1%F5%BD%C3%C0%CF%C1%A4&sm=title.basic&pd=1&stDateStart=",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "����Ȩ",
+          "link": "/",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "����",
+          "link": "/news/",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "'M&amp;A�ºλ�' �ϸ�, Ȩ������ �ͽ���. .",
+          "link": "/news/news_read.naver?article_id=0005511290&office_id=014&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "�����ٰ� CEO &quot;����ɷ� 100���� �� . .",
+          "link": "/news/news_read.naver?article_id=0005752813&office_id=277&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "[�ô����̳�] �븸 ����, ڸ �ݵ�ü. .",
+          "link": "/news/news_read.naver?article_id=0013901562&office_id=003&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "���� ���� ������ ���Ｍ ���� ����. .",
+          "link": "/news/news_read.naver?article_id=0001945726&office_id=057&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "'4�� ���� ����'�� ���� 15�� ��. .",
+          "link": "/news/news_read.naver?article_id=0001945725&office_id=057&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "��ö�ε�&hellip;���� �� �鼼������ &quot;�ɰ�. .",
+          "link": "/news/news_read.naver?article_id=0001945720&office_id=057&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "[�ܵ�] '�߰��� �ϸ�' ����� �ó���. .",
+          "link": "/news/news_read.naver?article_id=0005669459&office_id=009&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "��ƿ����, �����Ⱓ �ο�&hellip;�ŷ����� . .",
+          "link": "/news/news_read.naver?article_id=0006262960&office_id=018&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "[�ܵ�] Ȩ�� �ͽ������� ����� &lsquo;��. .",
+          "link": "/news/news_read.naver?article_id=0005669456&office_id=009&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "[�Ӻ�] �ϸ��׷�, Ȩ�÷��� �ͽ�����. .",
+          "link": "/news/news_read.naver?article_id=0005669455&office_id=009&mode=LSS3D&type=0&section_id=101&section_id2=258&section_id3=401",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "[�Ӻ�] Ȩ�÷��� �ͽ�������, �Ű� �켱�������ڿ� �ϸ��׷�&hellip;N..",
+          "link": "/news/news_read.naver?article_id=0005669440&office_id=009&mode=RANK&typ=0",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "���� ������ ���� �����н� &rsquo;10��' ���� ��... ������ &lsquo;3..",
+          "link": "/news/news_read.naver?article_id=0001158599&office_id=366&mode=RANK&typ=0",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "����� ����? �δ޸��� 40% &lsquo;����&rsquo; ���̺� �ְ�",
+          "link": "/news/news_read.naver?article_id=0002786365&office_id=021&mode=RANK&typ=0",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "&lsquo;3�� ���� ���� 42��&rsquo; ���� �۳⺸�� 3�質 ����&hellip;���� ��..",
+          "link": "/news/news_read.naver?article_id=0002633188&office_id=016&mode=RANK&typ=0",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "[�ܵ�] �ϸ��׷�, Ȩ�÷��� �ͽ������� �Ű� ������ ����...��..",
+          "link": "/news/news_read.naver?article_id=0001158659&office_id=366&mode=RANK&typ=0",
+          "pubDate": "",
+          "description": ""
+        },
+        {
+          "title": "&quot;8,500���� ����&quot; �İ� ����&hellip;��ǥġ �մ� ���� �ٰŴ�",
+          "link": "/news/news_read.naver?article_id=0001249639&office_id=215&mode=RANK&typ=0",
+          "pubDate": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "source": "yna_economy",
+      "source_name": "연합뉴스 경제",
+      "fetched_at": "2026-04-21T11:39:56.003Z",
+      "count": 120,
+      "items": [
+        {
+          "title": "박홍근 \"2045년 비전, 연내에 국민께 보고…재원도 산출\"(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421147051002",
+          "pubDate": "Tue, 21 Apr 2026 19:19:57 +0900",
+          "description": "(세종=연합뉴스) 이대희 송정은 기자 = 박홍근 기획예산처 장관은 21일 &quot;올해 내에 2045년의 미래 비전을 국민께 보고할 수 있도록 준비하겠..."
+        },
+        {
+          "title": "고가차 증가에 대물보험 10억 이상 가입 과반…할인특약 확대",
+          "link": "https://www.yna.co.kr/view/AKR20260421164100002",
+          "pubDate": "Tue, 21 Apr 2026 19:04:22 +0900",
+          "description": "(서울=연합뉴스) 강수련 기자 = 차량 가격 상승에 따라 대물배상 한도를 10억원 이상으로 설정한 자동차보험 가입자가 절반을 넘어선 것으로 나타..."
+        },
+        {
+          "title": "박홍근 \"IMF 韓부채비율, 과대 전망 많아…엄격한 재정 관리중\"(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421145051002",
+          "pubDate": "Tue, 21 Apr 2026 18:59:13 +0900",
+          "description": "(세종=연합뉴스) 안채원 송정은 기자 = 박홍근 기획예산처 장관은 21일 국제통화기금(IMF)이 2031년 한국의 국내총생산(GDP) 대비 국가..."
+        },
+        {
+          "title": "최태원 \"우리 정부가 직접 게임 참여해 기업 지원해야\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421160700003",
+          "pubDate": "Tue, 21 Apr 2026 18:16:20 +0900",
+          "description": "(서울=연합뉴스) 조성흠 기자 = 최태원 대한상공회의소 회장은 21일 &quot;현재 각국 정부가 직접 시장에 참여하는 상황에서, 우리 정부가 직접 게임..."
+        },
+        {
+          "title": "[연합뉴스 이 시각 헤드라인] - 18:00",
+          "link": "https://www.yna.co.kr/view/AKR20260421153000011",
+          "pubDate": "Tue, 21 Apr 2026 18:00:00 +0900",
+          "description": "■ 코스피 6,388선 터치, 역대최고…SK하이닉스 &apos;120만 닉스&apos; 돌파"
+        },
+        {
+          "title": "[카드뉴스] AI 시대, K-로컬의 내일을 만나다…와이팜 엑스포 2026",
+          "link": "https://www.yna.co.kr/view/AKR20260421148900371",
+          "pubDate": "Tue, 21 Apr 2026 17:58:49 +0900",
+          "description": "&quot;왜 지금 농촌인가?&quot;"
+        },
+        {
+          "title": "방시혁 영장신청에…'K팝 왕국' 하이브, 창사 20여년만 중대기로",
+          "link": "https://www.yna.co.kr/view/AKR20260421156500005",
+          "pubDate": "Tue, 21 Apr 2026 17:48:02 +0900",
+          "description": "(서울=연합뉴스) 이태수 기자 = 국내 1위 가요 기획사 하이브의 방시혁 의장을 상대로 경찰이 구속영장을 신청하면서 하이브가 창사 20여년 만에..."
+        },
+        {
+          "title": "노동장관, 청년카페서 추경 지원사업 점검…\"일경험 기회 확대\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421128400530",
+          "pubDate": "Tue, 21 Apr 2026 17:30:00 +0900",
+          "description": "(서울=연합뉴스) 옥성구 기자 = 김영훈 고용노동부 장관이 21일 서울 금천구의 청년 지원 공간인 청년 카페를 찾아 이번 추가경정예산으로 확대된..."
+        },
+        {
+          "title": "내년 최저임금 심의 시작…새 위원장엔 권순원 교수(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421140151530",
+          "pubDate": "Tue, 21 Apr 2026 17:29:53 +0900",
+          "description": "(세종=연합뉴스) 김은경 기자 = 내년도 최저임금을 결정하기 위한 최저임금위원회의 심의가 21일 본격적으로 시작됐다."
+        },
+        {
+          "title": "CSA 코스믹 \"자회사 젠트로그룹 주식 25억원에 추가취득\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421154100008",
+          "pubDate": "Tue, 21 Apr 2026 17:25:19 +0900",
+          "description": "(서울=연합뉴스) 코스닥 상장사 CSA 코스믹[083660]은 건설자재 제조 및 전문건설공사 등 자회사 젠트로그룹의 주식 1주를 약 25억원에 ..."
+        },
+        {
+          "title": "中국채에 유동성 몰리며 가격 강세…'안전자산 대안' 부상",
+          "link": "https://www.yna.co.kr/view/AKR20260421150900083",
+          "pubDate": "Tue, 21 Apr 2026 17:17:59 +0900",
+          "description": "(베이징=연합뉴스) 김현정 특파원 = 정부의 대규모 국채 발행이 예고된 상황에서도 중국 국채 가격이 풍부한 시중 유동성을 바탕으로 강세를 이어가..."
+        },
+        {
+          "title": "코스피, 전쟁공포 딛고 전고점 돌파…'7천피' 고지 넘보나(종합2보)",
+          "link": "https://www.yna.co.kr/view/AKR20260421076552008",
+          "pubDate": "Tue, 21 Apr 2026 17:12:47 +0900",
+          "description": "(서울=연합뉴스) 황철환 이민영 기자 = 미국과 이스라엘의 공격으로 시작된 이란전쟁의 충격으로 한때 5,000선마저 위협받았던 코스피가 21일 ..."
+        },
+        {
+          "title": "신현송 신임 한은 총재, 구윤철 부총리와 23일 첫 회동",
+          "link": "https://www.yna.co.kr/view/AKR20260421150800002",
+          "pubDate": "Tue, 21 Apr 2026 17:12:24 +0900",
+          "description": "(서울=연합뉴스) 임지우 기자 = 신현송 한국은행 신임 총재가 취임 사흘 만에 구윤철 경제부총리 겸 재정경제부 장관과 회동한다."
+        },
+        {
+          "title": "종전 기대감에 국고채 금리 일제히↓…3년물 연 3.330%(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421144251008",
+          "pubDate": "Tue, 21 Apr 2026 17:09:13 +0900",
+          "description": "(서울=연합뉴스) 김태종 기자 = 미국과 이란의 종전 기대감에 21일 국고채 금리가 일제히 하락 마감했다."
+        },
+        {
+          "title": "사상최고 경신, 코스피 전망은…전문가들 \"반도체 주도 랠리 지속\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421147200008",
+          "pubDate": "Tue, 21 Apr 2026 17:07:57 +0900",
+          "description": "(서울=연합뉴스) 황철환 고은지 이민영 김유향 기자 = 미국과 이란의 전쟁으로 한때 5,000선을 위협받던 코스피가 21일 전고점을 돌파하며 사..."
+        },
+        {
+          "title": "지방세 환급 페이머니로도 받는다…1주택 재산세 부담 완화 유지",
+          "link": "https://www.yna.co.kr/view/AKR20260421136200530",
+          "pubDate": "Tue, 21 Apr 2026 17:00:04 +0900",
+          "description": "(서울=연합뉴스) 오진송 기자 = 과오납으로 발생한 지방세 환급금을 선불전자지급수단(페이머니)으로도 받을 수 있게 된다."
+        },
+        {
+          "title": "韓부채비율 IMF지적에 박홍근 \"과대전망 많아…재정선순환 중요\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421145000002",
+          "pubDate": "Tue, 21 Apr 2026 17:00:03 +0900",
+          "description": "(세종=연합뉴스) 안채원 송정은 기자 = 박홍근 기획예산처 장관은 21일 국제통화기금(IMF)이 2031년 한국의 국내총생산(GDP) 대비 국가..."
+        },
+        {
+          "title": "박홍근 \"지금은 추경 집행으로 효과 극대화해야…2차 예단 못해\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421146100002",
+          "pubDate": "Tue, 21 Apr 2026 17:00:02 +0900",
+          "description": "(세종=연합뉴스) 이세원 송정은 기자 = 박홍근 기획예산처 장관은 &quot;지금은 기 편성된 추경 신속 집행으로 효과를 극대화하는 게 우리가 할 일&quot;이..."
+        },
+        {
+          "title": "박홍근 \"2045년 비전, 연내에 국민께 보고…재원도 산출\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421147000002",
+          "pubDate": "Tue, 21 Apr 2026 17:00:01 +0900",
+          "description": "(세종=연합뉴스) 이대희 송정은 기자 = 박홍근 기획예산처 장관은 21일 &quot;올해 내에 2045년의 미래 비전을 국민께 보고할 수 있도록 준비하겠..."
+        },
+        {
+          "title": "기름 넣고 결제없이 '쌩'…고유가에 英 휘발유 절도 급증",
+          "link": "https://www.yna.co.kr/view/AKR20260421146200009",
+          "pubDate": "Tue, 21 Apr 2026 16:49:58 +0900",
+          "description": "(서울=연합뉴스) 현영복 기자 = 이란 전쟁에 따른 국제 유가 급등으로 영국 주유소에서 차량에 주유 후 결제없이 달아나는 범죄가 크게 늘어나 주..."
+        },
+        {
+          "title": "화물연대 사망사고에 '노란봉투법' 해석 놓고 노사정 파열음",
+          "link": "https://www.yna.co.kr/view/AKR20260421140900052",
+          "pubDate": "Tue, 21 Apr 2026 16:46:03 +0900",
+          "description": "(전국종합=연합뉴스) &apos;화물연대 사태&apos;가 장기화할 조짐을 보이는 가운데 원하청 교섭 범위와 노란봉투법(노동조합 및 노동관계조정법 2·3조 개정법..."
+        },
+        {
+          "title": "국고채 금리 일제히 하락…3년물 연 3.330%",
+          "link": "https://www.yna.co.kr/view/AKR20260421144200008",
+          "pubDate": "Tue, 21 Apr 2026 16:42:04 +0900",
+          "description": "(서울=연합뉴스) 21일 국고채 금리가 일제히 하락했다."
+        },
+        {
+          "title": "춘천 기업혁신파크, 기업 방문·산업용지 문의 잇따라",
+          "link": "https://www.yna.co.kr/view/AKR20260421139500062",
+          "pubDate": "Tue, 21 Apr 2026 16:39:22 +0900",
+          "description": "(춘천=연합뉴스) 이상학 기자 = 강원 춘천시 &apos;기업혁신파크&apos;에 기업 현장 방문과 부지 문의가 이어지고 있다."
+        },
+        {
+          "title": "내년 최저임금 심의 시작…새 위원장엔 권순원 교수",
+          "link": "https://www.yna.co.kr/view/AKR20260421140100530",
+          "pubDate": "Tue, 21 Apr 2026 16:38:08 +0900",
+          "description": "(세종=연합뉴스) 김은경 기자 = 내년도 최저임금을 결정하기 위한 최저임금위원회의 심의가 21일 본격적으로 시작됐다."
+        },
+        {
+          "title": "강원교육청 지방공무원 경쟁률 6.43대 1…작년 절반 이하",
+          "link": "https://www.yna.co.kr/view/AKR20260421139400062",
+          "pubDate": "Tue, 21 Apr 2026 16:32:12 +0900",
+          "description": "(춘천=연합뉴스) 양지웅 기자 = 강원특별자치도교육청은 2026년도 지방공무원 응시원서를 접수한 결과 평균 6.43대 1의 경쟁률을 기록했다고 ..."
+        },
+        {
+          "title": "KG스틸 \"대한전선 주식 1천100억원어치 취득…지분율 4.9%\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421142800008",
+          "pubDate": "Tue, 21 Apr 2026 16:31:22 +0900",
+          "description": "(서울=연합뉴스) 코스피 상장사 KG스틸[016380]은 기타 절연선 및 케이블 제조업 업체 대한전선의 주식 954만5천296주를 1천100억원..."
+        },
+        {
+          "title": "'전쟁보단 실적'? 코스피 신고가 '우르르'…전월의 1.6배(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421083351008",
+          "pubDate": "Tue, 21 Apr 2026 16:30:32 +0900",
+          "description": "(서울=연합뉴스) 고은지 기자 = 미국과 이란 간 종전 협상에 대한 기대로 21일 코스피가 역대 최고가를 새로 쓴 가운데 개별 종목에서도 신고가..."
+        },
+        {
+          "title": "법원, 수제맥주 기업 어메이징브루잉컴퍼니 파산 선고",
+          "link": "https://www.yna.co.kr/view/AKR20260421140300030",
+          "pubDate": "Tue, 21 Apr 2026 16:24:13 +0900",
+          "description": "(서울=연합뉴스) 한주홍 기자 = 서울회생법원 회생12부(최두호 부장판사)는 21일 수제맥주 기업인 주식회사 어메이징브루잉컴퍼니에 대해 파산을 ..."
+        },
+        {
+          "title": "코스피 6,388선 터치, 역대최고…SK하이닉스 '120만 닉스' 돌파(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421137400008",
+          "pubDate": "Tue, 21 Apr 2026 16:15:50 +0900",
+          "description": "(서울=연합뉴스) 이민영 기자 = 코스피가 21일 미국과 이란의 종전 협상을 둘러싼 불확실성에도 2% 넘게 올라 사상 최고치를 경신했다."
+        },
+        {
+          "title": "금융위, '금융정상화 제안센터' 운영…현장 목소리 정책 반영",
+          "link": "https://www.yna.co.kr/view/AKR20260421134700002",
+          "pubDate": "Tue, 21 Apr 2026 16:06:53 +0900",
+          "description": "(서울=연합뉴스) 강류나 기자 = 금융위원회가 금융 정책에 국민의 목소리를 직접 반영하기 위해 국민 제안 창구를 운영한다고 21일 밝혔다."
+        }
+      ]
+    },
+    {
+      "source": "yna_market",
+      "source_name": "연합뉴스 증권",
+      "fetched_at": "2026-04-21T11:39:56.226Z",
+      "count": 120,
+      "items": [
+        {
+          "title": "LIG디펜스앤에어로스페이스, 애프터마켓서 10%대 급등",
+          "link": "https://www.yna.co.kr/view/AKR20260421158700008",
+          "pubDate": "Tue, 21 Apr 2026 17:53:01 +0900",
+          "description": "(서울=연합뉴스) 코스피 상장사 LIG디펜스앤에어로스페이스[079550]가 21일 애프터마켓에서 10%대 급등 중이다."
+        },
+        {
+          "title": "방시혁 영장신청에…'K팝 왕국' 하이브, 창사 20여년만 중대기로",
+          "link": "https://www.yna.co.kr/view/AKR20260421156500005",
+          "pubDate": "Tue, 21 Apr 2026 17:48:02 +0900",
+          "description": "(서울=연합뉴스) 이태수 기자 = 국내 1위 가요 기획사 하이브의 방시혁 의장을 상대로 경찰이 구속영장을 신청하면서 하이브가 창사 20여년 만에..."
+        },
+        {
+          "title": "CSA 코스믹 \"자회사 젠트로그룹 주식 25억원에 추가취득\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421154100008",
+          "pubDate": "Tue, 21 Apr 2026 17:25:19 +0900",
+          "description": "(서울=연합뉴스) 코스닥 상장사 CSA 코스믹[083660]은 건설자재 제조 및 전문건설공사 등 자회사 젠트로그룹의 주식 1주를 약 25억원에 ..."
+        },
+        {
+          "title": "中국채에 유동성 몰리며 가격 강세…'안전자산 대안' 부상",
+          "link": "https://www.yna.co.kr/view/AKR20260421150900083",
+          "pubDate": "Tue, 21 Apr 2026 17:17:59 +0900",
+          "description": "(베이징=연합뉴스) 김현정 특파원 = 정부의 대규모 국채 발행이 예고된 상황에서도 중국 국채 가격이 풍부한 시중 유동성을 바탕으로 강세를 이어가..."
+        },
+        {
+          "title": "코스피, 전쟁공포 딛고 전고점 돌파…'7천피' 고지 넘보나(종합2보)",
+          "link": "https://www.yna.co.kr/view/AKR20260421076552008",
+          "pubDate": "Tue, 21 Apr 2026 17:12:47 +0900",
+          "description": "(서울=연합뉴스) 황철환 이민영 기자 = 미국과 이스라엘의 공격으로 시작된 이란전쟁의 충격으로 한때 5,000선마저 위협받았던 코스피가 21일 ..."
+        },
+        {
+          "title": "종전 기대감에 국고채 금리 일제히↓…3년물 연 3.330%(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421144251008",
+          "pubDate": "Tue, 21 Apr 2026 17:09:13 +0900",
+          "description": "(서울=연합뉴스) 김태종 기자 = 미국과 이란의 종전 기대감에 21일 국고채 금리가 일제히 하락 마감했다."
+        },
+        {
+          "title": "사상최고 경신, 코스피 전망은…전문가들 \"반도체 주도 랠리 지속\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421147200008",
+          "pubDate": "Tue, 21 Apr 2026 17:07:57 +0900",
+          "description": "(서울=연합뉴스) 황철환 고은지 이민영 김유향 기자 = 미국과 이란의 전쟁으로 한때 5,000선을 위협받던 코스피가 21일 전고점을 돌파하며 사..."
+        },
+        {
+          "title": "에어부산, 1분기 매출 늘어도 영업이익 감소…순이익 적자 전환",
+          "link": "https://www.yna.co.kr/view/AKR20260421149400051",
+          "pubDate": "Tue, 21 Apr 2026 17:05:35 +0900",
+          "description": "(부산=연합뉴스) 손형주 기자 = 에어부산[298690]이 매출 증가에도 불구하고 고유가·고환율 부담으로 영업이익이 감소하고 당기순이익이 적자로..."
+        },
+        {
+          "title": "박홍근 \"지금은 추경 집행으로 효과 극대화해야…2차 예단 못해\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421146100002",
+          "pubDate": "Tue, 21 Apr 2026 17:00:02 +0900",
+          "description": "(세종=연합뉴스) 이세원 송정은 기자 = 박홍근 기획예산처 장관은 &quot;지금은 기 편성된 추경 신속 집행으로 효과를 극대화하는 게 우리가 할 일&quot;이..."
+        },
+        {
+          "title": "기름 넣고 결제없이 '쌩'…고유가에 英 휘발유 절도 급증",
+          "link": "https://www.yna.co.kr/view/AKR20260421146200009",
+          "pubDate": "Tue, 21 Apr 2026 16:49:58 +0900",
+          "description": "(서울=연합뉴스) 현영복 기자 = 이란 전쟁에 따른 국제 유가 급등으로 영국 주유소에서 차량에 주유 후 결제없이 달아나는 범죄가 크게 늘어나 주..."
+        },
+        {
+          "title": "국고채 금리 일제히 하락…3년물 연 3.330%",
+          "link": "https://www.yna.co.kr/view/AKR20260421144200008",
+          "pubDate": "Tue, 21 Apr 2026 16:42:04 +0900",
+          "description": "(서울=연합뉴스) 21일 국고채 금리가 일제히 하락했다."
+        },
+        {
+          "title": "아시아 주요 증시 일제히 상승",
+          "link": "https://www.yna.co.kr/view/AKR20260421143200009",
+          "pubDate": "Tue, 21 Apr 2026 16:33:18 +0900",
+          "description": "(서울=연합뉴스) 황정우 기자 = 미국과 이란 간 2차 종전 협상의 성사 여부가 불확실한 가운데 21일 한국, 일본, 대만 등 아시아 주요 증시..."
+        },
+        {
+          "title": "[표] 코스피 지수선물·옵션 시세표(21일)-3",
+          "link": "https://www.yna.co.kr/view/AKR20260421142700008",
+          "pubDate": "Tue, 21 Apr 2026 16:32:09 +0900",
+          "description": "◇주가지수옵션 \n(C:콜옵션,P:풋옵션) \n(단위:포인트,계약)"
+        },
+        {
+          "title": "[표] 코스피 지수선물·옵션 시세표(21일)-2",
+          "link": "https://www.yna.co.kr/view/AKR20260421142600008",
+          "pubDate": "Tue, 21 Apr 2026 16:31:56 +0900",
+          "description": "◇개별주식선물(기초자산 기준 시총 상위 100개) \n(단위:원,계약)"
+        },
+        {
+          "title": "[표] 코스피 지수선물·옵션 시세표(21일)-1",
+          "link": "https://www.yna.co.kr/view/AKR20260421142500008",
+          "pubDate": "Tue, 21 Apr 2026 16:31:37 +0900",
+          "description": "◇주가지수선물 \n(단위:포인트,계약)"
+        },
+        {
+          "title": "KG스틸 \"대한전선 주식 1천100억원어치 취득…지분율 4.9%\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421142800008",
+          "pubDate": "Tue, 21 Apr 2026 16:31:22 +0900",
+          "description": "(서울=연합뉴스) 코스피 상장사 KG스틸[016380]은 기타 절연선 및 케이블 제조업 업체 대한전선의 주식 954만5천296주를 1천100억원..."
+        },
+        {
+          "title": "'전쟁보단 실적'? 코스피 신고가 '우르르'…전월의 1.6배(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421083351008",
+          "pubDate": "Tue, 21 Apr 2026 16:30:32 +0900",
+          "description": "(서울=연합뉴스) 고은지 기자 = 미국과 이란 간 종전 협상에 대한 기대로 21일 코스피가 역대 최고가를 새로 쓴 가운데 개별 종목에서도 신고가..."
+        },
+        {
+          "title": "동서, 애프터마켓서 10%대 급등세",
+          "link": "https://www.yna.co.kr/view/AKR20260421139900008",
+          "pubDate": "Tue, 21 Apr 2026 16:22:40 +0900",
+          "description": "(서울=연합뉴스) 코스피 상장사 동서[026960]가 21일 애프터마켓에서 10%대 급등 중이다."
+        },
+        {
+          "title": "[특징주] 하이브, 방시혁 구속영장 신청 소식에 2%대 하락(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421085051008",
+          "pubDate": "Tue, 21 Apr 2026 16:17:08 +0900",
+          "description": "(서울=연합뉴스) 고은지 기자 = 하이브[352820]가 21일 방시혁 의장에 대한 구속영장이 신청됐다는 소식에 하락 마감했다."
+        },
+        {
+          "title": "코스피 6,388선 터치, 역대최고…SK하이닉스 '120만 닉스' 돌파(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421137400008",
+          "pubDate": "Tue, 21 Apr 2026 16:15:50 +0900",
+          "description": "(서울=연합뉴스) 이민영 기자 = 코스피가 21일 미국과 이란의 종전 협상을 둘러싼 불확실성에도 2% 넘게 올라 사상 최고치를 경신했다."
+        },
+        {
+          "title": "코스피, 전쟁공포 딛고 전고점 돌파…'7천피' 고지 넘보나(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421076551008",
+          "pubDate": "Tue, 21 Apr 2026 16:06:42 +0900",
+          "description": "(서울=연합뉴스) 황철환 기자 = 미국과 이스라엘의 공격으로 시작된 이란전쟁의 충격으로 한때 5,000선마저 위협받았던 코스피가 21일 전고점을..."
+        },
+        {
+          "title": "삼전·닉스 '2배 ETF' 내달 거래…10여종 출격 준비",
+          "link": "https://www.yna.co.kr/view/AKR20260421134800008",
+          "pubDate": "Tue, 21 Apr 2026 16:01:25 +0900",
+          "description": "(서울=연합뉴스) 김태종 기자 = 삼성전자[005930]와 SK하이닉스[000660]의 수익률을 ±2배로 추종하는 상장지수펀드(ETF) 거래가 ..."
+        },
+        {
+          "title": "[특징주] '캐즘 터널' 빠져나오나…2차전지주 '불기둥'(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421050952008",
+          "pubDate": "Tue, 21 Apr 2026 15:57:31 +0900",
+          "description": "(서울=연합뉴스) 고은지 기자 = 2차전지 관련 종목들이 업황 개선 기대 속 21일 동반 상승했다."
+        },
+        {
+          "title": "[특징주] 삼천당제약, 불성실공시법인 지정에 소폭 하락 마감(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421047751008",
+          "pubDate": "Tue, 21 Apr 2026 15:53:30 +0900",
+          "description": "(서울=연합뉴스) 황철환 기자 = 불성실공시법인으로 지정된 삼천당제약[000250]이 21일 소폭 하락한 채 거래를 종료했다."
+        },
+        {
+          "title": "[특징주] SK하이닉스, '120만 닉스' 고지 달성…삼전도 2.1%↑(종합)",
+          "link": "https://www.yna.co.kr/view/AKR20260421039651008",
+          "pubDate": "Tue, 21 Apr 2026 15:47:51 +0900",
+          "description": "(서울=연합뉴스) 황철환 기자 = SK하이닉스[000660]가 21일 5% 가까이 급등하며 사상 처음으로 &apos;120만 닉스&apos; 고지에 올라선 채 장..."
+        },
+        {
+          "title": "[표] 코스닥 기관 순매수도 상위종목(21일)",
+          "link": "https://www.yna.co.kr/view/AKR20260421132900008",
+          "pubDate": "Tue, 21 Apr 2026 15:45:59 +0900",
+          "description": "(단위:만원, 주)"
+        },
+        {
+          "title": "[표] 코스닥 외국인 순매수도 상위종목(21일)",
+          "link": "https://www.yna.co.kr/view/AKR20260421132600008",
+          "pubDate": "Tue, 21 Apr 2026 15:45:49 +0900",
+          "description": "(단위:만원, 주)"
+        },
+        {
+          "title": "[표] 거래소 외국인 순매수도 상위종목(21일)",
+          "link": "https://www.yna.co.kr/view/AKR20260421132800008",
+          "pubDate": "Tue, 21 Apr 2026 15:45:38 +0900",
+          "description": "(단위:억원, 만주)"
+        },
+        {
+          "title": "[표] 거래소 기관 순매수도 상위종목(21일)",
+          "link": "https://www.yna.co.kr/view/AKR20260421132700008",
+          "pubDate": "Tue, 21 Apr 2026 15:45:26 +0900",
+          "description": "(단위:억원, 만주)"
+        },
+        {
+          "title": "모건스탠리 \"컴퓨팅 병목이 CPU와 메모리로 이동\"",
+          "link": "https://www.yna.co.kr/view/AKR20260421131800009",
+          "pubDate": "Tue, 21 Apr 2026 15:44:20 +0900",
+          "description": "(서울=연합뉴스) 황정우 기자 = 모건스탠리는 점점 더 자율화하는 인공지능(AI)이 중앙처리장치(CPU)에 대한 수요를 증가시키고, 지금까지 A..."
+        }
+      ]
+    },
+    {
+      "source": "bok",
+      "source_name": "한국은행 보도자료",
+      "error": "HTTP 500",
+      "items": []
+    },
+    {
+      "source": "mk_economy",
+      "source_name": "매일경제",
+      "fetched_at": "2026-04-21T11:39:56.614Z",
+      "count": 50,
+      "items": [
+        {
+          "title": "“과장된 연기와 표정, 중국인 비하”…‘악마는 프라다 2’ 中서 보이콧 논란",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023357]]>",
+          "pubDate": "Tue, 21 Apr 2026 20:39:27 +09:00",
+          "description": "할리우드 영화 ‘악마는 프라다를 입는다 2’가 중국인 캐릭터 설정을 둘러싼 인종차별 논란에 휘말리면서 중국 내 보이콧 움직임이 확산되고 있다. 21일 중화망 등 현지 매체에 따르면.."
+        },
+        {
+          "title": "‘BTS 아빠’ 방시혁, 구속영장 신청…‘오너리스크’ 하이브, 중대 기로에",
+          "link": "<![CDATA[https://www.mk.co.kr/news/business/12023347]]>",
+          "pubDate": "Tue, 21 Apr 2026 20:32:41 +09:00",
+          "description": "경찰이 기업공개(IPO)를 앞두고 투자자들을 속여 지분을 팔게 한 혐의를 받는 방시혁 하이브 의장에게 구속영장을 신청했다. 그룹 방탄소년단(BTS)의 컴백으로 실적 개선 기대감이 .."
+        },
+        {
+          "title": "‘이재명 두 아들 군 면제’ 허위글 이수정 측 “피해자 처벌의사 확인해야”",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023338]]>",
+          "pubDate": "Tue, 21 Apr 2026 20:11:47 +09:00",
+          "description": "지난 21대 대선 과정에서 당시 더불어민주당 대선 후보였던 이재명 대통령의 두 아들이 군대 면제를 받았다는 허위 글을 소셜미디어(SNS)에 게시한 이수정 국민의힘 수원정 당협위원장.."
+        },
+        {
+          "title": "“이게 왜 ‘맘충’인지”…어울리지 못하는 아이 챙겨달라는 학부모 고민글 논란",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023337]]>",
+          "pubDate": "Tue, 21 Apr 2026 20:10:55 +09:00",
+          "description": "개그맨 이수지가 선보인 유치원 교사 패러디 영상이 화제인 가운데, 내향적 성향의 자녀를 둔 한 학부모가 자신이 ‘맘충’인지에 대해 고민하는 글이 논란이 되고 있다. 맘충은 자신의 .."
+        },
+        {
+          "title": "“우리 엄마 아직 살아있어요”…70대 딸, 노모 시신 자택에 옮긴 사연 눈길",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023328]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:59:53 +09:00",
+          "description": "70대 딸이 어머니의 사망 사실을 받아들이지 못하고 시신을 자택으로 옮기는 일이 발생해 안타까움을 자아낸다. 21일 부산 사하경찰서와 사하구에 따르면 70대 여성 A씨는 지난 15.."
+        },
+        {
+          "title": "[단독] '닭고기 하림' 유통업 시너지…홈플러스 회생 인가 청신호",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023325]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:57:51 +09:00",
+          "description": "유통 전문기업인 하림그룹이 홈플러스 익스프레스 매각 우선협상대상자에 선정됐다. 이로써 1년여를 이어온 홈플러스 회생 작업에도 속도가 붙게 됐다. 매각이 마무리될 경우 수천억 원에 .."
+        },
+        {
+          "title": "금감원 소비자보호 '전력투구'…설계부터 분쟁까지 전단계 평가",
+          "link": "<![CDATA[https://www.mk.co.kr/news/economy/12023322]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:53:12 +09:00",
+          "description": "금융감독원이 설계·판매·분쟁 등 금융 상품 판매의 전 주기에 걸쳐 소비자보호 관리·감독을 강화한다. 금융투자 상품 판매 시 설명 관련 가이드라인을 새로 마련하고 당국이 실시하는 소.."
+        },
+        {
+          "title": "[단독] SK온 도쿄지사 설립…車배터리 영토확장",
+          "link": "<![CDATA[https://www.mk.co.kr/news/business/12023319]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:51:37 +09:00",
+          "description": "SK그룹의 배터리 계열사인 SK온이 일본에 지사를 세우고 현지 시장 공략에 나선다. 보수적인 일본 완성차 시장 진출을 통해 '캐즘(수요 축소)'을 돌파하기 위한 전환점을 마련하겠다.."
+        },
+        {
+          "title": "[단독] 홈플 익스프레스 붙잡는 ‘닭고기 하림’…유통업 시너지 노린다",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023311]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:44:44 +09:00",
+          "description": "매각대금 3000억원 안팎예상 자회사 NS홈쇼핑 앞세워 인수 익스프레스 수도권 매장 활용 신선식품 전진기지로 키울 것유통 전문기업인 하림그룹이 홈플러스 익스프레스 매각 우선협상대상.."
+        },
+        {
+          "title": "[속보] 하림그룹, 홈플러스 익스프레스 품는다…회생안 인가 청신호",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023308]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:40:14 +09:00",
+          "description": "매각 우선협상대상자 선정 엔에스쇼핑이 인수 주체로하림그룹이 홈플러스의 슈퍼마켓사업부(SSM)인 홈플러스 익스프레스를 품는다. 이로서 홈플러스 회생계획안 통과에도 청신호가 켜졌다. .."
+        },
+        {
+          "title": "[단독] 하림, 홈플 익스프레스 품는다",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023307]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:38:06 +09:00",
+          "description": "하림그룹이 홈플러스의 기업형 슈퍼마켓(SSM) 사업부인 홈플러스 익스프레스를 품는다. 이로써 홈플러스 회생계획안 통과에도 청신호가 켜졌다. 21일 투자은행(IB) 업계에 따르면 홈.."
+        },
+        {
+          "title": "‘끼어들기’ 화 나서?…‘신호대기’ 오토바이 우체국 집배원 폭행한 40대 [영상]",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023296]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:24:48 +09:00",
+          "description": "차선 끼어들기에 화가 나 오토바이를 타고 있던 우체국 집배원을 폭행한 40대 남성이 경찰에 현행범으로 붙잡혔다. 21일 연합뉴스에 따르면 서울 강서경찰서는 폭행 혐의로 A(42)씨.."
+        },
+        {
+          "title": "“AI 도입해도 성과 안 나는 이유?”…답은 ‘운영 재설계’에 있다",
+          "link": "<![CDATA[https://www.mk.co.kr/news/business/12023287]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:07:50 +09:00",
+          "description": "매경AX클럽 1차 필드트립 “AX 성패, 기술 아닌 운영 구조에 달려” “IT 운영, 고정비에서 변동비 구조로 전환” “HR도 자동화…사람은 검증 역할로 이동” 비용·속도·리스크 .."
+        },
+        {
+          "title": "“해군 초임 하사 월급이 400만원?”…경제 유튜버 슈카도 놀랐다",
+          "link": "<![CDATA[https://www.mk.co.kr/news/politics/12023280]]>",
+          "pubDate": "Tue, 21 Apr 2026 19:06:38 +09:00",
+          "description": "유명 유튜버 슈카의 콘텐츠로 밝혀진 해군 초임하사의 월급이 화제다. 21일 유튜브에 따르면 슈카는 지난 18일 대한민국 해군은 공식 유튜브 채널에 ‘해군 함정 타면 초임 하사도 월.."
+        },
+        {
+          "title": "SKT, “AI B2B 위해 바꾼다”…엔터프라이즈 TF 신설",
+          "link": "<![CDATA[https://www.mk.co.kr/news/it/12023260]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:57:45 +09:00",
+          "description": "엔터프라이즈 TF, CEO 직속으로  공공·국방까지 B2B 공략 강화 AI DC 사업 조직도 따로 꾸려 취임 이후 ‘변화’ 강조 기조 이어가정재헌 SK텔레콤 대표가 취임 6개월을 .."
+        },
+        {
+          "title": "[단독] 미국·일본 “한국산 석유 없으면 큰일”…휘발유·항공유 요청 빗발쳐",
+          "link": "<![CDATA[https://www.mk.co.kr/news/economy/12023259]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:54:02 +09:00",
+          "description": "공급불안에 ‘K정유’ 수요 쑥 호주·뉴질랜드는 휘발유 미국은 항공유 공급 요청중동발 원유 공급 불안이 장기화하자 미국, 일본 등 주요국들이 우리 정부에 ‘석유 제품 수출 통제’ 자.."
+        },
+        {
+          "title": "“재무·전략 연동된 지속가능성 공시, 韓증시 밸류업 기여할 것”",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023258]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:50:49 +09:00",
+          "description": "곽병진 10대 한국회계기준원장 K-디스카운트 해소 공시 신뢰성 필수 재무·지속가능성부서 공동준비 시급 美 빼고 EU·日·中 모두 ESG 공시로 더 미루면 韓 기업 경쟁력 타격우려 .."
+        },
+        {
+          "title": "조광한, 경기지사 경선 사퇴하고 이성배 지지…양향자 반발",
+          "link": "<![CDATA[https://www.mk.co.kr/news/politics/12023256]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:43:57 +09:00",
+          "description": "국민의힘 경기도지사 경선에서 조광한 최고위원이 사퇴 후 이성배 예비후보를 지지하자 경쟁자인 양향자 예비후보가 ‘경선 방해’라며 강력히 반발했다. 조광한 최고위원은 21일 매일경제와.."
+        },
+        {
+          "title": "삼성전자 주주들, 노조 집회에 ‘맞불 집회’ 예고",
+          "link": "<![CDATA[https://www.mk.co.kr/news/business/12023255]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:38:19 +09:00",
+          "description": "삼성전자 노조가 23일 평택 사업장에서 대규모 집회를 개최할 예정인 가운데 삼성전자 주주운동본부라는 단체가 같은 시간 노조 집회 맞은 편에서 ‘삼성전자 500만 주주 총궐기 대회’.."
+        },
+        {
+          "title": "“결혼 전 성폭력으로 출산한 사실 숨긴 아내, 사기 결혼인가요?”",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023253]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:34:21 +09:00",
+          "description": "아내가 결혼 전 성폭력 피해로 낳은 아이를 숨긴 사실을 뒤늦게 알게 된 남성의 사연이 화제다. 21일 YTN 라디오 ‘조인섭 변호사의 상담소’에 따르면 결혼 후 아내의 출산 과거를.."
+        },
+        {
+          "title": "[단독] 서울역 금싸라기땅에 쪽방촌…동자동 공공개발 놓고 주민들 반대",
+          "link": "<![CDATA[https://www.mk.co.kr/news/realestate/12023252]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:24:49 +09:00",
+          "description": "서울역근처 동자동 쪽방촌 개발두고 토지소유주 62% “민간개발 원한다” 국토부 간담회장서 “명분없다” 시위  5년째 첫 단추도 못끼워…표류 조짐서울역 근처 동자동 쪽방촌을 두고 공.."
+        },
+        {
+          "title": "한국남부발전, 부산지역 최초 시청각장애인 지원 봉사활동",
+          "link": "<![CDATA[https://www.mk.co.kr/news/business/12023251]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:21:57 +09:00",
+          "description": "직원 직접 점자동화책 제작 복지 사각지대 해소 앞장한국남부발전이 창립 25주년을 맞아 부산지역 최초로 시청각장애인을 위한 직원 참여형 봉사활동을 펼쳤다. 21일 남부발전에 따르면 .."
+        },
+        {
+          "title": "인제서 4.5톤 군용 차량, 전신주 들이받아…1명 사망, 1명 중상",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023250]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:18:21 +09:00",
+          "description": "강원도 인제군에서 군용 차량 사고로 군인 1명이 숨지고 1명이 중상을 입었다. 21일 오후 2시께 서화면 서흥리에서 육군 12사단 소속 간부급 군인 20대 A씨가 몰던 4.5t 군.."
+        },
+        {
+          "title": "[속보] 홈플러스 익스프레스, 매각 우선협상대상자에 하림그룹…NS홈쇼핑 인수 전면에",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023249]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:14:40 +09:00",
+          "description": "홈플러스 익스프레스 매각 우선협상대상자에 하림그룹이 우선협상대상자로 선정됐다. 매각 측은 21일 오후 3시까지 본입찰을 진행했다. 인수주체로는 하림그룹 계열사인 NS홈쇼핑이 나선다.."
+        },
+        {
+          "title": "한병도 與원내대표 사퇴 … 연임 도전나서",
+          "link": "<![CDATA[https://www.mk.co.kr/news/politics/12023247]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:08:57 +09:00",
+          "description": "한병도 더불어민주당 원내대표(사진)가 21일 연임 도전을 위해 현 원내대표직을 사임했다. 한 원내대표는 이날 국회에서 기자간담회를 열고 \"산적한 현안에 대해 책임을 다하기 위해 원.."
+        },
+        {
+          "title": "尹정부 감사원 때리는 與 … 유병호에 동행명령장",
+          "link": "<![CDATA[https://www.mk.co.kr/news/politics/12023246]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:08:57 +09:00",
+          "description": "국회 '윤석열 정권 정치검찰 조작기소 의혹 사건 진상규명 국정조사 특별위원회'가 21일 서해 공무원 피격 사건·통계 조작 의혹 등에 관한 청문회에서 유병호 감사원 감사위원, 김숙동.."
+        },
+        {
+          "title": "“마약밀수 구속 안 되게”…‘억대 뇌물’ 관세청 특별사법경찰관 구속기소",
+          "link": "<![CDATA[https://www.mk.co.kr/news/society/12023242]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:08:48 +09:00",
+          "description": "가상화폐 투자금을 마련하기 위해 수사를 무마해주거나 불구속 수사를 받게 해주겠다며 피의자와 그 가족에게 뒷돈을 수수한 혐의를 받는 관세청 특별사법경찰관(특사경)이 구속상태로 재판에.."
+        },
+        {
+          "title": "와이제이링크, 250억 원 규모 전환사채 발행",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023238]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:08:14 +09:00",
+          "description": "코스닥 상장사 와이제이링크가 제6회 250억 원 규모의 전환사채를 발행한다고 2026년 4월 21일 공시했다.\n전환가액은 6308원이며, 전환 청구 기간은 2027년 5월 7일부터.."
+        },
+        {
+          "title": "금양그린파워, 220억 원 규모 전환사채 발행",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023239]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:08:14 +09:00",
+          "description": "코스닥 상장사 금양그린파워가 제3회 220억 원 규모의 전환사채를 발행한다고 2026년 4월 21일 공시했다.\n전환가액은 1만 5447원이다.\n전환 청구 기간은 2027년 4월 2.."
+        },
+        {
+          "title": "에이디테크놀로지, 1300억 원 규모 전환사채 발행",
+          "link": "<![CDATA[https://www.mk.co.kr/news/stock/12023240]]>",
+          "pubDate": "Tue, 21 Apr 2026 18:08:14 +09:00",
+          "description": "코스닥 상장사 에이디테크놀로지가 제4회 1300억 원 규모의 전환사채를 발행한다고 2026년 4월 21일 공시했다.\n전환가액은 5만 4603원이며, 전환 청구 기간은 2027년 4.."
+        }
+      ]
+    }
+  ],
+  "total_items": 110
+}
