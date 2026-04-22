@@ -47,9 +47,9 @@
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
 
-Shorts에서 검증된 stick-figure 스타일을 그대로 사용. 16:9만 차이.
+Shorts와 동일한 stick-figure 기준. 16:9 비율만 차이.
 ```
-Stick-figure cartoon, chibi proportions (big round heads, tiny bodies), dot eyes, simple line mouths, exaggerated expressions. Clean 2D vector illustration, bold line art, flat monochrome colors, high contrast. Simplified background with symbolic props (arrows, money, charts). 16:9 horizontal, subject centered, leave bottom 15% clear for subtitle overlay, no text overlay.
+Simple stick-figure cartoon, plain circle head with dot eyes and line mouth, thin-line stick body with NO clothing details (no tie, no suit, no hair styling), bold line art, flat monochrome with warm orange (#F4A261) accent on one prop. Simplified background with symbolic props only (arrows, coins, blank charts, simple icons). 16:9 horizontal, subject centered, bottom 15% clear for subtitle.
 ```
 
 ### Shorts 스타일과의 차이

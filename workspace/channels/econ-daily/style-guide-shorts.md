@@ -35,7 +35,7 @@
 ## Image Generation Style (Shorts — Stick-figure Cartoon)
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가 — Recraft V3 1000자 제한 대비 축약)
 ```
-Stick-figure cartoon, chibi proportions (big round heads, tiny bodies), dot eyes, simple line mouths, exaggerated expressions. Clean 2D vector illustration, bold line art, flat monochrome colors, high contrast. Simplified background with symbolic props (arrows, money, charts). 9:16 vertical, subject centered, no text overlay.
+Simple stick-figure cartoon, plain circle head with dot eyes and line mouth, thin-line stick body with NO clothing details (no tie, no suit, no hair styling), bold line art, flat monochrome with warm orange (#F4A261) accent on one prop. Simplified background with symbolic props only (arrows, coins, blank charts, simple icons). 9:16 vertical, subject centered.
 ```
 
 ### 금지 요소

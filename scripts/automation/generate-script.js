@@ -80,7 +80,7 @@ ${spec.mid_hook ? '- MID-HOOK REQUIRED: 씬 4 마지막 부분 또는 75초 지�
 RULES:
 1. Output MUST be a single JSON object. No markdown, no prose, no code fences.
 2. Voice is Yohan Koo (ElevenLabs Korean male) at ~6-7 Korean chars/sec.
-3. Image prompts in ENGLISH following "${spec.aspect}, cartoon stick figure..." pattern. Include brand props (chart, money, arrow).
+3. Image prompts in ENGLISH. Pattern MUST match proven format: "${spec.aspect}, cartoon stick figure [action verb-ing], [1-2 simple symbolic props], bold line art". Keep to 1 short sentence (≤25 words). FORBIDDEN words in image_prompt: "friendly", "smiling", "confident", "happy", "excited", "attentive", "suit", "tie", "shirt", "hair", "teacher", "businessman" — these bias the model toward detailed characters. Use ACTION VERBS only: "pointing at", "holding", "standing beside", "balancing", "running toward", "watching", "confused between", "raising". Example GOOD: "horizontal 16:9, cartoon stick figure pointing at pie chart with one large orange wedge, small stack of coins below, bold line art". Example BAD: "a friendly stick figure teacher with confident smile holding a pie chart".
 4. Korean numbers as Korean words (예: "사십 퍼센트" not "40%").
 5. BGM moods: tense_intro, calm_explain, dramatic_reveal, hopeful_outro, neutral_bg, upbeat_energy.
 6. emphasis_tokens: 1~3 Korean keywords per scene.
