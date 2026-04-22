@@ -86,6 +86,8 @@ RULES:
 6. emphasis_tokens: 1~3 Korean keywords per scene.
 7. Target audience: 20~40대 한국 투자자.
 8. FORBIDDEN: specific stock buy/sell recommendations, "무조건/100%/확실/이것만 하면 부자", 정치 편향.
+9. CRITICAL — narration is FOR TTS ONLY. DO NOT include in narration: emojis (📚 🚨 etc), bracket tags ([1/5]), intro card text, subtitle overlays, or any text that appears as visual-only elements. Those belong to video/subtitle layers — not to spoken audio.
+10. CRITICAL — Hook scene (씬 001) MUST include the SINGLE most impactful numeric value from the brief (percentage, count, date, dollar amount). Generic hooks without a specific number fail impact check.
 ${format === 'long-3min' ? '9. REQUIRED: 씬 7 마지막에 음성 면책 멘트 포함 ("본 영상은 투자 조언이 아닙니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.").\n' : '9. 자막 면책 "투자조언 아님"은 후처리로 자막 레이어에 추가됨 (narration에 넣지 말 것).\n'}
 OUTPUT SCHEMA:
 {
@@ -143,7 +145,7 @@ function loadSeriesContext(channel, fm) {
   return ctx;
 }
 
-async function callGemini(systemPrompt, userPrompt, model = DEFAULT_MODEL) {
+async function callGemini(systemPrompt, userPrompt, model = DEFAULT_MODEL, maxOutputTokens = 5000) {
   const key = getSecret('GOOGLE_AI_API_KEY');
   if (!key) throw new Error('GOOGLE_AI_API_KEY not set');
   const url = `${API_BASE}/models/${model}:generateContent?key=${key}`;
@@ -153,7 +155,7 @@ async function callGemini(systemPrompt, userPrompt, model = DEFAULT_MODEL) {
     generationConfig: {
       responseMimeType: 'application/json',
       temperature: 0.7,
-      maxOutputTokens: 5000,
+      maxOutputTokens,
     },
   };
   const res = await fetch(url, {
@@ -260,7 +262,9 @@ async function main() {
   );
 
   const userPrompt = userPromptParts.join('\n');
-  const rawJson = await callGemini(systemPrompt, userPrompt, values.model);
+  // Long-form is ~3x content of shorts — needs much larger token budget
+  const maxTokens = format === 'long-3min' ? 12000 : 5000;
+  const rawJson = await callGemini(systemPrompt, userPrompt, values.model, maxTokens);
 
   let parsed;
   try {
