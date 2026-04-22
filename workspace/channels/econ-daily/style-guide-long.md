@@ -47,12 +47,12 @@
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
 ```
-Simpler minimalist cartoon, flat vector character, line art with color accents. Plain circle head with dot eyes and single line mouth, thin stick limbs, NO clothing details (no tie, no suit, no hair styling), neutral expression. Clean bold black line art on flat cream background, warm orange (#F4A261) accent on one key prop only, no gradients, no shading, no anime style. Simplified background with symbolic props (arrows, coins, blank charts). 16:9 horizontal, subject centered, bottom 15% clear for subtitle overlay, no text overlay.
+Simple stick-figure cartoon in a bold vector line art style. Character: cute and chubby with a plain circle head, dot eyes, small line mouth, thin stick limbs — NO clothing details (no tie, no suit, no hair styling, no facial expressions beyond dots and lines). Flat cream background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars, blank charts). Strong warm orange (#F4A261) accent on ONE key prop only. Bold line art, flat monochrome, no gradients, no shading, no photorealism. 16:9 horizontal, subject in upper-center region, bottom 15% of frame kept empty and flat (no drawing). Absolutely no text, letters, words, or numbers anywhere.
 ```
 
-> **Character block** (Shorts · Long 완전 동일):
-> `Simpler minimalist cartoon, flat vector character, line art with color accents. Plain circle head with dot eyes and single line mouth, thin stick limbs, NO clothing details, neutral expression.`
-> → 캐릭터 묘사는 두 가이드 동일, aspect와 구성만 차이.
+> **Character block** (275a9b5 기반, Shorts · Long 동일 키워드):
+> `Simple stick-figure cartoon, bold vector line art style. Character: cute and chubby, plain circle head, dot eyes, small line mouth, thin stick limbs — NO clothing details, no facial expressions beyond dots and lines.`
+> → aspect와 구성만 차이.
 
 ### Shorts 스타일과의 차이
 | 항목 | Shorts | Long-form |
