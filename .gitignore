@@ -16,22 +16,11 @@ logs/budget/
 # Paperclip runtime
 .paperclip/
 
-# Episode rendered outputs (large files — regeneratable)
-workspace/episodes/*/40_assets/images/
-workspace/episodes/*/40_assets/tts/
-workspace/episodes/*/40_assets/bgm.wav
-workspace/episodes/*/55_render/
-workspace/episodes/*/distribution/
-
-# Episode revision backups (regeneratable)
-workspace/episodes/*/_revision_*_backup/
-workspace/episodes/*/_backup*/
-
-# Legacy symlink (40_assets was renamed from assets in some episodes)
-workspace/episodes/*/assets
-
-# Episode runtime status cache
-workspace/episodes/*/.episode_status.json
+# Episode artifacts — all runtime outputs (briefs, scripts, assets, renders, publish meta)
+# The pipeline regenerates these from workspace/channels/**/series/**/ep-*-brief.md
+# (those planning docs ARE source-controlled).
+# Source of truth: paperclip/config/series.json + workspace/channels/**/series/**/*.md
+workspace/episodes/
 
 # Misc logs
 *.log

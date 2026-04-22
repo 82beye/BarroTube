@@ -159,22 +159,30 @@ function mixBgm(videoPath, bgmPath, outPath, bgmVolume = 0.15) {
   return outPath;
 }
 
-export function renderDirect({ episodeDir, outPath, canvas = 'vertical' }) {
+export function renderDirect({ episodeDir, outPath, canvas }) {
   if (!hasFfmpeg()) {
     throw new Error('ffmpeg not found. Install: brew install ffmpeg');
   }
 
   const scriptPath = join(episodeDir, '30_script.md');
-  const assetsDir = join(episodeDir, 'assets');
-
   if (!existsSync(scriptPath)) throw new Error(`Missing ${scriptPath}`);
-  if (!existsSync(assetsDir)) throw new Error(`Missing ${assetsDir}`);
 
   const meta = parseFrontmatter(scriptPath);
   const scenes = meta.scenes || [];
   if (!scenes.length) throw new Error('No scenes in script');
 
-  const canvasDim = canvas === 'vertical' ? [1080, 1920] : [1920, 1080];
+  // Assets directory: prefer 40_assets (v1.1+), fallback to legacy assets/
+  let assetsDir = join(episodeDir, '40_assets');
+  if (!existsSync(assetsDir)) assetsDir = join(episodeDir, 'assets');
+  if (!existsSync(assetsDir)) throw new Error(`Missing assets dir (tried 40_assets/ and assets/)`);
+
+  // Canvas: explicit arg > format-based default
+  const format = meta.format || 'shorts';
+  const defaultCanvas = format === 'long-3min' ? 'horizontal' : 'vertical';
+  const chosenCanvas = canvas || defaultCanvas;
+  const canvasDim = chosenCanvas === 'vertical' ? [1080, 1920] : [1920, 1080];
+
+  console.log(`📐 Format: ${format} → canvas=${chosenCanvas} (${canvasDim.join('x')}), assets=${assetsDir.replace(episodeDir + '/', '')}`);
   const workDir = mkdtempSync(join(tmpdir(), 'bt-render-'));
   const clipPaths = [];
 
@@ -234,7 +242,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   if (!opts.episode || !opts.out) {
-    console.error('Usage: render-direct.js --episode <dir> --out <path.mp4> [--canvas vertical|landscape]');
+    console.error('Usage: render-direct.js --episode <dir> --out <path.mp4> [--canvas vertical|horizontal]');
+    console.error('  (canvas auto-inferred from script frontmatter.format if omitted)');
     process.exit(1);
   }
 
@@ -242,7 +251,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     renderDirect({
       episodeDir: resolve(opts.episode),
       outPath: resolve(opts.out),
-      canvas: opts.canvas || 'vertical',
+      canvas: opts.canvas,
     });
   } catch (e) {
     console.error(`❌ Render failed: ${e.message}`);

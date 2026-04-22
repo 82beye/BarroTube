@@ -107,9 +107,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
 
-  // FAL image_size: { width, height } 객체 또는 preset 문자열
-  // Shorts용 9:16 세로 포맷 (1080x1920)
-  let imageSize = { width: 1080, height: 1920 };
+  // FAL image_size — CLI --image-size가 최우선, 아니면 script format 기반 자동, default는 shorts 9:16
+  let imageSize = null;
   if (opts['image-size']) {
     const m = opts['image-size'].match(/^(\d+)x(\d+)$/);
     if (m) imageSize = { width: Number(m[1]), height: Number(m[2]) };
@@ -118,18 +117,38 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   try {
     if (opts.prompt && opts.out) {
+      if (!imageSize) imageSize = { width: 1080, height: 1920 };
       const r = await generateImage({ prompt: opts.prompt, outPath: resolve(opts.out), imageSize });
       console.log(`✅ Image saved: ${opts.out} (${(r.bytes / 1024).toFixed(1)} KB)`);
     } else if (opts.script && opts['out-dir']) {
       const meta = parseFrontmatter(opts.script);
       const outDir = resolve(opts['out-dir']);
-      // style-prefix 우선순위: CLI --style-prefix > channel style-guide > 빈 문자열
+
+      // Auto-infer imageSize from script format if not specified
+      if (!imageSize) {
+        const format = meta.format || 'shorts';
+        imageSize = format === 'long-3min'
+          ? { width: 1920, height: 1080 }   // 16:9
+          : { width: 1080, height: 1920 };  // 9:16
+        console.log(`📐 Format=${format} → imageSize=${imageSize.width}x${imageSize.height}`);
+      }
+
+      // style-prefix 우선순위: CLI > channel style-guide-{format}.md > style-guide.md > 빈 문자열
       let stylePrefix = opts['style-prefix'] || '';
       if (!stylePrefix && meta.channel_id) {
-        const styleGuide = resolve('workspace/channels', meta.channel_id, 'style-guide.md');
-        if (existsSync(styleGuide)) {
-          stylePrefix = loadChannelStylePrefix(styleGuide);
-          if (stylePrefix) console.log(`📋 Style prefix loaded from channel: ${meta.channel_id}`);
+        const format = meta.format || 'shorts';
+        const candidates = [
+          resolve('workspace/channels', meta.channel_id, `style-guide-${format === 'long-3min' ? 'long' : 'shorts'}.md`),
+          resolve('workspace/channels', meta.channel_id, 'style-guide.md'),
+        ];
+        for (const sg of candidates) {
+          if (existsSync(sg)) {
+            stylePrefix = loadChannelStylePrefix(sg);
+            if (stylePrefix) {
+              console.log(`📋 Style prefix loaded from: ${sg.split('/').slice(-3).join('/')}`);
+              break;
+            }
+          }
         }
       }
       mkdirSync(outDir, { recursive: true });

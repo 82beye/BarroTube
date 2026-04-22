@@ -144,7 +144,7 @@ async function main() {
 
   // Images
   const imgCount = scenes.filter(s =>
-    existsSync(join(epDir, 'assets/images', `scene_${s.scene_id}.png`))
+    existsSync(join(epDir, existsSync(join(epDir, '40_assets')) ? '40_assets/images' : 'assets/images', `scene_${s.scene_id}.png`))
   ).length;
   checks.push({
     item: 'Images',
@@ -155,7 +155,7 @@ async function main() {
   // TTS + scene duration match
   const ttsChecks = [];
   for (const s of scenes) {
-    const ttsPath = join(epDir, 'assets/tts', `scene_${s.scene_id}.wav`);
+    const ttsPath = join(epDir, existsSync(join(epDir, '40_assets')) ? '40_assets/tts' : 'assets/tts', `scene_${s.scene_id}.wav`);
     if (!existsSync(ttsPath)) {
       ttsChecks.push({ id: s.scene_id, mark: FAIL, val: 'missing' });
       continue;

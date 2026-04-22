@@ -95,6 +95,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const meta = parseFrontmatter(opts.script);
       const outDir = resolve(opts['out-dir']);
       mkdirSync(outDir, { recursive: true });
+
+      // Persona-based voice settings
+      const PERSONA_SETTINGS = {
+        'barro-teacher': { stability: 0.65, similarity_boost: 0.78, style: 0.2, speed: 1.0 },
+        'barro-alert':   { stability: 0.5,  similarity_boost: 0.75, style: 0.4, speed: 1.05 },
+      };
+      const persona = meta.persona || null;
+      const settings = persona && PERSONA_SETTINGS[persona] ? PERSONA_SETTINGS[persona] : {};
+      if (persona) console.log(`🎭 Persona=${persona} → stability=${settings.stability ?? 'default'}, style=${settings.style ?? 'default'}`);
+
       console.log(`🎙 Generating ${meta.scenes.length} TTS clips...`);
       for (const scene of meta.scenes) {
         const outPath = join(outDir, `scene_${scene.scene_id}.wav`);
@@ -102,7 +112,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           console.log(`  ⏭  Scene ${scene.scene_id} exists (use --force to regen)`);
           continue;
         }
-        await generateTTS({ text: scene.narration, outPath });
+        await generateTTS({ text: scene.narration, outPath, settings });
         console.log(`  ✅ Scene ${scene.scene_id} (${scene.narration.slice(0, 30)}...)`);
       }
       console.log(`\n🎙 All TTS generated in ${outDir}`);
