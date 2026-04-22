@@ -147,19 +147,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const outDir = resolve(opts['out-dir']);
       const format = meta.format || 'shorts';
 
-      // Hybrid routing (option B, 2026-04-23): long-3min → Gemini, shorts → Recraft
-      // Override with --force-recraft to keep everything on Recraft
-      if (format === 'long-3min' && !opts['force-recraft']) {
-        console.log(`📺 Long-form detected → routing to Gemini 3.1 Flash Image Preview`);
-        const { execSync } = await import('node:child_process');
-        const geminiScript = join(import.meta.dirname, 'generate-image-gemini.js');
-        const flags = [`--script "${opts.script}"`, `--out-dir "${opts['out-dir']}"`];
-        if (opts.force) flags.push('--force');
-        execSync(`node "${geminiScript}" ${flags.join(' ')}`, { stdio: 'inherit' });
-        process.exit(0);
-      }
-
       // Auto-infer imageSize from script format if not specified
+      // (Recraft V3 is the default for both shorts and long-form; Gemini is opt-in
+      //  via `node generate-image-gemini.js` only, not auto-routed.)
       if (!imageSize) {
         imageSize = format === 'long-3min'
           ? { width: 1920, height: 1080 }   // 16:9
