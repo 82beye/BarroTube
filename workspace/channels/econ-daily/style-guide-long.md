@@ -49,7 +49,7 @@
 
 Shorts와 동일한 stick-figure 기준. 16:9 비율만 차이.
 ```
-Simple stick-figure cartoon, plain circle head with dot eyes and line mouth, thin-line stick body with NO clothing details (no tie, no suit, no hair styling), bold line art, flat monochrome with warm orange (#F4A261) accent on one prop. Simplified background with symbolic props only (arrows, coins, blank charts, simple icons). 16:9 horizontal, subject centered, bottom 15% clear for subtitle.
+Simple stick-figure cartoon in a bold vector line art style. Character: cute and chubby with a plain circle head, dot eyes, small line mouth, thin stick limbs — NO clothing details (no tie, no suit, no hair styling, no facial expressions beyond dots and lines). Flat cream background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars, blank charts). Strong warm orange (#F4A261) accent on ONE key prop only. Bold line art, flat monochrome, no gradients, no shading, no photorealism. 16:9 horizontal, subject centered, bottom 15% clear for subtitle overlay bar.
 ```
 
 ### Shorts 스타일과의 차이
