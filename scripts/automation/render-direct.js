@@ -93,13 +93,17 @@ function renderScene({ imagePath, ttsPath, durationSec, narration, workDir, scen
   const args = ['-y', '-loop', '1', '-i', imagePath, '-i', ttsPath];
   overlays.forEach(o => args.push('-loop', '1', '-i', o.png));
 
+  // Subtitle bottom margin — Shorts needs 480px for YouTube UI; Long-form only 100px
+  // (heuristic: vertical canvas => Shorts, horizontal => Long-form)
+  const isVertical = canvasH > canvasW;
+  const subtitleBottomMargin = isVertical ? 480 : 100;
+
   let filter = `[0:v]scale=${canvasW}:${canvasH}:force_original_aspect_ratio=increase,crop=${canvasW}:${canvasH}[v0]`;
   overlays.forEach((o, i) => {
     const inIdx = i + 2; // 0=img, 1=audio, 2+=subs
     const inLabel = `v${i}`;
     const outLabel = `v${i + 1}`;
-    // bottom margin 480px: Shorts UI(profile/title 영역)와 겹치지 않는 안전 영역
-    filter += `;[${inLabel}][${inIdx}:v]overlay=(W-w)/2:H-h-480:enable='between(t,${o.start.toFixed(2)},${o.end.toFixed(2)})'[${outLabel}]`;
+    filter += `;[${inLabel}][${inIdx}:v]overlay=(W-w)/2:H-h-${subtitleBottomMargin}:enable='between(t,${o.start.toFixed(2)},${o.end.toFixed(2)})'[${outLabel}]`;
   });
   const finalLabel = overlays.length > 0 ? `v${overlays.length}` : 'v0';
 

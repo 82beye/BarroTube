@@ -25,3 +25,5 @@ workspace/episodes/
 # Misc logs
 *.log
 logs/*.log
+logs/*.err
+logs/*.out

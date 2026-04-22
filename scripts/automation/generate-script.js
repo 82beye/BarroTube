@@ -80,7 +80,7 @@ ${spec.mid_hook ? '- MID-HOOK REQUIRED: 씬 4 마지막 부분 또는 75초 지�
 RULES:
 1. Output MUST be a single JSON object. No markdown, no prose, no code fences.
 2. Voice is Yohan Koo (ElevenLabs Korean male) at ~6-7 Korean chars/sec.
-3. Image prompts in ENGLISH following "${spec.aspect}, cartoon stick figure..." pattern. Include brand props (chart, money, arrow). NO text overlay.
+3. Image prompts in ENGLISH following "${spec.aspect}, cartoon stick figure..." pattern. Include brand props (chart, money, arrow).
 4. Korean numbers as Korean words (예: "사십 퍼센트" not "40%").
 5. BGM moods: tense_intro, calm_explain, dramatic_reveal, hopeful_outro, neutral_bg, upbeat_energy.
 6. emphasis_tokens: 1~3 Korean keywords per scene.
@@ -88,6 +88,12 @@ RULES:
 8. FORBIDDEN: specific stock buy/sell recommendations, "무조건/100%/확실/이것만 하면 부자", 정치 편향.
 9. CRITICAL — narration is FOR TTS ONLY. DO NOT include in narration: emojis (📚 🚨 etc), bracket tags ([1/5]), intro card text, subtitle overlays, or any text that appears as visual-only elements. Those belong to video/subtitle layers — not to spoken audio.
 10. CRITICAL — Hook scene (씬 001) MUST include the SINGLE most impactful numeric value from the brief (percentage, count, date, dollar amount). Generic hooks without a specific number fail impact check.
+11. CRITICAL — image_prompt MUST NOT contain any text/words/numbers/company-names/labels to be rendered as text in the image. The image model will literally draw any text you mention. Use visual metaphors only:
+    - BAD:  "pie chart labeled '80% of market cap' with company names 'Apple, Microsoft, Amazon'"
+    - GOOD: "pie chart with one large highlighted wedge, three small anonymous company building icons stacked beside it"
+    - BAD:  "stick figure holding sign that says 'WARNING'"
+    - GOOD: "stick figure with surprised expression, large exclamation mark floating overhead"
+    Use symbolic shapes (arrow up/down for change, stacks of coins for money, chart with wedge for percentage, generic building icon for company) — NEVER text labels.
 ${format === 'long-3min' ? '9. REQUIRED: 씬 7 마지막에 음성 면책 멘트 포함 ("본 영상은 투자 조언이 아닙니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.").\n' : '9. 자막 면책 "투자조언 아님"은 후처리로 자막 레이어에 추가됨 (narration에 넣지 말 것).\n'}
 OUTPUT SCHEMA:
 {

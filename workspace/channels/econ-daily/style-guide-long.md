@@ -46,8 +46,10 @@
 ## Image Generation Style (Long-form — Stick-figure 16:9)
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
+
+Shorts에서 검증된 stick-figure 스타일을 그대로 사용. 16:9만 차이.
 ```
-Stick-figure cartoon, chibi proportions (big round heads, tiny bodies), dot eyes, simple line mouths, warm expressions. Clean 2D vector illustration, bold line art, flat monochrome colors with warm orange accents. Simplified background with educational props (chalkboard, books, charts, arrows). 16:9 horizontal, subject positioned with breathing room, no text overlay.
+Stick-figure cartoon, chibi proportions (big round heads, tiny bodies), dot eyes, simple line mouths, exaggerated expressions. Clean 2D vector illustration, bold line art, flat monochrome colors, high contrast. Simplified background with symbolic props (arrows, money, charts). 16:9 horizontal, subject centered, leave bottom 15% clear for subtitle overlay, no text overlay.
 ```
 
 ### Shorts 스타일과의 차이

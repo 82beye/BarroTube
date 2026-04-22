@@ -29,7 +29,8 @@ export async function generateImage({ prompt, outPath, imageSize = { width: 1080
   // 모델별 페이로드 포맷 차이 처리
   let body;
   if (FAL_MODEL_NAME === 'recraft-v3') {
-    // Recraft는 image_size를 { width, height }, style "digital_illustration" 선호
+    // digital_illustration — Shorts에서 검증된 최적 스타일 (stick figure + line art)
+    // (vector_illustration은 SVG 반환 + 과한 캐릭터 디테일로 역효과)
     body = {
       prompt,
       image_size: imageSize,
@@ -75,6 +76,27 @@ export async function generateImage({ prompt, outPath, imageSize = { width: 1080
   const imgBuffer = Buffer.from(await imgRes.arrayBuffer());
 
   mkdirSync(dirname(outPath), { recursive: true });
+
+  // Recraft vector_illustration style returns SVG — rasterize to PNG for ffmpeg compat
+  const isSvg = imgBuffer.slice(0, 512).toString('utf-8').match(/<svg[\s>]/);
+  if (isSvg && outPath.endsWith('.png')) {
+    const { execSync } = await import('node:child_process');
+    const svgTmp = outPath.replace(/\.png$/, '.tmp.svg');
+    writeFileSync(svgTmp, imgBuffer);
+    try {
+      const w = imageSize?.width || 1920;
+      const h = imageSize?.height || 1080;
+      execSync(`rsvg-convert -w ${w} -h ${h} -o "${outPath}" "${svgTmp}"`);
+    } catch (e) {
+      throw new Error(`SVG→PNG conversion failed (install librsvg?): ${e.message}`);
+    } finally {
+      const { unlinkSync } = await import('node:fs');
+      try { unlinkSync(svgTmp); } catch {}
+    }
+    const { statSync } = await import('node:fs');
+    return { path: outPath, bytes: statSync(outPath).size, sourceUrl: imgUrl, format: 'svg→png' };
+  }
+
   writeFileSync(outPath, imgBuffer);
   return { path: outPath, bytes: imgBuffer.length, sourceUrl: imgUrl };
 }
