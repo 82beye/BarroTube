@@ -94,6 +94,14 @@ RULES:
     - BAD:  "stick figure holding sign that says 'WARNING'"
     - GOOD: "stick figure with surprised expression, large exclamation mark floating overhead"
     Use symbolic shapes (arrow up/down for change, stacks of coins for money, chart with wedge for percentage, generic building icon for company) — NEVER text labels.
+12. CRITICAL — narration length MUST match target_seconds at ~6.0 Korean chars/sec (TTS speaking rate). For a scene with target_seconds=30, narration MUST be 170~190 Korean chars. Too short leaves silence; too long gets cut off. Compute per scene:
+    - target 10s → 55~65자
+    - target 15s → 85~95자
+    - target 30s → 170~190자
+    - target 35s → 200~215자
+    - target 40s → 230~245자
+    Count Korean characters only (exclude punctuation from the hard limit; you may go ±5 chars for natural flow).
+13. CRITICAL — For the FINAL wrap scene with disclaimer (format=long-3min), target_seconds MUST be AT LEAST 20s because the mandatory disclaimer ("본 영상은 투자 조언이 아닙니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.") alone is ~50 Korean chars (~8s TTS). Redistribute 5~10s from middle scenes (3~6) to the wrap scene when the total would otherwise exceed ${spec.target_total_seconds}s. The sum of all target_seconds MUST still equal ${spec.target_total_seconds}s exactly.
 ${format === 'long-3min' ? '9. REQUIRED: 씬 7 마지막에 음성 면책 멘트 포함 ("본 영상은 투자 조언이 아닙니다. 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.").\n' : '9. 자막 면책 "투자조언 아님"은 후처리로 자막 레이어에 추가됨 (narration에 넣지 말 것).\n'}
 OUTPUT SCHEMA:
 {

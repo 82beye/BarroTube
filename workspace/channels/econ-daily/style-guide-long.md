@@ -46,13 +46,20 @@
 ## Image Generation Style (Long-form — Stick-figure 16:9)
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
+
+롱폼은 시청자가 집중해서 보는 영상이라 **캐릭터 표현·도형 정밀도·색상 팔레트**의 완성도가 중요. Shorts의 심플함을 유지하되 구현 레벨을 한 단계 끌어올림.
 ```
-Simple stick-figure cartoon in a bold vector line art style. Character: cute and chubby with a plain circle head, dot eyes, small line mouth, thin stick limbs — NO clothing details (no tie, no suit, no hair styling, no facial expressions beyond dots and lines). Flat cream background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars, blank charts). Strong warm orange (#F4A261) accent on ONE key prop only. Bold line art, flat monochrome, no gradients, no shading, no photorealism. 16:9 horizontal, subject in upper-center region, bottom 15% of frame kept empty and flat (no drawing). Absolutely no text, letters, words, or numbers anywhere.
+Polished stick-figure cartoon, bold vector line art with crisp clean edges. Character: cute and chubby, plain circle head, well-placed dot eyes, small expressive line mouth, thin stick limbs in a clear action pose — NO clothing, no tie, no suit, no hair styling. One main symbolic prop rendered with precise proportions and sharp outlines (large arrow, coin stack, abstract geometric shape, or directional sign). Color palette: bold black line art base, generous warm orange (#F4A261) fill on the primary focus element, red (#E63946) accent only for alert or downward context, calm cream (#FFF8EC) background. A few decorative line icons (small stars, tiny sparkles, curved arrows) add polish without clutter. Flat but high-fidelity, no gradients, no shading, no anime. 16:9 horizontal, character upper-right, main prop slightly left of center, bottom 15% fully empty flat. No text, letters, words, or numbers in drawings.
 ```
 
-> **Character block** (275a9b5 기반, Shorts · Long 동일 키워드):
-> `Simple stick-figure cartoon, bold vector line art style. Character: cute and chubby, plain circle head, dot eyes, small line mouth, thin stick limbs — NO clothing details, no facial expressions beyond dots and lines.`
-> → aspect와 구성만 차이.
+> **Character block** (Shorts와 동일 캐릭터 키워드):
+> `cute and chubby stick figure, plain circle head, dot eyes, small line mouth, thin stick limbs, NO clothing details`
+>
+> **Long-form 전용 강조** (구현 레벨 업그레이드):
+> - 캐릭터 포즈 **표현력** — "clear natural action pose" 지시로 포즈 다양성
+> - 도형 **정밀도** — "precise proportions, sharp outlines, crisp clean edges"
+> - 색상 **팔레트 정교함** — 오렌지 primary + 빨강 alert + 크림 배경 3색 체계
+> - 장식 요소로 **폴리시** — stars/sparkles/curved arrows 추가 (clutter 없이)
 
 ### Shorts 스타일과의 차이
 | 항목 | Shorts | Long-form |

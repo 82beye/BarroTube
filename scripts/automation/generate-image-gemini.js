@@ -25,7 +25,7 @@ import { getSecret } from './config-loader.js';
 const DEFAULT_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image-preview';
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 
-export async function generateImageGemini({ prompt, outPath, aspectRatio = '9:16', model = DEFAULT_MODEL }) {
+export async function generateImageGemini({ prompt, outPath, aspectRatio = '9:16', resolution = '2K', model = DEFAULT_MODEL }) {
   const apiKey = getSecret('GOOGLE_AI_API_KEY');
   if (!apiKey) throw new Error('GOOGLE_AI_API_KEY not set in .env');
 
@@ -34,7 +34,7 @@ export async function generateImageGemini({ prompt, outPath, aspectRatio = '9:16
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
       responseModalities: ['IMAGE'],
-      imageConfig: { aspectRatio },
+      imageConfig: { aspectRatio, imageSize: resolution },
     },
   };
 
@@ -133,7 +133,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
       mkdirSync(outDir, { recursive: true });
 
-      console.log(`📐 Format=${format} → aspect=${aspectRatio}, model=${DEFAULT_MODEL}`);
+      const resolution = opts.resolution || '2K';
+      console.log(`📐 Format=${format} → aspect=${aspectRatio}, resolution=${resolution}, model=${DEFAULT_MODEL}`);
       if (stylePath) console.log(`📋 Style prefix: ${stylePath.replace(process.cwd() + '/', '')}`);
       console.log(`🎨 Generating ${meta.scenes.length} images via Gemini...`);
 
@@ -144,7 +145,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           continue;
         }
         const fullPrompt = stylePrefix ? `${stylePrefix}\n\n${scene.image_prompt}` : scene.image_prompt;
-        await generateImageGemini({ prompt: fullPrompt, outPath, aspectRatio });
+        await generateImageGemini({ prompt: fullPrompt, outPath, aspectRatio, resolution });
         console.log(`  ✅ Scene ${scene.scene_id}`);
       }
       console.log(`\n🎨 All images saved in ${outDir}`);

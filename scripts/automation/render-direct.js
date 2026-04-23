@@ -40,6 +40,14 @@ function hasFfmpeg() {
   return r.status === 0;
 }
 
+function probeDuration(mediaPath) {
+  const r = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mediaPath], {
+    encoding: 'utf-8',
+  });
+  if (r.status !== 0) return 0;
+  return parseFloat(r.stdout.trim()) || 0;
+}
+
 /**
  * Scene 단위로 이미지+TTS를 mp4 클립으로 렌더
  */
@@ -202,10 +210,16 @@ export function renderDirect({ episodeDir, outPath, canvas }) {
     if (!existsSync(imagePath)) throw new Error(`Missing image: ${imagePath}`);
     if (!existsSync(ttsPath)) throw new Error(`Missing tts: ${ttsPath}`);
 
+    // Use ACTUAL TTS duration for clip length + subtitle timing
+    // (was: scene.target_seconds — produced up to 46s of silence across 7 scenes)
+    const ttsDur = probeDuration(ttsPath);
+    const durationSec = ttsDur > 0 ? ttsDur : (scene.target_seconds || 12);
+    const targetNote = scene.target_seconds ? ` (script target ${scene.target_seconds}s)` : '';
+
     renderScene({
       imagePath,
       ttsPath,
-      durationSec: scene.target_seconds || 12,
+      durationSec,
       narration: scene.narration || '',
       workDir,
       sceneId,
@@ -215,7 +229,7 @@ export function renderDirect({ episodeDir, outPath, canvas }) {
     });
 
     clipPaths.push(clipPath);
-    console.log(`  ✅ Scene ${sceneId} (${scene.target_seconds}s)`);
+    console.log(`  ✅ Scene ${sceneId} (${durationSec.toFixed(2)}s TTS${targetNote})`);
   }
 
   // Concat
