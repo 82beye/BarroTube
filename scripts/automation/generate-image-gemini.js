@@ -133,7 +133,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
       mkdirSync(outDir, { recursive: true });
 
-      const resolution = opts.resolution || '2K';
+      const resolution = opts.resolution || '1K';
       console.log(`📐 Format=${format} → aspect=${aspectRatio}, resolution=${resolution}, model=${DEFAULT_MODEL}`);
       if (stylePath) console.log(`📋 Style prefix: ${stylePath.replace(process.cwd() + '/', '')}`);
       console.log(`🎨 Generating ${meta.scenes.length} images via Gemini...`);

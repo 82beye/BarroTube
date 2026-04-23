@@ -154,10 +154,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const outDir = resolve(opts['out-dir']);
       const format = meta.format || 'shorts';
 
-      // Opt-in only — Gemini has strong typography bias on chart contexts
-      // which made long-form outputs unusable even with explicit "no text" guards.
-      // Recraft V3 is the default for both shorts and long-form.
-      // Explicit opt-in: --use-gemini OR direct call to generate-image-gemini.js
+      // Character consistency: past Shorts (EP-2026-0002/0007/0008) were generated
+      // by Gemini. To keep Long-form visually consistent with Shorts, Long routes
+      // to the same Gemini model at the same 1K default resolution. The only
+      // differences are aspect (16:9 vs 9:16) and bottom subtitle-reserve area.
+      // Opt-out: --use-recraft forces Recraft V3 on this call.
+      if (format === 'long-3min' && !opts['use-recraft']) {
+        console.log(`📺 Long-form → routing to Gemini 3.1 Flash Image Preview (1K, matches Shorts)`);
+        const { execSync } = await import('node:child_process');
+        const geminiScript = join(import.meta.dirname, 'generate-image-gemini.js');
+        const flags = [`--script "${opts.script}"`, `--out-dir "${opts['out-dir']}"`, `--resolution 1K`];
+        if (opts.force) flags.push('--force');
+        execSync(`node "${geminiScript}" ${flags.join(' ')}`, { stdio: 'inherit' });
+        process.exit(0);
+      }
+      // Explicit --use-gemini (shorts opt-in for experiments)
       if (opts['use-gemini']) {
         console.log(`📺 --use-gemini → routing to Gemini 3.1 Flash Image Preview`);
         const { execSync } = await import('node:child_process');
