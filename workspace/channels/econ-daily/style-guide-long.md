@@ -47,11 +47,12 @@
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
 ```
-Simple stick-figure cartoon in a bold vector line art style. Character: cute and chubby with a plain circle head, dot eyes, small line mouth, thin stick limbs — NO clothing details (no tie, no suit, no hair styling, no facial expressions beyond dots and lines). Flat cream background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars, blank charts). Strong warm orange (#F4A261) accent on ONE key prop only. Bold line art, flat monochrome, no gradients, no shading, no photorealism. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
+The BarroTube mascot character (IDENTICAL in every scene, same body every time): smooth rounded circular head about 40% of total body height, two small solid black dot eyes placed close together and slightly above center of the head, simple curved line mouth (a small arc when smiling, a short horizontal line when neutral), chubby cylindrical torso, thin straight stick arms and legs ending in tiny rounded hand and foot tips — NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold thick black outlines on the character. Scene style: simple cartoon illustration, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading, no photorealism. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
 ```
 
-> **동일 캐릭터 보장 원칙**: Shorts와 Long은 **같은 모델(Gemini 3.1 Flash Image) + 같은 prefix + 같은 해상도(1K)**로 생성. aspect와 자막 영역만 차이. 캐릭터·색상·배경 전부 일치.
-> 과거 EP-2026-0008 "Image #2" 생성 조건 재현.
+> **BarroTube Mascot DNA** (Shorts · Long 완전 동일, EP-2026-0003 scene_003 기반):
+> `rounded head 40% height · dot eyes close together · chubby cylinder torso · thin stick limbs with rounded tips · no ears/hair/clothing`
+> → 캐릭터 지문은 두 가이드 동일. aspect와 자막 여백만 차이.
 
 ### Shorts 스타일과의 차이
 | 항목 | Shorts | Long-form |
