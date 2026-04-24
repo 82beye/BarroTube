@@ -87,6 +87,38 @@ function loadCharacterDna(channel) {
   return m ? m[1].trim() : '';
 }
 
+const ROLE_PALETTE_FALLBACK = {
+  hook: 'bullish',
+  'intro/recap': 'explainer',
+  definition: 'explainer',
+  data: 'bullish',
+  insight: 'explainer',
+  implication: 'wealth',
+  'wrap+teaser+disclaimer': 'cta',
+  wrap: 'cta',
+};
+
+function loadPalette(channel, paletteName) {
+  if (!paletteName) return '';
+  const path = resolve('workspace/channels', channel, 'scene-backgrounds.md');
+  if (!existsSync(path)) return '';
+  const md = readFileSync(path, 'utf-8');
+  // Match "## Palette: NAME" ... followed by ``` block
+  const re = new RegExp(`##\\s*Palette:\\s*${paletteName}\\b[\\s\\S]*?\\n\`\`\`\\n([\\s\\S]*?)\\n\`\`\``, 'i');
+  const m = md.match(re);
+  return m ? m[1].trim() : '';
+}
+
+function extractPaletteToken(imagePrompt) {
+  // look for [palette:NAME] in the image_prompt; consume and return cleaned prompt + name
+  const m = imagePrompt.match(/\[palette:([a-zA-Z0-9_-]+)\]/i);
+  if (!m) return { prompt: imagePrompt, paletteName: null };
+  return {
+    prompt: imagePrompt.replace(m[0], '').replace(/\s+/g, ' ').trim(),
+    paletteName: m[1].toLowerCase(),
+  };
+}
+
 function resolveStylePrefix(channel, format) {
   const suffix = format === 'long-3min' ? 'long' : 'shorts';
   const candidates = [
@@ -160,9 +192,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           console.log(`  ⏭  Scene ${scene.scene_id} exists (use --force to regen)`);
           continue;
         }
-        const fullPrompt = stylePrefix ? `${stylePrefix}\n\n${scene.image_prompt}` : scene.image_prompt;
+
+        // 1. Extract [palette:NAME] token from image_prompt (if present)
+        const { prompt: cleanedPrompt, paletteName: tokenPalette } = extractPaletteToken(scene.image_prompt || '');
+
+        // 2. Fallback: map scene.role to a default palette
+        const palettePick = tokenPalette || ROLE_PALETTE_FALLBACK[scene.role] || null;
+        const paletteBlock = palettePick ? loadPalette(meta.channel_id, palettePick) : '';
+
+        // 3. Compose final prompt: DNA + framing + palette + scene
+        const parts = [stylePrefix, paletteBlock, cleanedPrompt].filter(Boolean);
+        const fullPrompt = parts.join('\n\n');
+
         await generateImageGemini({ prompt: fullPrompt, outPath, aspectRatio, resolution });
-        console.log(`  ✅ Scene ${scene.scene_id}`);
+        const paletteTag = palettePick ? ` [palette:${palettePick}${tokenPalette ? '' : ' auto'}]` : '';
+        console.log(`  ✅ Scene ${scene.scene_id}${paletteTag}`);
       }
       console.log(`\n🎨 All images saved in ${outDir}`);
     } else {
