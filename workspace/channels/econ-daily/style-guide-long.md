@@ -47,12 +47,12 @@
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
 ```
-The mascot character (IDENTICAL body and face across scenes, only arm pose may vary for scene action): slim 2-head-tall chibi — head-to-body ratio 1:1 (head ~50%, torso+legs ~50%). Round circular head, two small solid black dot eyes placed close together slightly above center, simple curved line mouth (small arc when smiling, short horizontal line when neutral). VERY THIN skinny STRAIGHT VERTICAL stick-like torso — narrow vertical shape, absolutely NO belly, NO rounded bulge, NO chubby curves, torso width less than a third of the head's diameter. Arms and legs are drawn as SINGLE solid black lines — each limb is ONE straight solid line with uniform thickness (NOT an outlined or hollow shape, NOT a tube or cylinder, NOT two parallel lines forming a pipe) ending in small rounded tips. NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold black head outline. Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading. Absolutely no text, letters, words, brand names, or labels anywhere in the image. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
+The mascot character (IDENTICAL body and face across scenes, only arm pose may vary for scene action): slim 2-head-tall chibi — head-to-body ratio 1:1 (head ~50%, torso+legs ~50%). Round circular head, two small solid black dot eyes placed close together slightly above center, simple curved line mouth (small arc when smiling, short horizontal line when neutral). SLIM vertical RECTANGULAR torso — a clean simple rectangle shape (clearly a rectangular box form, NOT a line, NOT a cylinder, NOT a stick, NOT rounded or oval). Rectangle width is about half of the head's diameter, no belly, no bulge, no chubby curves, straight vertical sides. Arms and legs are drawn as SINGLE solid black lines — each limb is ONE straight solid line with uniform thickness (NOT an outlined or hollow shape, NOT a tube or cylinder, NOT two parallel lines forming a pipe) ending in small rounded tips. NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold black head outline. Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading. Absolutely no text, letters, words, brand names, or labels anywhere in the image. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
 ```
 
-> **Mascot DNA v8** (Shorts · Long 완전 동일, 2026-04-24 실선 단순화):
-> `head : body = 1:1 · slim vertical torso · 팔다리 single solid line (outlined tube 금지) · dot eyes + simple curve mouth · brand name 금지`
-> → v7의 "marker-pen" 표현 제거, 일반 "solid line"으로 통일.
+> **Mascot DNA v9** (Shorts · Long 완전 동일, 2026-04-24 몸통 직사각형 복귀):
+> `head : body = 1:1 · slim RECTANGULAR torso (머리 지름 1/2 폭) · 팔다리 single solid line · dot eyes + simple curve mouth · no brand text`
+> → v8 stick-like 몸통 → 명확한 rectangle로 교체. 팔다리는 single solid line 유지.
 
 ### Shorts 스타일과의 차이
 | 항목 | Shorts | Long-form |
