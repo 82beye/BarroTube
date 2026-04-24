@@ -35,12 +35,12 @@
 ## Image Generation Style (Shorts — Stick-figure Cartoon)
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가 — Recraft V3 1000자 제한 대비 축약)
 ```
-The BarroTube mascot character (IDENTICAL in every scene, same body every time): taller slender silhouette with a compact rounded circular head about 22-25% of total body height (keep the head small so the figure feels tall), two small solid black dot eyes placed close together and slightly above center of the head, simple curved line mouth (a small arc when smiling, a short horizontal line when neutral), gently rounded compact torso about 30% of body height, LONG thin straight stick arms and legs (legs take about 45% of total body height) ending in tiny rounded hand and foot tips — NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold thick black outlines on the character. Scene style: simple cartoon illustration, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading, no photorealism. 9:16 vertical, subject centered.
+The BarroTube mascot character (IDENTICAL in every scene, same body every time): balanced medium-height silhouette with a moderately rounded circular head about 30% of total body height (cute but not too stocky, taller than a compact chibi but shorter than a lanky stick figure), two small solid black dot eyes placed close together and slightly above center of the head, simple curved line mouth (a small arc when smiling, a short horizontal line when neutral), gently rounded torso about 32% of body height, medium-length thin straight stick arms and legs (legs take about 38% of total body height) ending in tiny rounded hand and foot tips — NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold thick black outlines on the character. Scene style: simple cartoon illustration, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading, no photorealism. 9:16 vertical, subject centered.
 ```
 
-> **BarroTube Mascot DNA v2** (Shorts · Long 완전 동일, 2026-04-24 비율 조정):
-> `compact head ~22-25% · small dot eyes close together · gently rounded torso ~30% · LONG stick legs ~45% · rounded limb tips · no ears/hair/clothing`
-> → 머리 비율 낮추고 다리 길이 강조해 길쭉한 실루엣. 캐릭터 지문은 두 가이드 동일.
+> **BarroTube Mascot DNA v3** (Shorts · Long 완전 동일, 2026-04-24 균형 조정):
+> `moderate head ~30% · small dot eyes close together · gently rounded torso ~32% · medium stick legs ~38% · rounded limb tips · no ears/hair/clothing`
+> → v1(40% 땅딸)과 v2(22-25% 길쭉)의 중간. 균형잡힌 medium-height. 지문은 두 가이드 동일.
 
 ### 금지 요소
 - 실제 인물 사진 (일러스트만 허용)
