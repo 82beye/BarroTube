@@ -134,6 +134,28 @@ function renderScene({ imagePath, ttsPath, durationSec, narration, workDir, scen
 }
 
 /**
+ * 정지 이미지 + 무음 오디오로 N초짜리 클립 생성 (인트로 카드용)
+ */
+function renderStillClip({ imagePath, durationSec, canvasW, canvasH, outPath }) {
+  const args = [
+    '-y',
+    '-loop', '1', '-i', imagePath,
+    '-f', 'lavfi', '-t', String(durationSec), '-i', 'anullsrc=channel_layout=mono:sample_rate=44100',
+    '-vf', `scale=${canvasW}:${canvasH}:force_original_aspect_ratio=increase,crop=${canvasW}:${canvasH}`,
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-r', '30',
+    '-c:a', 'aac', '-b:a', '192k', '-ar', '44100',
+    '-t', String(durationSec),
+    '-movflags', '+faststart',
+    outPath,
+  ];
+  const res = spawnSync('ffmpeg', args, { stdio: 'pipe' });
+  if (res.status !== 0) {
+    throw new Error(`ffmpeg intro clip render failed: ${res.stderr.toString().slice(-500)}`);
+  }
+  return outPath;
+}
+
+/**
  * 모든 씬 클립 concat
  */
 function concatScenes(clipPaths, outPath) {
@@ -197,6 +219,23 @@ export function renderDirect({ episodeDir, outPath, canvas }) {
   console.log(`📐 Format: ${format} → canvas=${chosenCanvas} (${canvasDim.join('x')}), assets=${assetsDir.replace(episodeDir + '/', '')}`);
   const workDir = mkdtempSync(join(tmpdir(), 'bt-render-'));
   const clipPaths = [];
+
+  // Optional: prepend 2s intro card if 45_intro.png exists in the episode dir.
+  // Intro is silent (anullsrc 2s) and uses the same canvas as scenes.
+  const introPath = join(episodeDir, '45_intro.png');
+  const INTRO_DURATION_SEC = 2;
+  if (existsSync(introPath)) {
+    const introClipPath = join(workDir, 'clip_000_intro.mp4');
+    renderStillClip({
+      imagePath: introPath,
+      durationSec: INTRO_DURATION_SEC,
+      canvasW: canvasDim[0],
+      canvasH: canvasDim[1],
+      outPath: introClipPath,
+    });
+    clipPaths.push(introClipPath);
+    console.log(`🎬 Intro card prepended (${INTRO_DURATION_SEC}s silent, from 45_intro.png)`);
+  }
 
   console.log(`🎬 Rendering ${scenes.length} scenes at ${canvasDim.join('x')}...`);
 

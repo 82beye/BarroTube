@@ -184,6 +184,30 @@ async function main() {
       console.log(`\n⏭  S6c Images: 이미 있음 (skip)`);
     }
 
+    // S6d Intro Card (series brand card, prepended to video)
+    const introPath = join(absEp, '45_intro.png');
+    if (!exists(introPath) || force) {
+      runTracked(absEp, episodeId, 'S6d', 'S6d Intro Card (Gemini)', '08-image-generator',
+        'scripts/automation/generate-intro.js', [
+          '--episode', relEp,
+          ...(force ? ['--force'] : []),
+        ]);
+    } else {
+      console.log(`\n⏭  S6d Intro: 이미 있음 (skip)`);
+    }
+
+    // S6e Thumbnail (YouTube feed thumbnail)
+    const thumbPath = join(absEp, '47_thumbnail.png');
+    if (!exists(thumbPath) || force) {
+      runTracked(absEp, episodeId, 'S6e', 'S6e Thumbnail (Gemini)', '08-image-generator',
+        'scripts/automation/generate-thumbnail.js', [
+          '--episode', relEp,
+          ...(force ? ['--force'] : []),
+        ]);
+    } else {
+      console.log(`\n⏭  S6e Thumbnail: 이미 있음 (skip)`);
+    }
+
     // S7 Render
     const renderDir = join(absEp, '55_render');
     const videoPath = join(renderDir, 'video.mp4');

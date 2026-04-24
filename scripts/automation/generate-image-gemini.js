@@ -65,21 +65,21 @@ export async function generateImageGemini({ prompt, outPath, aspectRatio = '9:16
   return { path: outPath, bytes: buffer.length, mime };
 }
 
-function parseFrontmatter(mdPath) {
+export function parseFrontmatter(mdPath) {
   const content = readFileSync(mdPath, 'utf-8');
   const match = content.match(/^---\n([\s\S]*?)\n---/);
   if (!match) throw new Error('No YAML frontmatter');
   return parseYAML(match[1]);
 }
 
-function loadChannelStylePrefix(styleGuidePath) {
+export function loadChannelStylePrefix(styleGuidePath) {
   const md = readFileSync(styleGuidePath, 'utf-8');
   const m = md.match(/```\n([\s\S]*?)\n```/);
   if (!m) return '';
   return m[1].trim();
 }
 
-function loadCharacterDna(channel) {
+export function loadCharacterDna(channel) {
   const dnaPath = resolve('workspace/channels', channel, 'character-dna.md');
   if (!existsSync(dnaPath)) return '';
   const md = readFileSync(dnaPath, 'utf-8');
@@ -98,7 +98,7 @@ const ROLE_PALETTE_FALLBACK = {
   wrap: 'cta',
 };
 
-function loadPalette(channel, paletteName) {
+export function loadPalette(channel, paletteName) {
   if (!paletteName) return '';
   const path = resolve('workspace/channels', channel, 'scene-backgrounds.md');
   if (!existsSync(path)) return '';

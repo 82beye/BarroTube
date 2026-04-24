@@ -191,7 +191,15 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
           console.warn(`  ⚠ SEO enhance 실패 (기존 메타 그대로 사용): ${e.message}`);
         }
       }
-      const thumbnailPath = meta.thumbnail ? join(episodeDir, meta.thumbnail) : null;
+      // 썸네일 경로 해석 (우선순위: meta.thumbnail → 47_thumbnail.png 자동 감지)
+      let thumbnailPath = meta.thumbnail ? join(episodeDir, meta.thumbnail) : null;
+      if (!thumbnailPath) {
+        const autoThumb = join(episodeDir, '47_thumbnail.png');
+        if (existsSync(autoThumb)) {
+          thumbnailPath = autoThumb;
+          console.log(`  🖼  Auto-detected thumbnail: 47_thumbnail.png`);
+        }
+      }
 
       console.log(`  📦 Building distribution packages...`);
       buildDistributionPackage({
