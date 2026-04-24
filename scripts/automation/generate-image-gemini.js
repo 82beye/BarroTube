@@ -74,9 +74,17 @@ function parseFrontmatter(mdPath) {
 
 function loadChannelStylePrefix(styleGuidePath) {
   const md = readFileSync(styleGuidePath, 'utf-8');
-  const m = md.match(/###\s*Style Prefix[^\n]*\n```\n([\s\S]*?)\n```/);
+  const m = md.match(/```\n([\s\S]*?)\n```/);
   if (!m) return '';
   return m[1].trim();
+}
+
+function loadCharacterDna(channel) {
+  const dnaPath = resolve('workspace/channels', channel, 'character-dna.md');
+  if (!existsSync(dnaPath)) return '';
+  const md = readFileSync(dnaPath, 'utf-8');
+  const m = md.match(/```\n([\s\S]*?)\n```/);
+  return m ? m[1].trim() : '';
 }
 
 function resolveStylePrefix(channel, format) {
@@ -87,11 +95,15 @@ function resolveStylePrefix(channel, format) {
   ];
   for (const sg of candidates) {
     if (existsSync(sg)) {
-      const prefix = loadChannelStylePrefix(sg);
-      if (prefix) return { prefix, path: sg };
+      const framing = loadChannelStylePrefix(sg);
+      if (framing) {
+        const dna = loadCharacterDna(channel);
+        const combined = dna ? `${dna}\n\n${framing}` : framing;
+        return { prefix: combined, path: sg, hasDna: !!dna };
+      }
     }
   }
-  return { prefix: '', path: null };
+  return { prefix: '', path: null, hasDna: false };
 }
 
 function aspectForFormat(format) {
@@ -127,15 +139,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
       const format = meta.format || 'shorts';
       const aspectRatio = opts.aspect || aspectForFormat(format);
-      const { prefix: stylePrefix, path: stylePath } = opts['style-prefix']
-        ? { prefix: opts['style-prefix'], path: '(CLI override)' }
+      const resolved = opts['style-prefix']
+        ? { prefix: opts['style-prefix'], path: '(CLI override)', hasDna: false }
         : resolveStylePrefix(meta.channel_id, format);
+      const { prefix: stylePrefix, path: stylePath, hasDna } = resolved;
 
       mkdirSync(outDir, { recursive: true });
 
       const resolution = opts.resolution || '1K';
       console.log(`📐 Format=${format} → aspect=${aspectRatio}, resolution=${resolution}, model=${DEFAULT_MODEL}`);
-      if (stylePath) console.log(`📋 Style prefix: ${stylePath.replace(process.cwd() + '/', '')}`);
+      if (stylePath) {
+        console.log(`📋 Framing: ${stylePath.replace(process.cwd() + '/', '')}`);
+        if (hasDna) console.log(`🧬 Character DNA: workspace/channels/${meta.channel_id}/character-dna.md`);
+      }
       console.log(`🎨 Generating ${meta.scenes.length} images via Gemini...`);
 
       for (const scene of meta.scenes) {

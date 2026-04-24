@@ -45,9 +45,12 @@
 
 ## Image Generation Style (Long-form — Stick-figure 16:9)
 
-### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
+### Style Prefix — Framing only (Character DNA는 [`character-dna.md`](./character-dna.md)에서 자동 prepend)
+
+Long은 **Shorts wide 앵글 기준에서 살짝 확대** — 캐릭터 조금 크게, 배경은 여전히 풍부.
+아래 ``` 블록이 character-dna.md의 DNA 블록 바로 뒤에 이어붙어 최종 prompt 구성.
 ```
-The mascot character (IDENTICAL body and face across scenes, only arm pose may vary for scene action): slim 2-head-tall chibi — head-to-body ratio 1:1 (head ~50%, torso+legs ~50%). Round circular head, two small solid black dot eyes placed close together slightly above center, simple curved line mouth (small arc when smiling, short horizontal line when neutral). SLIM vertical RECTANGULAR torso — a clean simple rectangle shape (clearly a rectangular box form, NOT a line, NOT a cylinder, NOT a stick, NOT rounded or oval). Rectangle width is about half of the head's diameter, no belly, no bulge, no chubby curves, straight vertical sides. Arms and legs are drawn as SINGLE solid black lines — each limb is ONE straight solid line with uniform thickness (NOT an outlined or hollow shape, NOT a tube or cylinder, NOT two parallel lines forming a pipe) ending in small rounded tips. NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold black head outline. Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading. Absolutely no text, letters, words, brand names, or labels anywhere in the image. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
+MEDIUM framing (slightly zoomed in compared to the Shorts baseline but NOT a close-up): the full body of the character is still visible head-to-feet, character positioned in the upper-center and occupying about 45-50% of the frame height — still leave breathing room around the character and generous space for background props (small arrows, coin stacks, stars, simple charts). Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark flat background. No gradients, no shading, no photorealism. Absolutely no text, letters, words, or labels anywhere. 16:9 horizontal aspect ratio, subject in upper-center, bottom 15% of frame kept empty and flat for subtitle overlay.
 ```
 
 > **Mascot DNA v9** (Shorts · Long 완전 동일, 2026-04-24 몸통 직사각형 복귀):

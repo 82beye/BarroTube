@@ -33,9 +33,12 @@
 - 영문 약어는 풀어 쓰기 (IMF → 국제통화기금)
 
 ## Image Generation Style (Shorts — Stick-figure Cartoon)
-### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가 — Recraft V3 1000자 제한 대비 축약)
+### Style Prefix — Framing only (Character DNA는 [`character-dna.md`](./character-dna.md)에서 자동 prepend)
+
+Shorts는 **와이드 앵글 베이스** — 캐릭터 작게, 배경 넉넉. Long은 이 기준에서 살짝 확대만.
+아래 ``` 블록이 character-dna.md의 DNA 블록 바로 뒤에 이어붙어 최종 prompt 구성.
 ```
-The mascot character (IDENTICAL body and face across scenes, only arm pose may vary for scene action): slim 2-head-tall chibi — head-to-body ratio 1:1 (head ~50%, torso+legs ~50%). Round circular head, two small solid black dot eyes placed close together slightly above center, simple curved line mouth (small arc when smiling, short horizontal line when neutral). SLIM vertical RECTANGULAR torso — a clean simple rectangle shape (clearly a rectangular box form, NOT a line, NOT a cylinder, NOT a stick, NOT rounded or oval). Rectangle width is about half of the head's diameter, no belly, no bulge, no chubby curves, straight vertical sides. Arms and legs are drawn as SINGLE solid black lines — each limb is ONE straight solid line with uniform thickness (NOT an outlined or hollow shape, NOT a tube or cylinder, NOT two parallel lines forming a pipe) ending in small rounded tips. NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold black head outline. Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading. Absolutely no text, letters, words, brand names, or labels anywhere in the image. 9:16 vertical, subject centered.
+WIDE-ANGLE framing: the full body of the character is always visible, character positioned slightly upper-center and occupying only about 30-35% of the frame height — plenty of breathing room around and above the character, generous space for background props (small arrows, coin stacks, stars, simple charts). Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark flat background. No gradients, no shading, no photorealism. Absolutely no text, letters, words, or labels anywhere. 9:16 vertical aspect ratio, subject centered, NOT zoomed in — camera pulled back to show the character with lots of surrounding space.
 ```
 
 > **Mascot DNA v9** (Shorts · Long 완전 동일, 2026-04-24 몸통 직사각형 복귀):
