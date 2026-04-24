@@ -47,12 +47,12 @@
 
 ### Style Prefix (모든 이미지 프롬프트 앞에 자동 추가)
 ```
-The BarroTube mascot character (IDENTICAL in every scene, same body every time): slim 2-head-tall chibi proportions — head-to-body ratio is 1:1, meaning the head takes about 50% of total height and the entire body (torso + legs combined) takes the other 50%. Round circular head, two small solid black dot eyes placed close together slightly above center, simple curved line mouth (small arc when smiling, short horizontal line when neutral). SLIM and NARROW straight torso with NO protruding belly, NO rounded bulge, NO chubby curves — the torso is a clean slim vertical shape. Slim straight stick arms and short slim stick legs ending in tiny rounded hand and foot tips. NO ears, NO hair, NO eyebrows, NO nose, NO clothing, NO accessories. Bold thick black outlines on the character. Scene style: simple cartoon illustration, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading, no photorealism. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
+The BarroTube mascot (SAME body across scenes, ONLY facial expression and arm pose change per scene): slim 2-head-tall chibi — head-to-body ratio 1:1 (head ~50%, torso+legs ~50%). Round circular head. EXPRESSIVE ACTIVE face matching scene emotion: eyes vary as small black dots (neutral), upward-curved arcs ^ ^ (happy smile), wide open circles (surprise/excitement), or half-moons (determined/focused); mouth varies as small curve (calm smile), wide open arc showing joy (laughter/excited), small round "o" shape (surprise/awe), flat short line (concentration). VERY THIN skinny STRAIGHT VERTICAL stick-like torso — the torso is a simple narrow vertical shape about as wide as the arms, absolutely NO belly, NO rounded bulge, NO chubby curves, NO torso width greater than a third of the head's diameter. Slim stick arms in dynamic active poses (raised up, pointing, waving, cheering, hands on hips). Slim short stick legs with tiny rounded foot tips. NO ears, NO hair, NO eyebrows, NO nose, NO clothing. Bold thick black outlines on the character. Scene style: simple cartoon, flat monochrome with strong warm orange (#F4A261) accent on ONE key prop only, cream or dark background with a few bold black-and-white graphic icons (upward arrows, coin stacks, stars). Flat, no gradients, no shading. 16:9 horizontal, subject in upper-center, bottom 15% of frame kept empty and flat.
 ```
 
-> **BarroTube Mascot DNA v4** (Shorts · Long 완전 동일, 2026-04-24 slim + 1:1):
-> `head : body = 1:1 (2-head-tall chibi) · slim narrow straight torso (no belly bulge) · slim short stick legs · dot eyes close together · no ears/hair/clothing`
-> → 사용자 명시: 배가 두드러지지 않게 slim, 머리와 몸 전체가 1:1. 지문은 두 가이드 동일.
+> **BarroTube Mascot DNA v5** (Shorts · Long 완전 동일, 2026-04-24 극슬림 + 액티브 표정):
+> `head : body = 1:1 · torso width < head diameter/3 (극도로 얇은 세로 막대) · 표정 다양화 허용 (웃음 ^^, 놀람 OO, 집중 --) · 입 다양 (curve/open arc/o/line) · active 팔 포즈 · no ears/hair/clothing`
+> → 몸통은 팔 굵기 수준으로 얇게, 표정은 씬 감정에 따라 적극 변화. 지문은 두 가이드 동일.
 
 ### Shorts 스타일과의 차이
 | 항목 | Shorts | Long-form |
