@@ -37,7 +37,9 @@ const ENV_PATH = join(PROJECT_ROOT, '.env');
 
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
-const SCOPE = 'https://www.googleapis.com/auth/youtube.upload';
+// 'youtube' = 채널 전체 read/write (업로드 + 썸네일 + 재생목록 + 댓글 등)
+// 'youtube.upload' 단독으로는 playlists.insert 불가 → 'youtube' 확장 필요
+const SCOPE = 'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.upload';
 
 function findFreePort() {
   return new Promise((resolve) => {

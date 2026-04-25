@@ -1,0 +1,31 @@
+{
+  "playlistId": "PLvDo3VC3fVmcWxpK9Ssc1K1YeeA4lnoCG",
+  "playlistUrl": "https://www.youtube.com/playlist?list=PLvDo3VC3fVmcWxpK9Ssc1K1YeeA4lnoCG",
+  "videos": [
+    {
+      "episodeId": "EP-2026-0010",
+      "seriesEpisode": 1,
+      "videoId": "jCwpGlzVICg"
+    },
+    {
+      "episodeId": "EP-2026-0011",
+      "seriesEpisode": 2,
+      "videoId": "FcU--zJhYR4"
+    },
+    {
+      "episodeId": "EP-2026-0012",
+      "seriesEpisode": 3,
+      "videoId": "YJyIhTDChgo"
+    },
+    {
+      "episodeId": "EP-2026-0013",
+      "seriesEpisode": 4,
+      "videoId": "D2HsXS0ck3Q"
+    },
+    {
+      "episodeId": "EP-2026-0014",
+      "seriesEpisode": 5,
+      "videoId": "aDGM-H4_XYM"
+    }
+  ]
+}
