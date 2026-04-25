@@ -2,7 +2,7 @@
 
 ## Project Overview
 Claude Code CLI × Paperclip 기반 멀티 에이전트 유튜브 자동화 시스템.
-한 명의 운영자가 Board 역할만 수행하면, 13개 전문 에이전트가 기획→자료조사→집필→팩트체크→자산생성→CapCut합성→QA→업로드까지 자동 수행.
+한 명의 운영자가 Board 역할만 수행하면, 13개 전문 에이전트가 기획→자료조사→집필→팩트체크→자산생성(씬·인트로·썸네일)→렌더→QA→업로드→재생목록 등록까지 자동 수행.
 
 ## Architecture
 - **Control Plane**: Paperclip (조직도, 티켓, 예산, 감사 로그)
@@ -30,7 +30,7 @@ node scripts/automation/create-episode.js --channel econ-daily --topic "주제"
 # 에피소드 실행 (체크포인트 재시작 지원)
 node scripts/automation/run-episode.js --episode EP-2026-0001
 
-# S4~S9b 경량 체인 (shorts-style, S2/S3 skip)
+# S4~S9 경량 체인 (S6c 씬 + S6d 인트로 + S6e 썸네일 자동 포함)
 node scripts/automation/produce-episode.js --episode EP-2026-0001
 
 # 상태 확인
@@ -47,6 +47,15 @@ node scripts/automation/rotate-audit-logs.js
 
 # CapCut 빌더
 node tools/capcut-builder/bin/capcut-builder.js build --script ... --assets ... --style ... --out ...
+
+# 시리즈 브랜딩 — 인트로/썸네일/재생목록 (S6d/S6e/S12)
+node scripts/automation/generate-intro.js     --episode <dir>                 # S6d 45_intro.png
+node scripts/automation/generate-thumbnail.js --episode <dir> --keyword "90%" --palette bullish  # S6e 47_thumbnail.png
+node scripts/automation/set-thumbnail.js      --all workspace/episodes/        # 사후 일괄 (영상 재업로드 X)
+node scripts/automation/create-playlist.js    --series sp500-basic --title "..." --privacy unlisted
+
+# OAuth 재발급 (scope 변경 / refresh_token revoke 시)
+node scripts/automation/setup-youtube-oauth.js
 ```
 
 ## Flag Semantics (Re-run / Force)
@@ -84,6 +93,12 @@ node tools/capcut-builder/bin/capcut-builder.js build --script ... --assets ... 
 4. **팩트체크 게이트**: HIGH 위험 → 재집필 (최대 2회)
 5. **예산 한도**: 역할별 월간 USD 한도, 초과 시 자동 정지
 6. **감사 로그**: 90일 보존, 불변(immutable), 에피소드별 export 가능
+7. **OAuth scope 2종 필수**: `youtube.upload + youtube` (재생목록·썸네일 권한 포함). 단일 scope만 있으면 `playlists.insert` 403
+8. **썸네일 인증 가드**: `thumbnails.set` 403은 영상 업로드 결과를 무효화하지 않음. 채널 전화 인증 회복 후 `set-thumbnail.js --all`로 사후 일괄 적용
 
-## Episode Workflow (S0~S11)
-S0 Brief → S1 Ticket → S2 Research → S3 Strategy → S4 Script → S5 Factcheck → S6 Assets → S7 CapCut → S8 QA → S9 Metadata → S10 Board Approval → S11 Publish
+## Episode Workflow (S0~S12)
+S0 Brief → S1 Ticket → S2 Research → S3 Strategy → S4 Script → S5 Factcheck →
+S6a TTS → S6b Duration Sync → S6c Scene Images → **S6d Intro Card** → **S6e Thumbnail** →
+S7 Render (인트로 2초 prepend) → S7b CapCut Draft → S8 QA → S9 Metadata →
+S10 Board Approval → S11 Publish (videos.insert + 썸네일 자동 감지) →
+**S12 Playlist Register (시리즈 마지막 ep 후)**

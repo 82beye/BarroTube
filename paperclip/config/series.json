@@ -1,6 +1,10 @@
 {
-  "version": "1.0",
-  "description": "시리즈 정의 — 연속된 롱폼 커리큘럼. 에피소드 단발과 구분되는 시리즈 단위 기획·승인·KPI.",
+  "version": "1.1",
+  "description": "시리즈 정의 — 연속된 롱폼 커리큘럼. 에피소드 단발과 구분되는 시리즈 단위 기획·승인·KPI. 1.1: thumbnail_specs(에피소드별 썸네일 키워드/팔레트) + branding_outputs(playlist_id, intro_thumbnail_status) 추가.",
+  "schema_notes": {
+    "thumbnail_specs": "에피소드별 썸네일 메인 카피. metadata-writer가 채워주거나 시리즈 기획 시 미리 정의. image-generator가 generate-thumbnail.js --keyword/--palette 인자로 사용.",
+    "branding_outputs": "시리즈 완료 후 publisher가 자동 기록. playlist_id, video_ids, intro/thumbnail 상태 트래킹."
+  },
   "series": [
     {
       "id": "sp500-basic",
@@ -23,6 +27,13 @@
         "workspace/channels/econ-daily/series/sp500-basic/ep-05-brief.md"
       ],
       "learning_arc": ["WHAT", "WHY", "HOW", "RISK", "WHEN"],
+      "thumbnail_specs": [
+        { "episode": 1, "arc": "WHAT", "keyword": "90%", "palette": "bullish", "rationale": "워런 버핏 90% 추천 임팩트" },
+        { "episode": 2, "arc": "WHY", "keyword": "10%", "palette": "bullish", "rationale": "100년 평균 10% 수익률" },
+        { "episode": 3, "arc": "HOW", "keyword": "0.03%", "palette": "explainer", "rationale": "최저 수수료 정보성" },
+        { "episode": 4, "arc": "RISK", "keyword": "1500원", "palette": "bearish", "rationale": "환율 리스크 경고" },
+        { "episode": 5, "arc": "WHEN", "keyword": "30년", "palette": "wealth", "rationale": "복리 시뮬레이션 미래" }
+      ],
       "next_series": "nasdaq100-basic",
       "required_disclaimer": true,
       "auto_derive_shorts": true,
@@ -33,8 +44,24 @@
         "avg_view_ratio_target": 0.5,
         "derive_shorts_to_long_uplift_target": 0.05
       },
-      "status": "planned",
-      "created_at": "2026-04-22"
+      "branding_outputs": {
+        "intro_card_status": "applied_all",
+        "thumbnail_status": "applied_all",
+        "playlist_id": "PLvDo3VC3fVmcWxpK9Ssc1K1YeeA4lnoCG",
+        "playlist_url": "https://www.youtube.com/playlist?list=PLvDo3VC3fVmcWxpK9Ssc1K1YeeA4lnoCG",
+        "playlist_privacy": "unlisted",
+        "playlist_record_path": "workspace/channels/econ-daily/sp500-basic-playlist.json",
+        "video_ids": [
+          { "episode": 1, "episode_id": "EP-2026-0010", "video_id": "jCwpGlzVICg" },
+          { "episode": 2, "episode_id": "EP-2026-0011", "video_id": "FcU--zJhYR4" },
+          { "episode": 3, "episode_id": "EP-2026-0012", "video_id": "YJyIhTDChgo" },
+          { "episode": 4, "episode_id": "EP-2026-0013", "video_id": "D2HsXS0ck3Q" },
+          { "episode": 5, "episode_id": "EP-2026-0014", "video_id": "aDGM-H4_XYM" }
+        ]
+      },
+      "status": "completed",
+      "created_at": "2026-04-22",
+      "completed_at": "2026-04-25"
     }
   ],
   "planned_series": [
@@ -42,12 +69,23 @@
       "id": "nasdaq100-basic",
       "name": "NASDAQ 100 입문 5편",
       "status": "queued",
-      "prerequisite": "sp500-basic:completed"
+      "prerequisite": "sp500-basic:completed",
+      "thumbnail_spec_required": true,
+      "intro_card_required": true,
+      "playlist_register_required": true
     }
   ],
   "defaults": {
     "required_disclaimer": true,
     "auto_derive_shorts": true,
-    "learning_arc_recommended": ["WHAT", "WHY", "HOW", "RISK", "WHEN"]
+    "learning_arc_recommended": ["WHAT", "WHY", "HOW", "RISK", "WHEN"],
+    "intro_card_required": true,
+    "thumbnail_required": true,
+    "playlist_register_required": true,
+    "thumbnail_keyword_constraints": {
+      "max_korean_chars": 6,
+      "must_include_number_or_percent": true,
+      "palette_options": ["bullish", "bearish", "explainer", "cta", "wealth"]
+    }
   }
 }

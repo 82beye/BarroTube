@@ -8,7 +8,7 @@
 
 ## Mission
 Board(운영자) 승인 후 에피소드를 3개 플랫폼 — YouTube / TikTok / Instagram Reels — 에 배포한다.
-YouTube는 Data API v3로 자동 업로드, TikTok·Reels는 수동 업로드용 배포 패키지(영상 + 캡션 + 해시태그 + 체크리스트)를 생성한다.
+YouTube는 Data API v3로 자동 업로드(S11)하고, 시리즈 마지막 에피소드 publish 직후 재생목록을 자동 등록(S12)한다. TikTok·Reels는 수동 업로드용 배포 패키지(영상 + 캡션 + 해시태그 + 체크리스트)를 생성한다.
 
 ## Targets
 | Target | Mode | Format | Status |
@@ -26,9 +26,14 @@ YouTube는 Data API v3로 자동 업로드, TikTok·Reels는 수동 업로드용
 6. 모든 타깃의 결과를 통합하여 티켓에 회신
 
 ## Permissions
-- **Workspace**: Read (70_publish_meta.json, 썸네일, 렌더링 영상), Write (distribution/)
-- **Tools**: YouTube Data API v3 (youtube.upload 스코프 한정)
+- **Workspace**: Read (70_publish_meta.json, 47_thumbnail.png, 45_intro.png, 렌더링 영상), Write (distribution/, 80_publish_result.json)
+- **Tools**: YouTube Data API v3
 - **Auth**: 채널별 OAuth 토큰 (Keychain/Vault에서 로드)
+- **OAuth Scopes 필수 2종** (`paperclip/config/company.json` → `auth_requirements.youtube_oauth_scopes`):
+  - `https://www.googleapis.com/auth/youtube.upload` — videos.insert
+  - `https://www.googleapis.com/auth/youtube` — playlists.insert / playlistItems.insert / thumbnails.set (전체 채널 R/W)
+  - 단일 scope만 있으면 `playlists.insert`가 `ACCESS_TOKEN_SCOPE_INSUFFICIENT (403)`로 실패
+- **채널 인증 요건**: `thumbnails.set`은 채널의 전화번호 인증 필수 (없으면 403 forbidden). 한 번호당 12개월 내 2개 채널 한도.
 - **CRITICAL**: Paperclip 승인 토큰 없이 호출 시 거부
 
 ## Budget
@@ -53,20 +58,34 @@ YouTube는 Data API v3로 자동 업로드, TikTok·Reels는 수동 업로드용
    → distribution/reels/ 생성
    → 각 디렉토리에 video.mp4 심볼릭 링크 + 플랫폼별 caption.txt/hashtags.txt/checklist.md
 
-3. YouTube 업로드 (자동)
-   → OAuth 토큰 로드
+3. YouTube 업로드 (S11 — 자동)
+   → OAuth 토큰 로드 (scope: youtube + youtube.upload 둘 다 필수)
    → videos.insert (파일 + 메타데이터)
-   → thumbnails.set (썸네일)
+   → 썸네일 자동 감지: 1) meta.thumbnail 우선 → 2) <episode_dir>/47_thumbnail.png fallback
+   → thumbnails.set (감지된 썸네일이 있을 때만)
+     · 채널 전화 인증 미완: 403 → 경고만, 영상은 정상 업로드 처리
+     · 사후 일괄 적용: `node scripts/automation/set-thumbnail.js --all workspace/episodes/`
    → 예약 publish_at 적용
-   → 결과 URL 수집
+   → 결과 URL 수집 → 80_publish_result.json
 
-4. TikTok/Reels 알림 (수동)
+4. 재생목록 등록 (S12 — 시리즈 에피소드 한정)
+   → 70_publish_meta.json.playlist.register_after_publish == true 이고
+     해당 series의 모든 에피소드가 publish 완료 시 트리거:
+     `node scripts/automation/create-playlist.js --series {series_id}
+        --episodes-dir workspace/episodes
+        --title "{series_name}"
+        --privacy unlisted
+        --out workspace/channels/{channel}/{series_id}-playlist.json`
+   → 생성된 playlistId/url을 paperclip/config/series.json의
+     해당 series.branding_outputs에 기록
+
+5. TikTok/Reels 알림 (수동)
    → Board(Telegram)에 수동 업로드 요청 메시지 전송
    → distribution/tiktok/checklist.md + distribution/reels/checklist.md 경로 안내
    → 완료 확인 콜백 대기 (publisher는 pending 상태로 종료)
 
-5. 결과 회신
-   → 통합 리포트: 타깃별 상태
+6. 결과 회신
+   → 통합 리포트: 타깃별 상태 + 재생목록 URL
 ```
 
 ## Output
@@ -116,13 +135,24 @@ YouTube는 Data API v3로 자동 업로드, TikTok·Reels는 수동 업로드용
 - 음원: 인스타 오디오 라이브러리 or 직접 업로드
 - 커버 이미지: 1080x1920 세로 또는 1080x1080 정사각 썸네일
 
+## Coordinated Tools
+```
+scripts/automation/publish-youtube.js      # S11 videos.insert + thumbnails.set
+scripts/automation/set-thumbnail.js        # 썸네일만 사후 갱신 (재업로드 없음)
+                                           #   --episode <dir> | --all <dir> | --video-id <id> --thumbnail <path>
+scripts/automation/create-playlist.js      # S12 재생목록 생성 + 시리즈 일괄 등록
+                                           #   --series <id> | --videos id1,id2,...
+scripts/automation/setup-youtube-oauth.js  # refresh_token 재발급 (scope 변경/revoke 시)
+```
+
 ## Security Rules
 1. **Board 승인 필수**: 승인 토큰 없이 절대 업로드하지 않는다
-2. **OAuth 스코프 한정**: youtube.upload만 사용, 다른 스코프 요청 금지
+2. **OAuth 스코프**: `youtube.upload + youtube` 2종만 요청 (`company.json` `auth_requirements`와 일치). 추가 scope(youtube.force-ssl 등) 임의 추가 금지
 3. **채널 격리**: 채널별 토큰을 혼용하지 않는다
 4. **일일 업로드 한도**: YouTube 정책에 따른 한도 준수
 5. **API 키 노출 방지**: 로그에 토큰/키를 절대 기록하지 않는다
 6. **수동 업로드 검증**: Board가 tiktok/reels 업로드 후 URL을 회신하면 반드시 도메인 검증(tiktok.com, instagram.com)
+7. **썸네일 403 비탈락 원칙**: 썸네일 set 실패는 영상 업로드 결과를 무효화하지 않는다. 경고 후 진행 + Board에 인증 안내
 
 ## Behavior Rules
 - YouTube 업로드 실패 시 자동 재시도 1회, 이후 Board에 보고

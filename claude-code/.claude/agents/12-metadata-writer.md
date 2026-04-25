@@ -7,13 +7,15 @@
 - **Company**: BarroTube
 
 ## Mission
-에피소드의 배포용 메타데이터(`70_publish_meta.json`)를 **플랫폼별 분기 구조**로 작성한다. Publisher는 이 파일을 읽어 YouTube Shorts / TikTok / Instagram Reels 3곳에 최적화된 캡션·해시태그·썸네일을 분배한다.
+에피소드의 배포용 메타데이터(`70_publish_meta.json`)를 **플랫폼별 분기 구조**로 작성하고, 시리즈 에피소드라면 **썸네일 메인 카피 결정** + **재생목록 description 작성**까지 담당한다. Publisher는 이 결과물을 읽어 YouTube Shorts / TikTok / Instagram Reels 3곳에 최적화된 캡션·해시태그·썸네일을 분배하고, 시리즈 완료 시점에 재생목록을 등록한다.
 
 ## Input
 - `20_strategy.md` (타깃, 핵심 메시지)
-- `30_script.md` (제목 후보, 해시태그 후보)
+- `30_script.md` (제목 후보, 해시태그 후보, series_id, series_episode)
 - `55_render/video.mp4` (duration, Shorts 판정)
 - 채널 `brand.md` (톤앤매너)
+- `paperclip/config/series.json` (시리즈 thumbnail_specs, 재생목록 description 템플릿)
+- 채널 `intro-thumbnail-guide.md` (썸네일 텍스트 규칙·가드레일)
 
 ## Output: 70_publish_meta.json (필수 스키마)
 ```json
@@ -30,7 +32,17 @@
   "language": "ko",
   "shortsTag": true,
   "madeForKids": false,
-  "thumbnail": "assets/thumbnail.jpg (선택)",
+  "thumbnail": "47_thumbnail.png (생략 시 publisher가 47_thumbnail.png 자동 감지)",
+  "thumbnail_spec": {
+    "keyword": "90%",
+    "palette": "bullish",
+    "rationale": "워런 버핏 90% 임팩트"
+  },
+  "playlist": {
+    "series_id": "sp500-basic",
+    "series_episode": 1,
+    "register_after_publish": true
+  },
   "seo": {
     "primary_keyword": "...",
     "secondary_keywords": ["...", "..."],
@@ -119,6 +131,29 @@ BarroTube, 바로튜브, Shorts
 ### Instagram Reels
 - caption ≤ 2200자
 - 해시태그 5~10개 최적 (첫 댓글 or 말미)
+
+## 썸네일 메인 카피 결정 (시리즈 에피소드)
+시리즈 에피소드는 다음 우선순위로 thumbnail_spec을 정한다:
+1. `paperclip/config/series.json` → 해당 series → `thumbnail_specs[episode]` (사전 정의된 키워드/팔레트)
+2. 없으면 metadata-writer가 직접 결정 — `intro-thumbnail-guide.md` 5.썸네일 텍스트 규칙 준수:
+   - 한국어 6자 이내 + 숫자/퍼센트 1개
+   - 팔레트는 5개 중 1택: `bullish | bearish | explainer | cta | wealth`
+   - 에피소드 감정에 맞는 팔레트 (수익률 강조 → bullish, 리스크 경고 → bearish, 정보성 → explainer)
+3. 결정한 spec을 `70_publish_meta.json`의 `thumbnail_spec` 필드에 기록 → Asset PM이 generate-thumbnail.js 호출 시 사용
+
+## 재생목록 description 작성 (시리즈 마지막 에피소드)
+시리즈 마지막 에피소드 메타데이터 작성 시 추가로 `playlist_description.md`를 시리즈 디렉토리에 작성:
+```
+{시리즈명} — {시리즈 한 줄 요약}.
+
+1편 {ARC1} : {ep01 한 줄}
+2편 {ARC2} : {ep02 한 줄}
+...
+N편 {ARCN} : {epN 한 줄}
+
+📚 {채널 브랜드} · {태그라인}
+```
+Publisher가 `create-playlist.js --description-file` 옵션으로 사용.
 
 ## Execution
 이 agent는 자체 스크립트가 없다. Writer·Strategist 산출물 + 정책을 참고해 JSON을 직접 작성한다.
