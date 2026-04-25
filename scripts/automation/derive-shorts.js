@@ -101,6 +101,13 @@ function buildDerivedBrief(newId, parentScript, selectedScenes, parentEpisodeId,
     created_at: new Date().toISOString(),
     status: 'created',
   };
+  // 시리즈 표시 일관성: derived shorts도 같은 시리즈/회차 배지를 사용 (인트로 카드/썸네일에서 [N/M] 표기).
+  // generate-script.js의 carry-over 로직이 fm.series_*를 script frontmatter로 복사하므로 직접 키도 노출.
+  if (parentFM.series_id) {
+    fm.series_id = parentFM.series_id;
+    fm.series_episode = parentFM.series_episode;
+    fm.series_total = parentFM.series_total;
+  }
 
   const sourceScenesSection = selectedScenes.map((s, i) => [
     `### Source ${i + 1} — 원본 씬 ${s.scene_id} (${s.role}, score ${s.__score})`,

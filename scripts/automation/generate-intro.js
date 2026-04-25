@@ -120,8 +120,14 @@ async function main() {
   const seriesM = fm.series_total || 5;
   const seriesName = displaySeriesName(seriesId);
 
-  if (!seriesId) {
-    console.warn('⚠️  Script has no series_id. Generating intro with a generic label.');
+  // 가드: series_id/series_episode 둘 중 하나라도 없으면 환각 텍스트(undefined/5, ""/5 등)가
+  // 인트로 카드에 박혀버린다. 인트로 카드는 시리즈 에피소드 전용 자산이므로,
+  // 누락 시 명확하게 거부하고 호출자가 frontmatter를 수정하도록 한다.
+  if (!seriesId || seriesN === undefined || seriesN === null) {
+    console.error(`❌ Cannot generate intro card: series_id and series_episode are required in frontmatter.`);
+    console.error(`   Current: series_id=${JSON.stringify(seriesId)}, series_episode=${JSON.stringify(seriesN)}`);
+    console.error(`   Hint: derived shorts must carry series_id from parent. Re-derive or patch 30_script.md frontmatter.`);
+    process.exit(2);
   }
 
   const outPath = join(epDir, '45_intro.png');

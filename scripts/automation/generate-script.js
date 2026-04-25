@@ -312,6 +312,7 @@ async function main() {
   if (fm.series_id) {
     outFM.series_id = fm.series_id;
     outFM.series_episode = fm.series_episode;
+    if (fm.series_total) outFM.series_total = fm.series_total;
   }
   if (fm.parent_episode_id) outFM.parent_episode_id = fm.parent_episode_id;
   outFM.scenes = scenes;
