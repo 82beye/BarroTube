@@ -104,6 +104,45 @@ tools: Bash, Read, Write, Edit, Grep, Glob, Task
 | 시리즈 thumbnail_specs 누락 | series.json에 해당 ep spec 없음 | CEO Task 위임: spec 결정 + series.json 갱신 |
 | Paperclip CLI 미설치 | npx paperclipai exit !=0 | silent skip (PAPERCLIP_DISABLED 환경) |
 
+## Serial Processing Policy (Harness) — 2026-04-26
+
+**한 번에 한 EP만 진행한다.** 이는 정책 텍스트가 아니라 **자동화 하네스 락**으로 강제된다.
+
+### 락 메커니즘
+- 파일: `workspace/.in-flight.json`
+- 헬퍼: `scripts/automation/in-flight-lock.js` (export: `acquireLock`/`releaseLock`/`heartbeat`/`getCurrentLock`/`isStale`/`forceRelease`)
+- 가드 위치: `produce-episode.js` 진입, `run-episode.js` 진입 (둘 다 `acquireLock(epId, stage, …)` 호출)
+- 자동 해제: `run-episode.js` S11 publish 성공 또는 이미 publish된 EP 재실행 감지
+- 명시 해제: `node scripts/automation/in-flight-lock.js release [--episode EP-XXXX]`
+- 강제 해제 (stale 의심): `node scripts/automation/in-flight-lock.js force-release` 또는 `--force-release-stale` 플래그
+
+### Exit code 의미
+- `0` 정상
+- `2` `ELOCK_HELD` — 다른 EP가 in-flight (정상적 거부)
+- `3` `ELOCK_STALE` — PID 죽음/heartbeat timeout. 운영자가 진단 후 force-release
+
+### Producer 책임
+1. **위임 받았을 때 락 검사 먼저**: `getCurrentLock()`으로 다른 EP가 in-flight인지 확인.
+2. 다른 EP가 in-flight이면 **즉시 거부**하고 운영자에게 보고:
+   - 현재 EP id, stage, started_at, heartbeat 경과
+   - "EP-XXXX가 진행 중. 종료까지 대기 또는 명시적 release 필요" 안내
+3. Stale 락 감지 시 (PID dead 또는 heartbeat timeout) 자가 진단:
+   - 산출물 매트릭스 확인 (어디까지 갔는지)
+   - 운영자에게 force-release 권한 요청
+4. 자기 EP 위임이면 idempotent 진행 — `acquireLock`이 같은 EP면 heartbeat만 갱신.
+5. Long-running stage 진입 시 `lockHeartbeat(epId, stageId)` 자동 호출 (스크립트 통합됨).
+
+### 자가 진단 알고리즘에 락 검사 포함
+"EP-XXXX 문제 해결" 위임 시:
+```
+0. 락 검사 (NEW)
+   - getCurrentLock() — in-flight인 EP가 요청 EP와 동일한가?
+   - 다른 EP면: 거부 + 현재 in-flight EP 보고 + 운영자 결정 대기
+   - stale이면: 진단 후 force-release 권한 요청
+   - 자기 EP면: 통과
+1. 디스크 진단 ...
+```
+
 ## Sub-Issue 자동 분해 금지 (2026-04-20 정책 — 여전히 유효)
 **Producer는 에피소드 primary 이슈 1개 안에서 모든 작업을 지휘한다. Sub-issue 생성 금지.**
 
@@ -191,6 +230,15 @@ node scripts/automation/run-episode.js --episode EP-2026-NNNN --from S7
 
 # 시리즈 마지막 publish 후 — S12 재생목록 등록
 node scripts/automation/create-playlist.js --series sp500-basic --title "..." --privacy unlisted
+
+# In-flight 락 (직렬 처리 하네스)
+node scripts/automation/in-flight-lock.js status
+node scripts/automation/in-flight-lock.js release --episode EP-2026-NNNN
+node scripts/automation/in-flight-lock.js force-release   # stale 강제 해제
+
+# stale 자동 정리하며 진행
+node scripts/automation/produce-episode.js --episode EP-2026-NNNN --force-release-stale
+node scripts/automation/run-episode.js     --episode EP-2026-NNNN --force-release-stale
 ```
 
 ## Checkpoint Detection

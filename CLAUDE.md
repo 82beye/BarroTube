@@ -58,6 +58,11 @@ node scripts/automation/install-schedule.js --channel econ-daily --time "06:00"
 # Audit log 불변성 + 90일 보존 (일 1회 권장)
 node scripts/automation/rotate-audit-logs.js
 
+# In-flight 락 (Producer 직렬 처리 하네스, 2026-04-26)
+node scripts/automation/in-flight-lock.js status                          # 현재 락 조회
+node scripts/automation/in-flight-lock.js release --episode EP-2026-NNNN  # 명시적 해제 (자기 EP만)
+node scripts/automation/in-flight-lock.js force-release                   # 강제 해제 (stale 정리)
+
 # CapCut 빌더
 node tools/capcut-builder/bin/capcut-builder.js build --script ... --assets ... --style ... --out ...
 
@@ -142,6 +147,7 @@ Producer 결과 → Main agent → 사용자에게 short report
 6. **감사 로그**: 90일 보존, 불변(immutable), 에피소드별 export 가능
 7. **OAuth scope 2종 필수**: `youtube.upload + youtube` (재생목록·썸네일 권한 포함). 단일 scope만 있으면 `playlists.insert` 403
 8. **썸네일 인증 가드**: `thumbnails.set` 403은 영상 업로드 결과를 무효화하지 않음. 채널 전화 인증 회복 후 `set-thumbnail.js --all`로 사후 일괄 적용
+9. **Producer 직렬 처리 락 (2026-04-26)**: `produce-episode.js`/`run-episode.js`는 `workspace/.in-flight.json` 하네스 락으로 한 번에 한 EP만 진행. 다른 EP 시도 시 exit 2 (`ELOCK_HELD`)로 거부. S11 publish 성공 시 자동 release. 락 상태 조회/해제: `node scripts/automation/in-flight-lock.js {status|release|force-release}`. Stale 자동 정리 옵션: `--force-release-stale` 또는 `force-release`.
 
 ## Episode Workflow (S0~S12)
 S0 Brief → S1 Ticket → S2 Research → S3 Strategy → S4 Script → S5 Factcheck →

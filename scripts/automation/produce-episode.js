@@ -43,6 +43,7 @@ import { parseArgs } from 'node:util';
 import { parse as parseYAML } from 'yaml';
 import { updateIssueStatus } from './register-paperclip-issue.js';
 import { resolvePaths, formatToPlatform } from './paths.js';
+import { acquireLock, releaseLock, heartbeat as lockHeartbeat } from './in-flight-lock.js';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const LOGS = join(ROOT, 'logs');
@@ -97,6 +98,8 @@ function run(label, cmd, args) {
 function runTracked(episodeDir, episodeId, stageId, label, agent, cmd, args) {
   auditLog(episodeId, 'stage_start', { stage: stageId, agent });
   updateStageStatus(episodeDir, episodeId, stageId, 'in_progress', { agent });
+  // 락 heartbeat — long-running stage 중 stale 오인 방지.
+  try { lockHeartbeat(episodeId, stageId); } catch { /* lock 없을 수 있음, ignore */ }
   try {
     run(label, cmd, args);
     auditLog(episodeId, 'stage_complete', { stage: stageId, agent });
@@ -117,10 +120,11 @@ async function main() {
       platform: { type: 'string' },           // long | shorts (v2 멀티 플랫폼 빌드 시 명시)
       force: { type: 'boolean', default: false },
       'skip-capcut': { type: 'boolean', default: false },
+      'force-release-stale': { type: 'boolean', default: false },
     },
   });
   if (!values.episode) {
-    console.error('Usage: produce-episode.js --episode EP-YYYY-NNNN [--platform long|shorts] [--force] [--skip-capcut]');
+    console.error('Usage: produce-episode.js --episode EP-YYYY-NNNN [--platform long|shorts] [--force] [--skip-capcut] [--force-release-stale]');
     process.exit(1);
   }
 
@@ -174,6 +178,20 @@ async function main() {
   console.log(`🎬 Produce episode: ${absEp}`);
   console.log(`   Format: ${format} → platform=${platform}, layout=${p.isV2 ? 'v2 (platforms/)' : 'v1 (legacy)'}`);
   console.log(`   Force: ${force}, Skip CapCut: ${values['skip-capcut']}`);
+
+  // ─── In-flight Lock: 직렬 처리 강제 (Producer harness policy) ───────────────
+  // 다른 EP가 in-flight면 즉시 거부. 같은 EP면 idempotent (heartbeat 갱신).
+  try {
+    const lock = acquireLock(episodeId, 'S4', {
+      command: `produce-episode.js --episode ${episodeId}${values.platform ? ' --platform ' + values.platform : ''}`,
+      autoCleanStale: !!values['force-release-stale'],
+    });
+    console.log(`🔒 In-flight lock acquired: ${lock.episode_id} (pid=${lock.pid})`);
+  } catch (e) {
+    console.error(`❌ ${e.message}`);
+    auditLog(episodeId, 'inflight_lock_denied', { reason: e.code || 'unknown', current: e.lock || null });
+    process.exit(e.code === 'ELOCK_HELD' ? 2 : (e.code === 'ELOCK_STALE' ? 3 : 1));
+  }
 
   auditLog(episodeId, 'produce_start', { force, skip_capcut: values['skip-capcut'], platform, layout: p.isV2 ? 'v2' : 'v1' });
   updateIssueStatus(episodeId, 'in_progress', { comment: 'produce-episode: S4~S9 chain started' });
@@ -294,13 +312,18 @@ async function main() {
   auditLog(episodeId, 'produce_complete', {});
   updateIssueStatus(episodeId, 'in_review', { comment: 'S4~S9 complete — awaiting Board approval' });
 
+  // 락 정책: produce-episode 성공 후에도 락 유지 (S10/S11 이전).
+  // 운영자가 같은 EP 흐름을 이어서 진행하므로 다른 EP가 끼어들면 안됨.
+  // 락은 run-episode.js가 S11 publish 성공 시 자동 release, 또는 명시적 release.
   console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('✅ S4~S9 완료');
   console.log(`   📁 ${absEp}`);
+  console.log(`   🔒 In-flight lock: ${episodeId} (유지 — S11 publish 시 자동 해제)`);
   console.log('\n다음:');
   console.log(`   승인 (Telegram): /approve ${relEp.split('/').pop()}`);
   console.log(`   승인 (CLI):      node scripts/automation/approve-episode.js --episode ${relEp.split('/').pop()} --by "Board"`);
   console.log(`   배포 (auto):     run-episode.js가 S11 자동 실행`);
+  console.log(`   락 강제 해제:    node scripts/automation/in-flight-lock.js release --episode ${episodeId}`);
 }
 
 main().catch(e => { console.error('\n❌', e.message); process.exit(1); });

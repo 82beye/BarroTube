@@ -16,6 +16,7 @@ import { buildDistributionPackage } from './build-distribution.js';
 import { publishYouTube } from './publish-youtube.js';
 import { notify } from './notify.js';
 import { updateIssueStatus } from './register-paperclip-issue.js';
+import { acquireLock, releaseLock, heartbeat as lockHeartbeat } from './in-flight-lock.js';
 
 const WORKSPACE = resolve(import.meta.dirname, '../../workspace');
 const LOGS = resolve(import.meta.dirname, '../../logs');
@@ -98,6 +99,7 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
 
   auditLog(episodeId, 'stage_start', { stage: stage.id, agent: stage.agent });
   updateStatus(episodeDir, episodeId, stage.id, 'in_progress', { agent: stage.agent });
+  try { lockHeartbeat(episodeId, stage.id); } catch { /* lock 없을 수 있음, ignore */ }
 
   // S7 — 렌더 (ffmpeg 직접 렌더, CapCut 우회)
   if (stage.id === 'S7') {
@@ -168,6 +170,8 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
             console.log(`  → 재업로드하려면 --force-republish`);
             updateStatus(episodeDir, episodeId, stage.id, 'completed', { youtube_url: prevUrl, skipped: 'already_published' });
             auditLog(episodeId, 'publish_skipped_duplicate', { stage: stage.id, videoId: prevVideoId });
+            // 이미 게시된 EP의 락은 release (idempotent re-run 정리)
+            try { if (releaseLock(episodeId)) auditLog(episodeId, 'inflight_lock_released', { reason: 'duplicate_publish_skip' }); } catch {}
             return true;
           }
         } catch (e) {
@@ -258,6 +262,17 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
       updateStatus(episodeDir, episodeId, stage.id, 'completed', { youtube_url: ytResult.url });
       auditLog(episodeId, 'published', { stage: stage.id, result: publishResult });
       updateIssueStatus(episodeId, 'done', { comment: `Published: ${ytResult.url}` });
+
+      // ─── In-flight Lock 자동 해제 (S11 publish 성공) ─────────────────────────
+      try {
+        const released = releaseLock(episodeId);
+        if (released) {
+          console.log(`  🔓 In-flight lock released (S11 published).`);
+          auditLog(episodeId, 'inflight_lock_released', { reason: 's11_publish_success' });
+        }
+      } catch (e) {
+        console.warn(`  ⚠ Lock release failed (non-fatal): ${e.message}`);
+      }
       return true;
     } catch (e) {
       console.error(`  ❌ Publish failed: ${e.message}`);
@@ -326,11 +341,12 @@ async function main() {
       from: { type: 'string', short: 'f' },
       'dry-run': { type: 'boolean', default: false },
       'force-republish': { type: 'boolean', default: false },
+      'force-release-stale': { type: 'boolean', default: false },
     },
   });
 
   if (!values.episode) {
-    console.error('Usage: node run-episode.js --episode <EP-YYYY-NNNN> [--from <S2>] [--dry-run] [--force-republish]');
+    console.error('Usage: node run-episode.js --episode <EP-YYYY-NNNN> [--from <S2>] [--dry-run] [--force-republish] [--force-release-stale]');
     process.exit(1);
   }
 
@@ -344,6 +360,22 @@ async function main() {
   console.log(`   Episode: ${values.episode}`);
   console.log(`   Path: ${episodeDir}`);
   console.log(`   Dry Run: ${values['dry-run'] || false}`);
+
+  // ─── In-flight Lock: 직렬 처리 강제 (Producer harness policy) ───────────────
+  // dry-run은 실제 변경이 없으므로 lock skip.
+  if (!values['dry-run']) {
+    try {
+      const lock = acquireLock(values.episode, values.from || 'auto', {
+        command: `run-episode.js --episode ${values.episode}${values.from ? ' --from ' + values.from : ''}`,
+        autoCleanStale: !!values['force-release-stale'],
+      });
+      console.log(`   🔒 In-flight lock: ${lock.episode_id} (pid=${lock.pid})`);
+    } catch (e) {
+      console.error(`\n❌ ${e.message}`);
+      auditLog(values.episode, 'inflight_lock_denied', { reason: e.code || 'unknown', current: e.lock || null });
+      process.exit(e.code === 'ELOCK_HELD' ? 2 : (e.code === 'ELOCK_STALE' ? 3 : 1));
+    }
+  }
 
   // 체크포인트 감지 (FR-S-003)
   let startIndex;
