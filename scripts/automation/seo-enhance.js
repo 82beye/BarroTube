@@ -204,10 +204,18 @@ async function main() {
   }
 
   const epDir = resolve(values.episode);
-  const script = parseFrontmatter(join(epDir, '30_script.md'));
+  const scriptCandidates = [
+    join(epDir, 'platforms', 'long', '30_script.md'),
+    join(epDir, 'platforms', 'shorts', '30_script.md'),
+    join(epDir, '30_script.md'),
+  ];
+  const scriptPath = scriptCandidates.find(p => existsSync(p));
+  if (!scriptPath) { console.error('❌ Missing 30_script.md'); process.exit(1); }
+  const baseDir = scriptPath.replace(/\/30_script\.md$/, '');
+  const script = parseFrontmatter(scriptPath);
   const channel = values.channel || script.channel_id || 'econ-daily';
 
-  const metaPath = join(epDir, '70_publish_meta.json');
+  const metaPath = join(baseDir, '70_publish_meta.json');
   const meta = existsSync(metaPath) ? JSON.parse(readFileSync(metaPath, 'utf-8')) : {};
   meta.episode_id = script.episode_id;
   meta.channel_id = channel;

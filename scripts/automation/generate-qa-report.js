@@ -66,11 +66,17 @@ async function main() {
   if (!values.episode) { console.error('Usage: generate-qa-report.js --episode <dir>'); process.exit(1); }
 
   const epDir = resolve(values.episode);
-  const scriptPath = join(epDir, '30_script.md');
-  const videoPath = join(epDir, '55_render/video.mp4');
-
-  if (!existsSync(scriptPath)) { console.error('❌ Missing 30_script.md'); process.exit(1); }
-  if (!existsSync(videoPath)) { console.error('❌ Missing 55_render/video.mp4'); process.exit(1); }
+  // v2 (platforms/) 우선 → v1 fallback
+  const scriptCandidates = [
+    join(epDir, 'platforms', 'long', '30_script.md'),
+    join(epDir, 'platforms', 'shorts', '30_script.md'),
+    join(epDir, '30_script.md'),
+  ];
+  const scriptPath = scriptCandidates.find(p => existsSync(p));
+  if (!scriptPath) { console.error('❌ Missing 30_script.md'); process.exit(1); }
+  const baseDir = scriptPath.replace(/\/30_script\.md$/, '');
+  const videoPath = join(baseDir, '55_render/video.mp4');
+  if (!existsSync(videoPath)) { console.error(`❌ Missing 55_render/video.mp4 under ${baseDir}`); process.exit(1); }
 
   const md = readFileSync(scriptPath, 'utf-8');
   const fm = parseYAML(md.match(/^---\n([\s\S]*?)\n---/)[1]);
@@ -229,7 +235,7 @@ async function main() {
       : '❌ 실패 항목 수정 후 재검사 필요.',
   ].filter(Boolean).join('\n');
 
-  const outPath = join(epDir, '60_qa_report.md');
+  const outPath = join(baseDir, '60_qa_report.md');
   writeFileSync(outPath, report, 'utf-8');
 
   console.log(`✅ QA report: ${outPath}`);

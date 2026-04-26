@@ -333,7 +333,17 @@ async function main() {
     refs ? `## 레퍼런스\n05_topic_references.md 참조\n` : '',
   ].join('\n');
 
-  const outPath = join(epDir, '30_script.md');
+  // v2 layout: episodeDir/platforms/{platform}/30_script.md (platforms/ 디렉토리가 이미 있으면 v2)
+  // v1 layout: episodeDir/30_script.md (legacy)
+  const platform = format === 'long-3min' ? 'long' : 'shorts';
+  const v2BaseDir = join(epDir, 'platforms', platform);
+  const isV2 = existsSync(join(epDir, 'platforms'));
+  const outDir = isV2 ? v2BaseDir : epDir;
+  if (isV2) {
+    const { mkdirSync } = await import('node:fs');
+    mkdirSync(outDir, { recursive: true });
+  }
+  const outPath = join(outDir, '30_script.md');
   writeFileSync(outPath, scriptBody, 'utf-8');
 
   console.log(`✅ Script saved: ${outPath}`);

@@ -23,14 +23,17 @@ const DEFAULT_MODEL = process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
 function buildSystemPrompt(format, seriesInfo) {
   const isShorts = format === 'shorts';
   const formatLabel = isShorts ? 'YouTube Shorts (60초)' : 'YouTube 롱폼 (3분 시리즈)';
+  // 시리즈 표시명: seriesInfo.series_name (series.json에서 동적 로드) 또는 series_id 자체.
+  // 이전 코드는 sp500을 hardcode해서 다른 시리즈에도 sp500 라벨이 박혔음 — 이를 동적으로 교체.
+  const seriesName = seriesInfo?.series_name || seriesInfo?.series_id || '';
   const titleHint = isShorts
     ? "100자 이내, primary keyword 앞 30자에, '#Shorts' 포함 권장"
-    : "70자 이내, primary keyword 앞 30자, 시리즈 번호 포함 예: '[S&P500 입문 1/5]', #Shorts 사용 금지";
+    : `70자 이내, primary keyword 앞 30자, 시리즈 번호 포함 예: '[${seriesName} ${seriesInfo?.series_episode || 1}/${seriesInfo?.series_total || 5}]', #Shorts 사용 금지`;
   const shortsTagValue = isShorts ? 'true' : 'false';
   const brandHashtags = isShorts ? '#BarroTube, #60초경제' : '#BarroTube, #3분경제, #경제수업';
 
   const seriesBlock = seriesInfo
-    ? `\nSERIES CONTEXT:\n- Series: ${seriesInfo.series_id} (episode ${seriesInfo.series_episode}/${seriesInfo.series_total || '?'})\n- Title MUST include series badge: "[S&P500 입문 ${seriesInfo.series_episode}/5]" style\n- description 상단 2~3줄에 "이 영상은 [시리즈명] 시리즈의 ${seriesInfo.series_episode}번째 편입니다." 시리즈 네비게이션 포함\n- Tags에 시리즈 관련 태그 필수 (sp500입문, S&P500시리즈 등)\n`
+    ? `\nSERIES CONTEXT:\n- Series: ${seriesInfo.series_id} "${seriesName}" (episode ${seriesInfo.series_episode}/${seriesInfo.series_total || '?'})\n- Title MUST include this series badge: "[${seriesName} ${seriesInfo.series_episode}/${seriesInfo.series_total || 5}]" — DO NOT substitute another series name (e.g. previous series).\n- description 상단 2~3줄에 "이 영상은 ${seriesName} 시리즈의 ${seriesInfo.series_episode}번째 편입니다." 시리즈 네비게이션 포함\n- Tags에 시리즈 관련 태그 필수 (${seriesInfo.series_id.replace(/-basic$/, '')}입문, ${seriesName.replace(/\s+입문.*$/, '')}시리즈 등)\n`
     : '';
 
   return `You are "Metadata Writer Agent" of BarroTube (Korean economy YouTube channel).
@@ -105,16 +108,33 @@ async function main() {
   if (!values.episode) { console.error('Usage: generate-metadata.js --episode <dir>'); process.exit(1); }
 
   const epDir = resolve(values.episode);
-  const scriptPath = join(epDir, '30_script.md');
-  if (!existsSync(scriptPath)) { console.error('❌ Missing 30_script.md'); process.exit(1); }
+  const scriptCandidates = [
+    join(epDir, 'platforms', 'long', '30_script.md'),
+    join(epDir, 'platforms', 'shorts', '30_script.md'),
+    join(epDir, '30_script.md'),
+  ];
+  const scriptPath = scriptCandidates.find(p => existsSync(p));
+  if (!scriptPath) { console.error('❌ Missing 30_script.md'); process.exit(1); }
+  const baseDir = scriptPath.replace(/\/30_script\.md$/, '');
 
   const scriptMd = readFileSync(scriptPath, 'utf-8');
   const fm = parseFrontmatter(scriptMd);
   if (!fm) { console.error('❌ No frontmatter'); process.exit(1); }
 
   const format = fm.format || 'shorts';
+  // series_name을 paperclip/config/series.json에서 동적으로 로드 → 다른 시리즈에 sp500 라벨 박히는 회귀 방지
+  let seriesName = null, thumbnailSpec = null;
+  if (fm.series_id) {
+    try {
+      const cfg = JSON.parse(readFileSync(resolve('paperclip/config/series.json'), 'utf-8'));
+      const s = (cfg.series || []).find(x => x.id === fm.series_id);
+      seriesName = s?.name || null;
+      thumbnailSpec = s?.thumbnail_specs?.find(t => t.episode === fm.series_episode) || null;
+    } catch {}
+  }
   const seriesInfo = fm.series_id ? {
     series_id: fm.series_id,
+    series_name: seriesName,
     series_episode: fm.series_episode,
     series_total: fm.series_total || 5,
   } : null;
@@ -167,13 +187,42 @@ async function main() {
   if (seriesInfo) {
     meta.series_id = seriesInfo.series_id;
     meta.series_episode = seriesInfo.series_episode;
+    meta.series_name = seriesInfo.series_name;
+    // playlist 자동 등록을 위한 hint
+    meta.playlist = {
+      series_id: seriesInfo.series_id,
+      series_episode: seriesInfo.series_episode,
+      register_after_publish: true,
+    };
   }
+  // 시리즈 thumbnail_specs를 메타에 박아서 publisher가 47_thumbnail.png + 키워드를 매칭할 수 있게.
+  // generate-thumbnail이 이미 적용했지만 메타 차원에서도 보존 (audit · 재생성 시 참고).
+  if (thumbnailSpec) {
+    meta.thumbnail_spec = {
+      keyword: thumbnailSpec.keyword,
+      palette: thumbnailSpec.palette,
+      rationale: thumbnailSpec.rationale,
+    };
+  }
+  meta.thumbnail = meta.thumbnail || '47_thumbnail.png';
   meta.privacyStatus = 'private'; // 기본 private, 운영자가 필요 시 변경
 
   // Enforce format-aligned shortsTag (Gemini sometimes ignores)
   if (format === 'long-3min') meta.shortsTag = false;
 
-  const outPath = join(epDir, '70_publish_meta.json');
+  // 다른 시리즈 라벨이 잘못 들어갔을 경우 title 보정 (Gemini가 종종 환각으로 sp500 prefix를 박음)
+  if (seriesInfo && meta.title) {
+    const expectedBadge = `[${seriesInfo.series_name} ${seriesInfo.series_episode}/${seriesInfo.series_total}]`;
+    const wrongPattern = /\[[^\]]*입문\s+\d+\/\d+\]/;
+    const m = meta.title.match(wrongPattern);
+    if (m && !meta.title.startsWith(expectedBadge)) {
+      const corrected = meta.title.replace(wrongPattern, expectedBadge);
+      console.warn(`   ⚠ Title series badge 보정: ${m[0]} → ${expectedBadge}`);
+      meta.title = corrected;
+    }
+  }
+
+  const outPath = join(baseDir, '70_publish_meta.json');
   writeFileSync(outPath, JSON.stringify(meta, null, 2), 'utf-8');
 
   console.log(`✅ Metadata saved: ${outPath}`);

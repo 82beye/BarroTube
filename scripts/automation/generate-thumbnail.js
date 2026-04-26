@@ -44,10 +44,20 @@ function locateBase(epDir, platformHint) {
   return { scriptPath: null, baseDir: null };
 }
 
+// 시리즈 표시명 — series.json에서 자동 로드 후 fallback 매핑.
+// generate-thumbnail은 작은 배지로만 사용하므로 짧은 별칭이 필요할 수 있음.
 const SERIES_DISPLAY_NAME = {
   'sp500-basic': 'S&P500 입문',
   'nasdaq100-basic': 'NASDAQ 100 입문',
 };
+
+function loadSeriesNameFromConfig(seriesId) {
+  try {
+    const cfg = JSON.parse(readFileSync(resolve('paperclip/config/series.json'), 'utf-8'));
+    const s = (cfg.series || []).find(x => x.id === seriesId);
+    return s?.name || null;
+  } catch { return null; }
+}
 
 const BRAND_TAGLINE = '3분이면 충분한 경제';
 
@@ -164,11 +174,32 @@ async function main() {
   const hookScene = (fm.scenes || []).find(s => s.role === 'hook') || fm.scenes?.[0];
   const hookNarration = hookScene?.narration || '';
 
-  // palette resolution
+  // 시리즈 thumbnail_specs 자동 로드 (paperclip/config/series.json)
+  // 우선순위: CLI override (--keyword/--palette) > series.json thumbnail_specs > 자동 fallback
+  let specKeyword = null, specPalette = null;
+  if (seriesId && seriesN) {
+    try {
+      const seriesCfg = JSON.parse(readFileSync(resolve('paperclip/config/series.json'), 'utf-8'));
+      const series = (seriesCfg.series || []).find(s => s.id === seriesId);
+      const spec = series?.thumbnail_specs?.find(t => t.episode === seriesN);
+      if (spec) {
+        specKeyword = spec.keyword;
+        specPalette = spec.palette;
+        console.log(`   📋 series.json thumbnail_spec: keyword="${spec.keyword}", palette=${spec.palette} (rationale: ${spec.rationale})`);
+      }
+    } catch (e) {
+      console.warn(`   ⚠ series.json 로드 실패: ${e.message}`);
+    }
+  }
+
+  // palette resolution: CLI > series spec > role fallback > bullish
   const paletteName = opts.palette
+    || specPalette
     || ROLE_PALETTE_FALLBACK[hookScene?.role]
     || 'bullish';
   const paletteBlock = loadPalette(channel, paletteName);
+  // keyword resolution: CLI > series spec > null (Gemini가 hook narration에서 추출)
+  const keywordResolved = opts.keyword || specKeyword || null;
 
   const outPath = join(baseDir, '47_thumbnail.png');
   if (existsSync(outPath) && !opts.force) {
@@ -184,7 +215,7 @@ async function main() {
     episodeM: seriesM,
     topic,
     hookNarration,
-    keywordHint: opts.keyword || null,
+    keywordHint: keywordResolved,
     paletteBlock,
   });
 
