@@ -64,19 +64,62 @@
       "status": "completed",
       "created_at": "2026-04-22",
       "completed_at": "2026-04-25"
-    }
-  ],
-  "planned_series": [
+    },
     {
       "id": "nasdaq100-basic",
       "name": "NASDAQ 100 입문 5편",
-      "status": "queued",
-      "prerequisite": "sp500-basic:completed",
-      "thumbnail_spec_required": true,
-      "intro_card_required": true,
-      "playlist_register_required": true
+      "channel": "econ-daily",
+      "format": "long-3min",
+      "persona": "barro-teacher",
+      "total_episodes": 5,
+      "cadence": {
+        "days": ["tue", "thu", "sun"],
+        "time_kst": "19:00",
+        "estimated_completion_weeks": 1.7
+      },
+      "curriculum_path": "workspace/channels/econ-daily/series/nasdaq100-basic/curriculum.md",
+      "brief_paths": [
+        "workspace/channels/econ-daily/series/nasdaq100-basic/ep-01-brief.md",
+        "workspace/channels/econ-daily/series/nasdaq100-basic/ep-02-brief.md",
+        "workspace/channels/econ-daily/series/nasdaq100-basic/ep-03-brief.md",
+        "workspace/channels/econ-daily/series/nasdaq100-basic/ep-04-brief.md",
+        "workspace/channels/econ-daily/series/nasdaq100-basic/ep-05-brief.md"
+      ],
+      "learning_arc": ["WHAT", "WHY", "HOW", "RISK", "WHEN"],
+      "thumbnail_specs": [
+        { "episode": 1, "arc": "WHAT", "keyword": "5조달러", "palette": "explainer", "rationale": "시총 5조 달러 회사 한 개로 NDX 집중 노출 시각화 (S&P500 EP01 bullish 90%와 차별, 정보성 입문 톤)" },
+        { "episode": 2, "arc": "WHY", "keyword": "성장 13%", "palette": "bullish", "rationale": "S&P500 평균 10% 대비 NASDAQ 평균 13%+ 비교 임팩트" },
+        { "episode": 3, "arc": "HOW", "keyword": "0.15%", "palette": "explainer", "rationale": "QQQM 운용보수 0.15% — 최저비용 정보성 (sp500 EP03의 0.03% 대비 NDX 절대값이 더 높다는 점 자연 노출)" },
+        { "episode": 4, "arc": "RISK", "keyword": "낙폭 83%", "palette": "bearish", "rationale": "닷컴버블 -83% 최대낙폭 — sp500 EP04 환율 1500원과 다른 RISK 축으로 차별" },
+        { "episode": 5, "arc": "WHEN", "keyword": "10년 12배", "palette": "wealth", "rationale": "2014~2024 NASDAQ 100 약 12배 누적 — 코어-새틀라이트 시리즈 완결 톤" }
+      ],
+      "next_series": null,
+      "required_disclaimer": true,
+      "auto_derive_shorts": true,
+      "kpi": {
+        "ep01_views_target": 3500,
+        "ep05_views_target": 2500,
+        "series_completion_rate_target": 0.28,
+        "avg_view_ratio_target": 0.5,
+        "derive_shorts_to_long_uplift_target": 0.06,
+        "prev_series_playlist_to_ep01_uplift_target": 0.03
+      },
+      "branding_outputs": {
+        "intro_card_status": "pending",
+        "thumbnail_status": "pending",
+        "playlist_id": null,
+        "playlist_url": null,
+        "playlist_privacy": "unlisted",
+        "playlist_record_path": "workspace/channels/econ-daily/nasdaq100-basic-playlist.json",
+        "layout_version": "v2",
+        "layout_note": "각 EP는 platforms/{long,shorts,tiktok,reels}/ 구조로 생성 예정. derived shorts는 부모 EP 안 platforms/shorts/에 합병.",
+        "video_ids": []
+      },
+      "status": "planned",
+      "created_at": "2026-04-26"
     }
   ],
+  "planned_series": [],
   "defaults": {
     "required_disclaimer": true,
     "auto_derive_shorts": true,
