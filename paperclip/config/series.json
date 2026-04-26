@@ -51,12 +51,14 @@
         "playlist_url": "https://www.youtube.com/playlist?list=PLvDo3VC3fVmcWxpK9Ssc1K1YeeA4lnoCG",
         "playlist_privacy": "unlisted",
         "playlist_record_path": "workspace/channels/econ-daily/sp500-basic-playlist.json",
+        "layout_version": "v2",
+        "layout_note": "각 EP는 platforms/{long,shorts,tiktok,reels}/ 구조로 마이그레이션 완료. derived shorts는 부모 EP 안 platforms/shorts/에 합병됨 (구 EP-0015~0019 ID는 폐기, video_id_shorts에 보관).",
         "video_ids": [
-          { "episode": 1, "episode_id": "EP-2026-0010", "video_id": "jCwpGlzVICg" },
-          { "episode": 2, "episode_id": "EP-2026-0011", "video_id": "FcU--zJhYR4" },
-          { "episode": 3, "episode_id": "EP-2026-0012", "video_id": "YJyIhTDChgo" },
-          { "episode": 4, "episode_id": "EP-2026-0013", "video_id": "D2HsXS0ck3Q" },
-          { "episode": 5, "episode_id": "EP-2026-0014", "video_id": "aDGM-H4_XYM" }
+          { "episode": 1, "episode_id": "EP-2026-0010", "video_id_long": "jCwpGlzVICg", "video_id_shorts": null, "legacy_shorts_ep": "EP-2026-0015" },
+          { "episode": 2, "episode_id": "EP-2026-0011", "video_id_long": "FcU--zJhYR4", "video_id_shorts": null, "legacy_shorts_ep": "EP-2026-0016" },
+          { "episode": 3, "episode_id": "EP-2026-0012", "video_id_long": "YJyIhTDChgo", "video_id_shorts": null, "legacy_shorts_ep": "EP-2026-0017" },
+          { "episode": 4, "episode_id": "EP-2026-0013", "video_id_long": "D2HsXS0ck3Q", "video_id_shorts": null, "legacy_shorts_ep": "EP-2026-0018" },
+          { "episode": 5, "episode_id": "EP-2026-0014", "video_id_long": "aDGM-H4_XYM", "video_id_shorts": null, "legacy_shorts_ep": "EP-2026-0019" }
         ]
       },
       "status": "completed",

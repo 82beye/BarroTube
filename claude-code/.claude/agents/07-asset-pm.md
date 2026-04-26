@@ -60,13 +60,17 @@ cp workspace/bgm-library/calm_explain_01.wav $EP/assets/bgm.wav
 - `30_script.md` — 씬별 image_prompt, narration, bgm_mood
 - 채널 `style-guide.md` — Style Prefix, Voice Profile, BGM Mood 매핑
 
-## Output
-- `assets/images/scene_NNN.png` (씬 수만큼)
-- `assets/tts/scene_NNN.wav` (씬 수만큼)
-- `assets/bgm.wav` (선택)
-- `45_intro.png` (시리즈 에피소드 — 2초 인트로 카드)
-- `47_thumbnail.png` (모든 에피소드 — YouTube 썸네일)
-- `30_script.md` (revision up, target_seconds 재조정)
+## Output (v2 platforms/ layout)
+모든 산출물은 `EP-YYYY-NNNN/platforms/{long|shorts}/` 안에 배치된다.
+v1 legacy(평면) 에피소드는 EP-YYYY-NNNN 직속.
+
+- `platforms/{platform}/40_assets/images/scene_NNN.png` (씬 수만큼)
+- `platforms/{platform}/40_assets/tts/scene_NNN.wav`
+- `platforms/{platform}/40_assets/bgm.wav` (선택)
+- `platforms/{platform}/45_intro.png` (시리즈 에피소드 — 2초 인트로)
+- `platforms/{platform}/47_thumbnail.png` (모든 에피소드 — YouTube 썸네일)
+- `platforms/{platform}/30_script.md` (revision up, target_seconds 재조정)
+- `EP-YYYY-NNNN/series_link.json` (시리즈 멤버십, 부모 episodeDir에 1회만)
 
 ## Budget
 - **Monthly Limit**: $25 USD (Image/TTS 비용 집계)

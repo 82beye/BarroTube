@@ -23,7 +23,7 @@
  */
 
 import { readFileSync, existsSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, dirname } from 'node:path';
 import {
   generateImageGemini,
   loadCharacterDna,
@@ -31,6 +31,18 @@ import {
   loadPalette,
   parseFrontmatter,
 } from './generate-image-gemini.js';
+
+function locateBase(epDir, platformHint) {
+  const candidates = platformHint
+    ? [join(epDir, 'platforms', platformHint, '30_script.md')]
+    : [
+        join(epDir, 'platforms', 'long', '30_script.md'),
+        join(epDir, 'platforms', 'shorts', '30_script.md'),
+        join(epDir, '30_script.md'),
+      ];
+  for (const c of candidates) if (existsSync(c)) return { scriptPath: c, baseDir: dirname(c) };
+  return { scriptPath: null, baseDir: null };
+}
 
 const SERIES_DISPLAY_NAME = {
   'sp500-basic': 'S&P500 입문',
@@ -123,10 +135,10 @@ async function main() {
   }
 
   const epDir = resolve(opts.episode);
-  const scriptPath = join(epDir, '30_script.md');
+  const { scriptPath, baseDir } = locateBase(epDir, opts.platform);
   const briefPath = join(epDir, '00_brief.md');
-  if (!existsSync(scriptPath)) {
-    console.error(`❌ Missing 30_script.md in ${epDir}`);
+  if (!scriptPath) {
+    console.error(`❌ Missing 30_script.md under ${epDir} (tried platforms/long, platforms/shorts, legacy root)`);
     process.exit(1);
   }
 
@@ -158,7 +170,7 @@ async function main() {
     || 'bullish';
   const paletteBlock = loadPalette(channel, paletteName);
 
-  const outPath = join(epDir, '47_thumbnail.png');
+  const outPath = join(baseDir, '47_thumbnail.png');
   if (existsSync(outPath) && !opts.force) {
     console.log(`⏭  Thumbnail already exists at ${outPath}. Use --force to regenerate.`);
     process.exit(0);

@@ -186,9 +186,14 @@ async function main() {
     process.exit(1);
   }
 
-  const parentScriptPath = join(parentDir, '30_script.md');
-  if (!existsSync(parentScriptPath)) {
-    console.error(`❌ Missing parent 30_script.md: ${parentScriptPath}`);
+  // v2(platforms/long/30_script.md) 우선 → v1 fallback
+  const parentScriptCandidates = [
+    join(parentDir, 'platforms', 'long', '30_script.md'),
+    join(parentDir, '30_script.md'),
+  ];
+  const parentScriptPath = parentScriptCandidates.find(p => existsSync(p));
+  if (!parentScriptPath) {
+    console.error(`❌ Missing parent 30_script.md (tried: ${parentScriptCandidates.join(', ')})`);
     process.exit(1);
   }
 
@@ -228,14 +233,16 @@ async function main() {
   });
   console.log('');
 
-  // 생성할 파생 ID 계획
-  const plannedIds = [];
+  // v2 layout: 부모 EP 디렉토리 안에 platforms/shorts/ 를 생성. count > 1이면 shorts/, shorts2/ 식으로.
+  // (대부분 1편이라 shorts/만 사용. 2편 이상은 같은 부모에 여러 변형 — 드문 케이스)
+  const platformDirs = [];
   for (let i = 1; i <= count; i++) {
-    plannedIds.push(generateNextEpisodeIdWithOffset(i));
+    const suffix = i === 1 ? 'shorts' : `shorts${i}`;
+    platformDirs.push(join(parentDir, 'platforms', suffix));
   }
 
-  console.log(`📋 Derivation plan: ${count} derived Shorts from ${parentId}`);
-  plannedIds.forEach((id, i) => console.log(`   ${id}  ← derived[${i + 1}]`));
+  console.log(`📋 Derivation plan: ${count} derived Shorts inside ${parentId}/platforms/`);
+  platformDirs.forEach((d, i) => console.log(`   ${d.replace(WORKSPACE + '/', '')}  ← derived[${i + 1}]`));
   console.log('');
 
   if (values['dry-run']) {
@@ -246,26 +253,26 @@ async function main() {
   // 실제 생성
   const parentScript = { fm: parentFM, topic: parentFM.topic, raw: rawScript };
   for (let i = 0; i < count; i++) {
-    const newId = plannedIds[i];
-    const epDir = join(WORKSPACE, 'episodes', newId);
+    const platDir = platformDirs[i];
 
-    if (existsSync(epDir)) {
-      console.error(`❌ Already exists: ${epDir}. Aborting.`);
-      process.exit(1);
+    if (existsSync(join(platDir, '00_brief.md'))) {
+      console.error(`⚠️  Already bootstrapped: ${platDir}/00_brief.md (skipping). Use --force or remove manually.`);
+      continue;
     }
 
-    mkdirSync(epDir, { recursive: true });
-    mkdirSync(join(epDir, 'assets'), { recursive: true });
+    mkdirSync(platDir, { recursive: true });
+    mkdirSync(join(platDir, '40_assets'), { recursive: true });
 
-    const briefBody = buildDerivedBrief(newId, parentScript, topScenes, parentId, i + 1);
-    writeFileSync(join(epDir, '00_brief.md'), briefBody, 'utf-8');
+    // derived shorts ID는 부모와 동일 — 같은 episode_id 사용. 디스크 상에서는 platforms/shorts/로 구분.
+    const briefBody = buildDerivedBrief(parentId, parentScript, topScenes, parentId, i + 1);
+    writeFileSync(join(platDir, '00_brief.md'), briefBody, 'utf-8');
 
-    console.log(`   ✅ ${newId} → ${epDir}`);
+    console.log(`   ✅ ${parentId}/platforms/${platDir.split('/').pop()}`);
   }
 
   console.log('');
-  console.log(`🎉 ${count} derived Shorts bootstrapped from ${parentId}`);
-  console.log(`   Next: node run-episode.js --episode ${plannedIds[0]}`);
+  console.log(`🎉 ${count} derived Shorts bootstrapped inside ${parentId}/platforms/`);
+  console.log(`   Next: node produce-episode.js --episode ${parentId}  (will pick up format=shorts brief)`);
 }
 
 // 파생이 2개일 때 중복 ID 방지 (generateNextEpisodeId는 디스크 상태 기반이므로,

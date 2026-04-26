@@ -193,22 +193,33 @@ function mixBgm(videoPath, bgmPath, outPath, bgmVolume = 0.15) {
   return outPath;
 }
 
-export function renderDirect({ episodeDir, outPath, canvas }) {
+export function renderDirect({ episodeDir, outPath, canvas, platform: platformHint }) {
   if (!hasFfmpeg()) {
     throw new Error('ffmpeg not found. Install: brew install ffmpeg');
   }
 
-  const scriptPath = join(episodeDir, '30_script.md');
-  if (!existsSync(scriptPath)) throw new Error(`Missing ${scriptPath}`);
+  // v2 (platforms/{long|shorts}/) 우선 → v1 legacy (episodeDir 직접) fallback.
+  // platformHint가 있으면 해당 플랫폼만 시도, 없으면 long → shorts → legacy 순으로 탐색.
+  const candidates = platformHint
+    ? [join(episodeDir, 'platforms', platformHint, '30_script.md')]
+    : [
+        join(episodeDir, 'platforms', 'long', '30_script.md'),
+        join(episodeDir, 'platforms', 'shorts', '30_script.md'),
+        join(episodeDir, '30_script.md'),
+      ];
+  const scriptPath = candidates.find(p => existsSync(p));
+  if (!scriptPath) throw new Error(`Missing 30_script.md (tried: ${candidates.join(', ')})`);
+  const baseDir = dirname(scriptPath);  // platforms/{long|shorts}/ or episodeDir 자체
+  const usingV2 = baseDir !== episodeDir;
 
   const meta = parseFrontmatter(scriptPath);
   const scenes = meta.scenes || [];
   if (!scenes.length) throw new Error('No scenes in script');
 
-  // Assets directory: prefer 40_assets (v1.1+), fallback to legacy assets/
-  let assetsDir = join(episodeDir, '40_assets');
-  if (!existsSync(assetsDir)) assetsDir = join(episodeDir, 'assets');
-  if (!existsSync(assetsDir)) throw new Error(`Missing assets dir (tried 40_assets/ and assets/)`);
+  // Assets directory: 40_assets (v1.1+ 표준) — v1과 v2 모두 base 안에
+  let assetsDir = join(baseDir, '40_assets');
+  if (!existsSync(assetsDir)) assetsDir = join(baseDir, 'assets');
+  if (!existsSync(assetsDir)) throw new Error(`Missing assets dir under ${baseDir}`);
 
   // Canvas: explicit arg > format-based default
   const format = meta.format || 'shorts';
@@ -216,13 +227,13 @@ export function renderDirect({ episodeDir, outPath, canvas }) {
   const chosenCanvas = canvas || defaultCanvas;
   const canvasDim = chosenCanvas === 'vertical' ? [1080, 1920] : [1920, 1080];
 
-  console.log(`📐 Format: ${format} → canvas=${chosenCanvas} (${canvasDim.join('x')}), assets=${assetsDir.replace(episodeDir + '/', '')}`);
+  console.log(`📐 Format: ${format} → canvas=${chosenCanvas} (${canvasDim.join('x')}), layout=${usingV2 ? 'v2' : 'v1'}, base=${baseDir.replace(episodeDir + '/', '') || '.'}`);
   const workDir = mkdtempSync(join(tmpdir(), 'bt-render-'));
   const clipPaths = [];
 
-  // Optional: prepend 2s intro card if 45_intro.png exists in the episode dir.
+  // Optional: prepend 2s intro card if 45_intro.png exists in the base dir.
   // Intro is silent (anullsrc 2s) and uses the same canvas as scenes.
-  const introPath = join(episodeDir, '45_intro.png');
+  const introPath = join(baseDir, '45_intro.png');
   const INTRO_DURATION_SEC = 2;
   if (existsSync(introPath)) {
     const introClipPath = join(workDir, 'clip_000_intro.mp4');

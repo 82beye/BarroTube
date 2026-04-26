@@ -21,13 +21,29 @@
  */
 
 import { readFileSync, existsSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, dirname } from 'node:path';
 import {
   generateImageGemini,
   loadCharacterDna,
   loadChannelStylePrefix,
   parseFrontmatter,
 } from './generate-image-gemini.js';
+
+/**
+ * v2 (platforms/) layout 우선 → v1 (legacy) fallback.
+ * 30_script.md 위치를 찾아 그 디렉토리를 base로 반환.
+ */
+function locateBase(epDir, platformHint) {
+  const candidates = platformHint
+    ? [join(epDir, 'platforms', platformHint, '30_script.md')]
+    : [
+        join(epDir, 'platforms', 'long', '30_script.md'),
+        join(epDir, 'platforms', 'shorts', '30_script.md'),
+        join(epDir, '30_script.md'),
+      ];
+  for (const c of candidates) if (existsSync(c)) return { scriptPath: c, baseDir: dirname(c) };
+  return { scriptPath: null, baseDir: null };
+}
 
 // 시리즈별 한국어 축약 이름 (배지 표기용). series_id에서 자동 유추도 가능.
 const SERIES_DISPLAY_NAME = {
@@ -104,9 +120,9 @@ async function main() {
   }
 
   const epDir = resolve(opts.episode);
-  const scriptPath = join(epDir, '30_script.md');
-  if (!existsSync(scriptPath)) {
-    console.error(`❌ Missing 30_script.md in ${epDir}`);
+  const { scriptPath, baseDir } = locateBase(epDir, opts.platform);
+  if (!scriptPath) {
+    console.error(`❌ Missing 30_script.md under ${epDir} (tried platforms/long, platforms/shorts, legacy root)`);
     process.exit(1);
   }
 
@@ -130,7 +146,7 @@ async function main() {
     process.exit(2);
   }
 
-  const outPath = join(epDir, '45_intro.png');
+  const outPath = join(baseDir, '45_intro.png');
   if (existsSync(outPath) && !opts.force) {
     console.log(`⏭  Intro already exists at ${outPath}. Use --force to regenerate.`);
     process.exit(0);

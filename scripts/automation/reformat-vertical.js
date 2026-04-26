@@ -70,19 +70,28 @@ function reformat(inPath, outPath) {
 
 function reformatEpisode(epDir) {
   const abs = resolve(epDir);
-  const src = join(abs, '55_render', 'video.mp4');
-  if (!existsSync(src)) throw new Error(`Missing render: ${src}`);
-  const targets = ['tiktok', 'reels'].map(p => join(abs, 'distribution', p, 'video_vertical.mp4'));
-  // 한 번 변환 후 두 곳에 복사 (동일 출력)
-  const tmp = join(abs, 'distribution', '_vertical.mp4');
-  console.log(`🎞  ${basename(abs)}: ${src} → 1080×1920`);
+  // v2: long platform render → tiktok/reels platforms (sibling).
+  // v1: episodeDir/55_render → episodeDir/distribution/{tiktok,reels}.
+  const v2Src = join(abs, 'platforms', 'long', '55_render', 'video.mp4');
+  const v1Src = join(abs, '55_render', 'video.mp4');
+  const src = existsSync(v2Src) ? v2Src : v1Src;
+  if (!existsSync(src)) throw new Error(`Missing render (tried v2: ${v2Src}, v1: ${v1Src})`);
+  const isV2 = src === v2Src;
+
+  const targets = isV2
+    ? ['tiktok', 'reels'].map(p => join(abs, 'platforms', p, 'video_vertical.mp4'))
+    : ['tiktok', 'reels'].map(p => join(abs, 'distribution', p, 'video_vertical.mp4'));
+
+  const tmpRoot = isV2 ? join(abs, 'platforms') : join(abs, 'distribution');
+  mkdirSync(tmpRoot, { recursive: true });
+  const tmp = join(tmpRoot, '_vertical.mp4');
+  console.log(`🎞  ${basename(abs)}: ${src} → 1080×1920 (${isV2 ? 'v2 platforms/' : 'v1 distribution/'})`);
   const r = reformat(src, tmp);
   for (const t of targets) {
     mkdirSync(dirname(t), { recursive: true });
     copyFileSync(tmp, t);
     console.log(`   ✅ ${t}`);
   }
-  // 임시 파일 유지 (디버그용). 필요 시 삭제 가능.
   return r;
 }
 

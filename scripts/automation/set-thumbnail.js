@@ -67,10 +67,22 @@ async function setThumbnail(accessToken, videoId, thumbnailPath) {
 
 function resolveEpisode(epDir) {
   const abs = resolve(epDir);
-  const resultPath = join(abs, '80_publish_result.json');
-  const thumbPath = join(abs, '47_thumbnail.png');
-  if (!existsSync(resultPath)) return { ok: false, reason: 'no 80_publish_result.json' };
-  if (!existsSync(thumbPath)) return { ok: false, reason: 'no 47_thumbnail.png' };
+  // v2 (platforms/long, platforms/shorts) 우선 → v1 fallback.
+  const resultCandidates = [
+    join(abs, 'platforms', 'long', '80_publish_result.json'),
+    join(abs, 'platforms', 'shorts', '80_publish_result.json'),
+    join(abs, '80_publish_result.json'),
+  ];
+  const resultPath = resultCandidates.find(p => existsSync(p));
+  if (!resultPath) return { ok: false, reason: 'no 80_publish_result.json' };
+  const platformDir = resultPath.replace(/\/80_publish_result\.json$/, '');
+  // 썸네일은 같은 platformDir에 있으면 우선, 아니면 episodeDir 직접.
+  const thumbCandidates = [
+    join(platformDir, '47_thumbnail.png'),
+    join(abs, '47_thumbnail.png'),
+  ];
+  const thumbPath = thumbCandidates.find(p => existsSync(p));
+  if (!thumbPath) return { ok: false, reason: 'no 47_thumbnail.png' };
   const result = JSON.parse(readFileSync(resultPath, 'utf-8'));
   const videoId = result?.targets?.youtube?.videoId;
   if (!videoId) return { ok: false, reason: 'no videoId in publish result' };

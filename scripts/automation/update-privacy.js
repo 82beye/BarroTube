@@ -71,8 +71,13 @@ async function updatePrivacy(accessToken, videoId, status) {
 }
 
 function videoIdFromEpisode(epDir) {
-  const p = join(epDir, '80_publish_result.json');
-  if (!existsSync(p)) return null;
+  const candidates = [
+    join(epDir, 'platforms', 'long', '80_publish_result.json'),
+    join(epDir, 'platforms', 'shorts', '80_publish_result.json'),
+    join(epDir, '80_publish_result.json'),
+  ];
+  const p = candidates.find(c => existsSync(c));
+  if (!p) return null;
   try {
     const r = JSON.parse(readFileSync(p, 'utf-8'));
     return r?.targets?.youtube?.videoId || null;

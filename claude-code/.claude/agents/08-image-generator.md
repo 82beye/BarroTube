@@ -90,11 +90,14 @@ FAL_MODEL=recraft-v3 node scripts/automation/generate-image.js \
 - `30_script.md` — 씬별 `image_prompt` 필드
 - 채널 `style-guide.md` — Style Prefix 블록
 
-## Output
-- `workspace/episodes/EP-*/assets/images/scene_NNN.png` (씬 이미지)
-- `workspace/episodes/EP-*/45_intro.png` (인트로 카드 — 시리즈 에피소드)
-- `workspace/episodes/EP-*/47_thumbnail.png` (YouTube 썸네일)
+## Output (v2 platforms/ layout)
+모든 이미지는 `workspace/episodes/EP-*/platforms/{long|shorts}/` 안에 배치.
+
+- `platforms/{platform}/40_assets/images/scene_NNN.png` (씬 이미지)
+- `platforms/{platform}/45_intro.png` (인트로 카드 — 시리즈 에피소드)
+- `platforms/{platform}/47_thumbnail.png` (YouTube 썸네일)
 - 크기: shorts 1080×1920 / long 1920×1080 (Gemini imageSize=1K 기준)
+- v1 legacy 에피소드(EP-0001~0009)는 episodeDir 직속에 배치 — paths.js가 자동 fallback
 
 ## Budget
 - **Monthly Limit**: $15 USD

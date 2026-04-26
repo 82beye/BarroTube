@@ -151,8 +151,14 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
   if (stage.id === 'S11') {
     try {
       // 중복 퍼블리시 가드 (#6): 이미 업로드된 videoId가 있으면 기본적으로 거부
-      const publishResultFile = join(episodeDir, '80_publish_result.json');
-      if (existsSync(publishResultFile) && !opts.forceRepublish) {
+      // v2/v1 둘 다 검색
+      const publishResultCandidates = [
+        join(episodeDir, 'platforms', 'long', '80_publish_result.json'),
+        join(episodeDir, 'platforms', 'shorts', '80_publish_result.json'),
+        join(episodeDir, '80_publish_result.json'),
+      ];
+      const publishResultFile = publishResultCandidates.find(p => existsSync(p));
+      if (publishResultFile && !opts.forceRepublish) {
         try {
           const prev = JSON.parse(readFileSync(publishResultFile, 'utf-8'));
           const prevVideoId = prev?.targets?.youtube?.videoId;
@@ -169,15 +175,27 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
         }
       }
 
-      const approvalFile = join(episodeDir, '75_board_approval.json');
-      if (!existsSync(approvalFile)) throw new Error('Board approval token missing — cannot publish');
+      const approvalCandidates = [
+        join(episodeDir, 'platforms', 'long', '75_board_approval.json'),
+        join(episodeDir, 'platforms', 'shorts', '75_board_approval.json'),
+        join(episodeDir, '75_board_approval.json'),
+      ];
+      const approvalFile = approvalCandidates.find(p => existsSync(p));
+      if (!approvalFile) throw new Error('Board approval token missing — cannot publish');
       const approval = JSON.parse(readFileSync(approvalFile, 'utf-8'));
       if (approval.approved !== true) throw new Error('Approval token invalid');
 
-      const metaFile = join(episodeDir, '70_publish_meta.json');
-      const videoFile = join(episodeDir, '55_render', 'video.mp4');
-      if (!existsSync(metaFile)) throw new Error('Missing 70_publish_meta.json');
-      if (!existsSync(videoFile)) throw new Error('Missing rendered video');
+      // v2 (platforms/) 우선 → v1 fallback. 우선순위: long → shorts → legacy.
+      const metaCandidates = [
+        join(episodeDir, 'platforms', 'long', '70_publish_meta.json'),
+        join(episodeDir, 'platforms', 'shorts', '70_publish_meta.json'),
+        join(episodeDir, '70_publish_meta.json'),
+      ];
+      const metaFile = metaCandidates.find(p => existsSync(p));
+      if (!metaFile) throw new Error(`Missing 70_publish_meta.json (tried: ${metaCandidates.join(', ')})`);
+      const platformDir = metaFile.replace(/\/70_publish_meta\.json$/, '');
+      const videoFile = join(platformDir, '55_render', 'video.mp4');
+      if (!existsSync(videoFile)) throw new Error(`Missing rendered video: ${videoFile}`);
 
       // SEO 보강 (seo 필드 누락 시 자동 적용)
       let meta = JSON.parse(readFileSync(metaFile, 'utf-8'));
@@ -191,13 +209,20 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
           console.warn(`  ⚠ SEO enhance 실패 (기존 메타 그대로 사용): ${e.message}`);
         }
       }
-      // 썸네일 경로 해석 (우선순위: meta.thumbnail → 47_thumbnail.png 자동 감지)
-      let thumbnailPath = meta.thumbnail ? join(episodeDir, meta.thumbnail) : null;
-      if (!thumbnailPath) {
-        const autoThumb = join(episodeDir, '47_thumbnail.png');
-        if (existsSync(autoThumb)) {
-          thumbnailPath = autoThumb;
-          console.log(`  🖼  Auto-detected thumbnail: 47_thumbnail.png`);
+      // 썸네일 경로 해석 (우선순위: meta.thumbnail → platformDir/47_thumbnail.png → episodeDir/47_thumbnail.png)
+      let thumbnailPath = meta.thumbnail ? join(platformDir, meta.thumbnail) : null;
+      if (thumbnailPath && !existsSync(thumbnailPath)) thumbnailPath = join(episodeDir, meta.thumbnail);
+      if (!thumbnailPath || !existsSync(thumbnailPath)) {
+        const autoCandidates = [
+          join(platformDir, '47_thumbnail.png'),
+          join(episodeDir, '47_thumbnail.png'),
+        ];
+        const found = autoCandidates.find(p => existsSync(p));
+        if (found) {
+          thumbnailPath = found;
+          console.log(`  🖼  Auto-detected thumbnail: ${found.replace(episodeDir + '/', '')}`);
+        } else {
+          thumbnailPath = null;
         }
       }
 
@@ -226,7 +251,7 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
           reels: { status: 'pending_manual', package_path: join(episodeDir, 'distribution/reels') },
         },
       };
-      writeFileSync(join(episodeDir, '80_publish_result.json'), JSON.stringify(publishResult, null, 2), 'utf-8');
+      writeFileSync(join(platformDir, '80_publish_result.json'), JSON.stringify(publishResult, null, 2), 'utf-8');
 
       await notify('episode_complete', publishResult);
 

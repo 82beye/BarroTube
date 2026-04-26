@@ -82,14 +82,22 @@ function parseFrontmatter(mdPath) {
   return m ? parseYAML(m[1]) : null;
 }
 
-function collectSeriesEpisodes(episodesDir, seriesId) {
+function collectSeriesEpisodes(episodesDir, seriesId, platform = 'long') {
   const base = resolve(episodesDir);
   const dirs = readdirSync(base).filter(d => d.startsWith('EP-') && statSync(join(base, d)).isDirectory());
   const items = [];
   for (const d of dirs) {
-    const scriptPath = join(base, d, '30_script.md');
-    const resultPath = join(base, d, '80_publish_result.json');
-    if (!existsSync(scriptPath) || !existsSync(resultPath)) continue;
+    // v2 우선: platforms/{platform}/ 안에 30_script.md + 80_publish_result.json
+    const v2Script = join(base, d, 'platforms', platform, '30_script.md');
+    const v2Result = join(base, d, 'platforms', platform, '80_publish_result.json');
+    const v1Script = join(base, d, '30_script.md');
+    const v1Result = join(base, d, '80_publish_result.json');
+    let scriptPath, resultPath;
+    if (existsSync(v2Script) && existsSync(v2Result)) {
+      scriptPath = v2Script; resultPath = v2Result;
+    } else if (existsSync(v1Script) && existsSync(v1Result)) {
+      scriptPath = v1Script; resultPath = v1Result;
+    } else continue;
     const fm = parseFrontmatter(scriptPath);
     if (!fm || fm.series_id !== seriesId) continue;
     const result = JSON.parse(readFileSync(resultPath, 'utf-8'));
@@ -135,7 +143,8 @@ async function main() {
     videos = opts.videos.split(',').map((v, i) => ({ episodeId: `manual-${i+1}`, seriesEpisode: i+1, videoId: v.trim() }));
   } else if (opts.series) {
     const dir = opts['episodes-dir'] || 'workspace/episodes';
-    videos = collectSeriesEpisodes(dir, opts.series);
+    const platform = opts.platform || 'long';  // 시리즈는 long 기본, --platform shorts로 Shorts 시리즈도 등록 가능
+    videos = collectSeriesEpisodes(dir, opts.series, platform);
     if (videos.length === 0) { console.error(`❌ No episodes found for series "${opts.series}" in ${dir}`); process.exit(1); }
   } else {
     console.error('Either --series <id> or --videos <id1,id2,...> required'); process.exit(1);

@@ -37,10 +37,12 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
+import { parse as parseYAML } from 'yaml';
 import { updateIssueStatus } from './register-paperclip-issue.js';
+import { resolvePaths, formatToPlatform } from './paths.js';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const LOGS = join(ROOT, 'logs');
@@ -112,12 +114,13 @@ async function main() {
   const { values } = parseArgs({
     options: {
       episode: { type: 'string', short: 'e' },
+      platform: { type: 'string' },           // long | shorts (v2 멀티 플랫폼 빌드 시 명시)
       force: { type: 'boolean', default: false },
       'skip-capcut': { type: 'boolean', default: false },
     },
   });
   if (!values.episode) {
-    console.error('Usage: produce-episode.js --episode EP-YYYY-NNNN [--force] [--skip-capcut]');
+    console.error('Usage: produce-episode.js --episode EP-YYYY-NNNN [--platform long|shorts] [--force] [--skip-capcut]');
     process.exit(1);
   }
 
@@ -128,35 +131,69 @@ async function main() {
   }
   const absEp = resolve(ROOT, epDir);
   if (!existsSync(absEp)) { console.error(`❌ Episode not found: ${absEp}`); process.exit(1); }
-  if (!existsSync(join(absEp, '00_brief.md'))) { console.error('❌ 00_brief.md 없음'); process.exit(1); }
+
+  // Brief 검색: --platform 명시 시 platforms/{platform}/00_brief.md 우선,
+  // 없으면 episodeDir/00_brief.md (long 또는 v1 legacy).
+  let briefPath;
+  if (values.platform) {
+    const v2 = join(absEp, 'platforms', values.platform, '00_brief.md');
+    const root = join(absEp, '00_brief.md');
+    briefPath = existsSync(v2) ? v2 : root;
+  } else {
+    const v2Long = join(absEp, 'platforms', 'long', '00_brief.md');
+    const root = join(absEp, '00_brief.md');
+    briefPath = existsSync(v2Long) ? v2Long : root;
+  }
+  if (!existsSync(briefPath)) { console.error(`❌ 00_brief.md 없음 (tried: ${briefPath})`); process.exit(1); }
 
   const force = values.force;
   const relEp = epDir;
   const episodeId = relEp.split('/').pop();
+
+  // brief에서 format 추출 → 어느 platforms/{long|shorts}/ 디렉토리에 산출물을 둘지 결정.
+  const briefRaw = readFileSync(briefPath, 'utf-8');
+  const briefFM = (() => {
+    const m = briefRaw.match(/^---\n([\s\S]*?)\n---/);
+    return m ? parseYAML(m[1]) : {};
+  })();
+  const format = values.platform === 'shorts' ? 'shorts'
+               : values.platform === 'long' ? 'long-3min'
+               : (briefFM.format || 'long-3min');
+  const platform = formatToPlatform(format);
+  const p = resolvePaths(absEp, format);
+
+  // v2 layout 보장: platforms/{platform}/ 디렉토리 미리 생성
+  mkdirSync(p.base, { recursive: true });
+
+  // 하위 스크립트에 --script/--out-dir 등을 절대 경로로 전달 (cwd 상관없이 동일하게 작동).
+  const scriptArg = p.script;
+  const ttsDirArg = p.ttsDir + '/';
+  const imgDirArg = p.imagesDir + '/';
+  const renderOutArg = p.video;
+
   console.log(`🎬 Produce episode: ${absEp}`);
+  console.log(`   Format: ${format} → platform=${platform}, layout=${p.isV2 ? 'v2 (platforms/)' : 'v1 (legacy)'}`);
   console.log(`   Force: ${force}, Skip CapCut: ${values['skip-capcut']}`);
 
-  auditLog(episodeId, 'produce_start', { force, skip_capcut: values['skip-capcut'] });
+  auditLog(episodeId, 'produce_start', { force, skip_capcut: values['skip-capcut'], platform, layout: p.isV2 ? 'v2' : 'v1' });
   updateIssueStatus(episodeId, 'in_progress', { comment: 'produce-episode: S4~S9 chain started' });
 
   try {
     // S4 Script
-    const scriptPath = join(absEp, '30_script.md');
-    if (!exists(scriptPath) || force) {
+    if (!exists(p.script) || force) {
       runTracked(absEp, episodeId, 'S4', 'S4 Script (Gemini)', '05-writer',
         'scripts/automation/generate-script.js', ['--episode', relEp]);
     } else {
-      console.log(`\n⏭  S4 Script: ${scriptPath} 존재 (skip, --force로 재생성)`);
+      console.log(`\n⏭  S4 Script: ${p.script} 존재 (skip, --force로 재생성)`);
     }
 
     // S6a TTS
-    const ttsDir = join(absEp, 'assets/tts');
-    const ttsDone = exists(join(ttsDir, 'scene_001.wav')) && exists(join(ttsDir, 'scene_005.wav'));
+    const ttsDone = exists(join(p.ttsDir, 'scene_001.wav')) && exists(join(p.ttsDir, 'scene_005.wav'));
     if (!ttsDone || force) {
       runTracked(absEp, episodeId, 'S6a', 'S6a TTS (ElevenLabs)', '09-voice-engineer',
         'scripts/automation/generate-tts.js', [
-          '--script', join(relEp, '30_script.md'),
-          '--out-dir', join(relEp, 'assets/tts/'),
+          '--script', scriptArg,
+          '--out-dir', ttsDirArg,
           '--force',
         ]);
     } else {
@@ -166,18 +203,17 @@ async function main() {
     // S6b Duration sync
     runTracked(absEp, episodeId, 'S6b', 'S6b Duration Sync', '09-voice-engineer',
       'scripts/automation/sync-durations.js', [
-        '--script', join(relEp, '30_script.md'),
-        '--tts-dir', join(relEp, 'assets/tts/'),
+        '--script', scriptArg,
+        '--tts-dir', ttsDirArg,
       ]);
 
     // S6c Images
-    const imgDir = join(absEp, 'assets/images');
-    const imgDone = exists(join(imgDir, 'scene_001.png')) && exists(join(imgDir, 'scene_005.png'));
+    const imgDone = exists(join(p.imagesDir, 'scene_001.png')) && exists(join(p.imagesDir, 'scene_005.png'));
     if (!imgDone || force) {
       runTracked(absEp, episodeId, 'S6c', 'S6c Images (Nano Banana 2)', '08-image-generator',
         'scripts/automation/generate-image-gemini.js', [
-          '--script', join(relEp, '30_script.md'),
-          '--out-dir', join(relEp, 'assets/images/'),
+          '--script', scriptArg,
+          '--out-dir', imgDirArg,
           '--force',
         ]);
     } else {
@@ -185,8 +221,7 @@ async function main() {
     }
 
     // S6d Intro Card (series brand card, prepended to video)
-    const introPath = join(absEp, '45_intro.png');
-    if (!exists(introPath) || force) {
+    if (!exists(p.intro) || force) {
       runTracked(absEp, episodeId, 'S6d', 'S6d Intro Card (Gemini)', '08-image-generator',
         'scripts/automation/generate-intro.js', [
           '--episode', relEp,
@@ -197,8 +232,7 @@ async function main() {
     }
 
     // S6e Thumbnail (YouTube feed thumbnail)
-    const thumbPath = join(absEp, '47_thumbnail.png');
-    if (!exists(thumbPath) || force) {
+    if (!exists(p.thumbnail) || force) {
       runTracked(absEp, episodeId, 'S6e', 'S6e Thumbnail (Gemini)', '08-image-generator',
         'scripts/automation/generate-thumbnail.js', [
           '--episode', relEp,
@@ -209,18 +243,16 @@ async function main() {
     }
 
     // S7 Render
-    const renderDir = join(absEp, '55_render');
-    const videoPath = join(renderDir, 'video.mp4');
-    mkdirSync(renderDir, { recursive: true });
-    if (!exists(videoPath) || force) {
+    mkdirSync(p.renderDir, { recursive: true });
+    if (!exists(p.video) || force) {
       runTracked(absEp, episodeId, 'S7', 'S7 Render (ffmpeg + PIL subtitles)', '10-capcut-composer',
         'scripts/automation/render-direct.js', [
           '--episode', relEp,
-          '--out', join(relEp, '55_render/video.mp4'),
-          '--canvas', 'vertical',
+          '--out', renderOutArg,
+          '--canvas', platform === 'long' ? 'horizontal' : 'vertical',
         ]);
     } else {
-      console.log(`\n⏭  S7 Render: ${videoPath} 존재 (skip)`);
+      console.log(`\n⏭  S7 Render: ${p.video} 존재 (skip)`);
     }
 
     // S7b CapCut (optional)
