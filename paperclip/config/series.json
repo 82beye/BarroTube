@@ -3,12 +3,14 @@
   "description": "시리즈 정의 — 연속된 롱폼 커리큘럼. 에피소드 단발과 구분되는 시리즈 단위 기획·승인·KPI. 1.1: thumbnail_specs(에피소드별 썸네일 키워드/팔레트) + branding_outputs(playlist_id, intro_thumbnail_status) 추가.",
   "schema_notes": {
     "thumbnail_specs": "에피소드별 썸네일 메인 카피. metadata-writer가 채워주거나 시리즈 기획 시 미리 정의. image-generator가 generate-thumbnail.js --keyword/--palette 인자로 사용.",
-    "branding_outputs": "시리즈 완료 후 publisher가 자동 기록. playlist_id, video_ids, intro/thumbnail 상태 트래킹."
+    "branding_outputs": "시리즈 완료 후 publisher가 자동 기록. playlist_id, video_ids, intro/thumbnail 상태 트래킹.",
+    "display_name_short": "인트로 카드 / 썸네일 배지에 사용할 짧은 이름 (예: 'NASDAQ 100 입문'). name 필드는 정식 시리즈 명칭이므로 '5편' 같은 보일러플레이트가 들어가지만, 배지에는 짧은 별칭이 가독성에 유리. generate-intro.js / generate-thumbnail.js가 자동 사용. 미지정 시 name에서 ' N편' 패턴 제거 후 fallback."
   },
   "series": [
     {
       "id": "sp500-basic",
       "name": "S&P500 입문 5편",
+      "display_name_short": "S&P500 입문",
       "channel": "econ-daily",
       "format": "long-3min",
       "persona": "barro-teacher",
@@ -68,6 +70,7 @@
     {
       "id": "nasdaq100-basic",
       "name": "NASDAQ 100 입문 5편",
+      "display_name_short": "NASDAQ 100 입문",
       "channel": "econ-daily",
       "format": "long-3min",
       "persona": "barro-teacher",

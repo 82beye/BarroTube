@@ -44,19 +44,22 @@ function locateBase(epDir, platformHint) {
   return { scriptPath: null, baseDir: null };
 }
 
-// 시리즈 표시명 — series.json에서 자동 로드 후 fallback 매핑.
-// generate-thumbnail은 작은 배지로만 사용하므로 짧은 별칭이 필요할 수 있음.
-const SERIES_DISPLAY_NAME = {
-  'sp500-basic': 'S&P500 입문',
-  'nasdaq100-basic': 'NASDAQ 100 입문',
-};
+// 시리즈 표시명 — paperclip/config/series.json에서 동적 로드.
+// 우선순위: series.json display_name_short > series.json name 정규화 > series_id
+// 새 시리즈 추가 시 코드 수정 없이 series.json만 갱신하면 됨.
 
-function loadSeriesNameFromConfig(seriesId) {
+function loadSeriesDisplayName(seriesId) {
+  if (!seriesId) return '';
   try {
     const cfg = JSON.parse(readFileSync(resolve('paperclip/config/series.json'), 'utf-8'));
     const s = (cfg.series || []).find(x => x.id === seriesId);
-    return s?.name || null;
-  } catch { return null; }
+    if (!s) return seriesId;
+    // 1순위: 명시적 display_name_short ("S&P500 입문" 같은 짧은 배지용)
+    if (s.display_name_short) return s.display_name_short;
+    // 2순위: name에서 "5편" 같은 보일러플레이트 제거 (배지에 길면 안 됨)
+    if (s.name) return s.name.replace(/\s*\d+편$/, '').trim();
+    return seriesId;
+  } catch { return seriesId; }
 }
 
 const BRAND_TAGLINE = '3분이면 충분한 경제';
@@ -160,7 +163,7 @@ async function main() {
   const seriesId = fm.series_id;
   const seriesN = fm.series_episode;
   const seriesM = fm.series_total || 5;
-  const seriesName = SERIES_DISPLAY_NAME[seriesId] || seriesId || '';
+  const seriesName = loadSeriesDisplayName(seriesId) || '';
 
   // topic extraction
   let topic = '';

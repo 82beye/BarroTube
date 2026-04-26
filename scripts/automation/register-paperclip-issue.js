@@ -24,6 +24,31 @@ const WORKSPACE = join(ROOT, 'workspace/episodes');
 const PAPERCLIP_COMPANY_ID = '46041d31-43ca-4135-8db6-8a84ba0d22de'; // BarroTube
 const DEFAULT_ASSIGNEE = '8f440921-8463-4127-a45e-0cb478334480';    // Producer (PD)
 
+// Paperclip 통합은 옵션. PAPERCLIP_DISABLED=1 또는 자동 감지로 비활성.
+// 명시적 비활성 시 모든 호출이 즉시 null 반환 (silent skip이 아니라 일관된 단일 안내).
+const PAPERCLIP_DISABLED = process.env.PAPERCLIP_DISABLED === '1';
+
+let _paperclipAvailable = null; // 첫 호출 시 1회 검증 후 캐시
+
+function isPaperclipAvailable() {
+  if (PAPERCLIP_DISABLED) return false;
+  if (_paperclipAvailable !== null) return _paperclipAvailable;
+  // npx paperclipai --help 가능성 검사 (1회 cache)
+  try {
+    const env = { ...process.env, PATH: `/opt/homebrew/bin:/usr/local/bin:${process.env.PATH || '/usr/bin:/bin'}` };
+    const r = spawnSync('npx', ['--yes', '--no', 'paperclipai', '--help'], { encoding: 'utf-8', env, timeout: 5000 });
+    _paperclipAvailable = r.status === 0;
+  } catch {
+    _paperclipAvailable = false;
+  }
+  if (!_paperclipAvailable && !process.env.BARROTUBE_PAPERCLIP_NOTICE_SHOWN) {
+    process.env.BARROTUBE_PAPERCLIP_NOTICE_SHOWN = '1';
+    console.warn('  ℹ Paperclip CLI 미설치/미사용 — 이슈 등록 단계는 비활성화됨 (파이프라인은 정상 진행).');
+    console.warn('    활성화하려면: npm i -g paperclipai && paperclipai login. 일시 비활성: PAPERCLIP_DISABLED=1');
+  }
+  return _paperclipAvailable;
+}
+
 function getPaperclipBin() {
   // npx paperclipai — PATH 이슈 회피
   return { cmd: 'npx', prefix: ['--yes', 'paperclipai'] };
@@ -35,6 +60,7 @@ function extractTopic(briefContent) {
 }
 
 function registerIssue(episodeId, { skipIfRegistered = true } = {}) {
+  if (!isPaperclipAvailable()) return null;  // 명시적 비활성: 호출자에게 단일 형태(null)로 통보
   const epDir = join(WORKSPACE, episodeId);
   if (!existsSync(epDir)) {
     console.error(`❌ ${episodeId} 없음`);
@@ -114,8 +140,10 @@ function updateIssueStatus(episodeId, nextStatus, { comment = null, silent = fal
   if (!VALID_ISSUE_STATUS.has(nextStatus)) {
     throw new Error(`Invalid issue status: ${nextStatus}`);
   }
+  if (!isPaperclipAvailable()) return null;
   const issueId = readEpisodeIssueId(episodeId);
   if (!issueId) {
+    // Paperclip은 사용 가능하지만 이 EP가 등록되지 않은 경우 (단발 fallback)
     if (!silent) console.log(`  ⏭  ${episodeId} no paperclip issue_id — skipping status=${nextStatus}`);
     return null;
   }

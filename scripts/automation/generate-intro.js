@@ -45,15 +45,19 @@ function locateBase(epDir, platformHint) {
   return { scriptPath: null, baseDir: null };
 }
 
-// 시리즈별 한국어 축약 이름 (배지 표기용). series_id에서 자동 유추도 가능.
-const SERIES_DISPLAY_NAME = {
-  'sp500-basic': 'S&P500 입문',
-  'nasdaq100-basic': 'NASDAQ 100 입문',
-};
-
+// 시리즈별 표시명 — paperclip/config/series.json에서 동적 로드.
+// 우선순위: display_name_short > name (보일러플레이트 정리) > series_id.
+// 새 시리즈 추가 시 코드 수정 불필요.
 function displaySeriesName(seriesId) {
   if (!seriesId) return '';
-  return SERIES_DISPLAY_NAME[seriesId] || seriesId;
+  try {
+    const cfg = JSON.parse(readFileSync(resolve('paperclip/config/series.json'), 'utf-8'));
+    const s = (cfg.series || []).find(x => x.id === seriesId);
+    if (!s) return seriesId;
+    if (s.display_name_short) return s.display_name_short;
+    if (s.name) return s.name.replace(/\s*\d+편$/, '').trim();
+    return seriesId;
+  } catch { return seriesId; }
 }
 
 function aspectForFormat(format) {
