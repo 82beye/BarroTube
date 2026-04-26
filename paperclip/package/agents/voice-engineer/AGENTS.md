@@ -74,3 +74,21 @@ node scripts/automation/sync-durations.js \
 - Voice ID를 임의로 변경하지 않는다 (브랜드 일관성)
 - 숫자는 한글 표기로 스크립트에 적혀야 자연스러운 발음 (예: "4.4조" → "사조사천억")
 - 영문 약어는 풀어 쓰도록 Writer에 피드백 (IMF → 국제통화기금)
+
+
+## v2 Layout (platforms/) 인지
+
+산출물 경로는 `paths.js`의 `resolvePaths(episodeDir, format)` 헬퍼를 거쳐 결정된다. v2 우선 → v1 자동 fallback.
+
+| 자산 | v2 (long) | v2 (shorts) | v1 legacy |
+|---|---|---|---|
+| script | `EP/platforms/long/30_script.md` | `EP/platforms/shorts/30_script.md` | `EP/30_script.md` |
+| TTS | `EP/platforms/long/40_assets/tts/` | `EP/platforms/shorts/40_assets/tts/` | `EP/assets/tts/` 또는 `EP/40_assets/tts/` |
+| images | `EP/platforms/long/40_assets/images/` | 동일 | `EP/assets/images/` |
+| intro | `EP/platforms/long/45_intro.png` | 동일 | `EP/45_intro.png` |
+| thumbnail | `EP/platforms/long/47_thumbnail.png` | 동일 | `EP/47_thumbnail.png` |
+| render | `EP/platforms/long/55_render/video.mp4` | 동일 | `EP/55_render/video.mp4` |
+| meta/QA/approval/result | `EP/platforms/{long|shorts}/{60,70,75,80}*` | 동일 | `EP/60..80*` |
+| brief / series_link | `EP/00_brief.md`, `EP/series_link.json` (episodeDir 직속) | 동일 | `EP/00_brief.md` |
+
+**Agent 작업 원칙**: 직접 경로를 하드코딩하지 말고, 자동화 스크립트(produce-episode·run-episode·generate-*)가 전달하는 `--script`/`--episode`/`--out-dir`를 그대로 사용. paths.js가 v1/v2 모두 처리하므로 layout 분기는 신경 쓸 필요 없음.

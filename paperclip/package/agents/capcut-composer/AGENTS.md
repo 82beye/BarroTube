@@ -91,3 +91,21 @@ vertical:  1080×1920 (ratio: '9:16')   // 기본
 - **CapCut 프로젝트**는 사람이 열어 수정·재수출 가능한 편집 원본 (선택적)
 - 자막 위치 하단 고정 (`H-h-120`)
 - 두 산출물의 duration이 일치해야 함 (TTS sync 후 렌더)
+
+
+## v2 Layout (platforms/) 인지
+
+산출물 경로는 `paths.js`의 `resolvePaths(episodeDir, format)` 헬퍼를 거쳐 결정된다. v2 우선 → v1 자동 fallback.
+
+| 자산 | v2 (long) | v2 (shorts) | v1 legacy |
+|---|---|---|---|
+| script | `EP/platforms/long/30_script.md` | `EP/platforms/shorts/30_script.md` | `EP/30_script.md` |
+| TTS | `EP/platforms/long/40_assets/tts/` | `EP/platforms/shorts/40_assets/tts/` | `EP/assets/tts/` 또는 `EP/40_assets/tts/` |
+| images | `EP/platforms/long/40_assets/images/` | 동일 | `EP/assets/images/` |
+| intro | `EP/platforms/long/45_intro.png` | 동일 | `EP/45_intro.png` |
+| thumbnail | `EP/platforms/long/47_thumbnail.png` | 동일 | `EP/47_thumbnail.png` |
+| render | `EP/platforms/long/55_render/video.mp4` | 동일 | `EP/55_render/video.mp4` |
+| meta/QA/approval/result | `EP/platforms/{long|shorts}/{60,70,75,80}*` | 동일 | `EP/60..80*` |
+| brief / series_link | `EP/00_brief.md`, `EP/series_link.json` (episodeDir 직속) | 동일 | `EP/00_brief.md` |
+
+**Agent 작업 원칙**: 직접 경로를 하드코딩하지 말고, 자동화 스크립트(produce-episode·run-episode·generate-*)가 전달하는 `--script`/`--episode`/`--out-dir`를 그대로 사용. paths.js가 v1/v2 모두 처리하므로 layout 분기는 신경 쓸 필요 없음.

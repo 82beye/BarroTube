@@ -76,3 +76,21 @@ reference_videos: [{url1}, {url2}, ...]
 - 저작권 위험이 있는 콘텐츠(음악, 이미지 무단 사용)를 식별하여 경고한다
 - 데이터는 반드시 출처를 명시한다
 - 주관적 판단보다 데이터 기반 인사이트를 우선한다
+
+
+## v2 Layout (platforms/) 인지
+
+산출물 경로는 `paths.js`의 `resolvePaths(episodeDir, format)` 헬퍼를 거쳐 결정된다. v2 우선 → v1 자동 fallback.
+
+| 자산 | v2 (long) | v2 (shorts) | v1 legacy |
+|---|---|---|---|
+| script | `EP/platforms/long/30_script.md` | `EP/platforms/shorts/30_script.md` | `EP/30_script.md` |
+| TTS | `EP/platforms/long/40_assets/tts/` | `EP/platforms/shorts/40_assets/tts/` | `EP/assets/tts/` 또는 `EP/40_assets/tts/` |
+| images | `EP/platforms/long/40_assets/images/` | 동일 | `EP/assets/images/` |
+| intro | `EP/platforms/long/45_intro.png` | 동일 | `EP/45_intro.png` |
+| thumbnail | `EP/platforms/long/47_thumbnail.png` | 동일 | `EP/47_thumbnail.png` |
+| render | `EP/platforms/long/55_render/video.mp4` | 동일 | `EP/55_render/video.mp4` |
+| meta/QA/approval/result | `EP/platforms/{long|shorts}/{60,70,75,80}*` | 동일 | `EP/60..80*` |
+| brief / series_link | `EP/00_brief.md`, `EP/series_link.json` (episodeDir 직속) | 동일 | `EP/00_brief.md` |
+
+**Agent 작업 원칙**: 직접 경로를 하드코딩하지 말고, 자동화 스크립트(produce-episode·run-episode·generate-*)가 전달하는 `--script`/`--episode`/`--out-dir`를 그대로 사용. paths.js가 v1/v2 모두 처리하므로 layout 분기는 신경 쓸 필요 없음.
