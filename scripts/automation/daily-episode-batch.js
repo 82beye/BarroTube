@@ -34,6 +34,7 @@ async function main() {
       channel: { type: 'string', short: 'c' },
       count: { type: 'string', short: 'n' },
       'auto-assets': { type: 'boolean', default: false },
+      'auto-produce': { type: 'boolean', default: false },  // brief 후 produce-episode 자동 트리거
       date: { type: 'string', short: 'd' },
     },
   });
@@ -135,6 +136,25 @@ async function main() {
   if (values['auto-assets']) {
     console.log(`\n🤖 --auto-assets 모드: Writer·Asset 단계는 Claude Code agent 필요 (현재 미구현)`);
     console.log(`   수동 진행: Claude CLI에서 해당 에이전트 호출`);
+  }
+
+  // --auto-produce: brief 생성 직후 produce-episode 자동 트리거 (직렬, 1편씩)
+  // 이전엔 brief만 만들고 운영자가 수동으로 produce-episode 호출했어야 했음 → IN REVIEW에서
+  // 멈춰있는 케이스 다수 발생. 자동화 한 단계 더 진행.
+  if (values['auto-produce']) {
+    console.log(`\n🚀 --auto-produce 모드: 각 brief에 대해 produce-episode 직렬 실행`);
+    for (const e of created) {
+      console.log(`\n━━━ ${e.id}: ${e.topic} ━━━`);
+      const r = spawnSync('node', [
+        'scripts/automation/produce-episode.js',
+        '--episode', e.id,
+        '--skip-capcut',
+      ], { cwd: ROOT, stdio: 'inherit' });
+      if (r.status !== 0) {
+        console.error(`  ❌ produce-episode failed for ${e.id} (status ${r.status}). 다음 EP로 계속 진행.`);
+      }
+    }
+    console.log(`\n✅ Auto-produce 완료. Board 승인 (S10) 대기 중.`);
   }
 }
 

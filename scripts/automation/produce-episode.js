@@ -220,15 +220,21 @@ async function main() {
       console.log(`\n⏭  S6c Images: 이미 있음 (skip)`);
     }
 
-    // S6d Intro Card (series brand card, prepended to video)
-    if (!exists(p.intro) || force) {
-      runTracked(absEp, episodeId, 'S6d', 'S6d Intro Card (Gemini)', '08-image-generator',
-        'scripts/automation/generate-intro.js', [
-          '--episode', relEp,
-          ...(force ? ['--force'] : []),
-        ]);
+    // S6d Intro Card (series brand card) — 시리즈 에피소드일 때만.
+    // 단발 Shorts는 series_id가 없으므로 인트로 카드 부적합 (회차 표시가 핵심 자산).
+    const hasSeriesId = !!briefFM.series_id;
+    if (hasSeriesId) {
+      if (!exists(p.intro) || force) {
+        runTracked(absEp, episodeId, 'S6d', 'S6d Intro Card (Gemini)', '08-image-generator',
+          'scripts/automation/generate-intro.js', [
+            '--episode', relEp,
+            ...(force ? ['--force'] : []),
+          ]);
+      } else {
+        console.log(`\n⏭  S6d Intro: 이미 있음 (skip)`);
+      }
     } else {
-      console.log(`\n⏭  S6d Intro: 이미 있음 (skip)`);
+      console.log(`\n⏭  S6d Intro: series_id 없음 — 단발 에피소드는 인트로 카드 미사용 (skip)`);
     }
 
     // S6e Thumbnail (YouTube feed thumbnail)
