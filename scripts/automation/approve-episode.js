@@ -5,6 +5,12 @@
  *
  * Usage:
  *   node approve-episode.js --episode EP-2026-0001 [--by "운영자이름"] [--note "..."]
+ *   node approve-episode.js --episode EP-2026-0020 --platform shorts
+ *
+ * v1.1 (2026-04-25): v2 platforms/ 레이아웃 지원
+ *   - paths.js의 resolvePaths(epDir, format) 헬퍼 사용
+ *   - brief frontmatter의 format 또는 --platform 플래그로 long/shorts 분기
+ *   - v1 평면 레이아웃은 paths.js 자동 fallback으로 그대로 작동
  *
  * 승인 후: run-episode.js를 재실행하면 S10 통과 → S11 자동 진행
  */
@@ -13,19 +19,23 @@ import { parseArgs } from 'node:util';
 import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { userInfo } from 'node:os';
+import { parse as parseYAML } from 'yaml';
+import { resolvePaths } from './paths.js';
 
 const WORKSPACE = resolve(import.meta.dirname, '../../workspace');
 
 const { values } = parseArgs({
   options: {
-    episode: { type: 'string', short: 'e' },
-    by: { type: 'string', short: 'b' },
-    note: { type: 'string', short: 'n' },
+    episode:  { type: 'string', short: 'e' },
+    by:       { type: 'string', short: 'b' },
+    note:     { type: 'string', short: 'n' },
+    platform: { type: 'string', short: 'p' },  // 'long' | 'shorts' (선택, brief 우선)
+    'dry-run': { type: 'boolean' },
   },
 });
 
 if (!values.episode) {
-  console.error('Usage: node approve-episode.js --episode <EP-YYYY-NNNN> [--by <name>] [--note <text>]');
+  console.error('Usage: node approve-episode.js --episode <EP-YYYY-NNNN> [--by <name>] [--note <text>] [--platform long|shorts] [--dry-run]');
   process.exit(1);
 }
 
@@ -35,24 +45,69 @@ if (!existsSync(episodeDir)) {
   process.exit(1);
 }
 
-// 선결조건: QA 리포트 + 메타데이터 + 렌더 존재
-const required = [
-  { path: '55_render/video.mp4', label: 'Rendered video' },
-  { path: '60_qa_report.md', label: 'QA report' },
-  { path: '70_publish_meta.json', label: 'Metadata' },
-];
-
-for (const r of required) {
-  if (!existsSync(join(episodeDir, r.path))) {
-    console.error(`❌ Missing: ${r.label} (${r.path})`);
-    console.error(`   S10 승인은 S7~S9 완료 후에만 가능합니다.`);
-    process.exit(1);
+// brief frontmatter에서 format 추출 → 어느 platforms/{long|shorts}/를 검사할지 결정
+const briefPath = join(episodeDir, '00_brief.md');
+let briefFmt = 'long-3min';
+if (existsSync(briefPath)) {
+  try {
+    const briefRaw = readFileSync(briefPath, 'utf-8');
+    const m = briefRaw.match(/^---\n([\s\S]*?)\n---/);
+    if (m) {
+      const fm = parseYAML(m[1]);
+      if (fm?.format) briefFmt = fm.format;
+    }
+  } catch (e) {
+    console.warn(`⚠️  brief frontmatter 파싱 실패: ${e.message}. format=long-3min 가정.`);
   }
 }
 
+// --platform 플래그가 있으면 우선 (운영자가 명시적 지정)
+const format = values.platform === 'shorts' ? 'shorts'
+             : values.platform === 'long' ? 'long-3min'
+             : briefFmt;
+
+const p = resolvePaths(episodeDir, format);
+
+console.log(`📂 Episode: ${values.episode}`);
+console.log(`   Format: ${format} → platform=${p.platform}, layout=${p.isV2 ? 'v2 (platforms/)' : 'v1 (legacy)'}`);
+console.log(`   Base dir: ${p.base}`);
+
+// 멱등성: 이미 approval 토큰이 있으면 정보만 보여주고 종료 (재발급 안 함)
+if (existsSync(p.approval)) {
+  try {
+    const existing = JSON.parse(readFileSync(p.approval, 'utf-8'));
+    console.log(`\n✅ 이미 승인된 에피소드입니다.`);
+    console.log(`   Token: ${existing.token}`);
+    console.log(`   Approved by: ${existing.approved_by}`);
+    console.log(`   Approved at: ${existing.approved_at}`);
+    if (existing.note) console.log(`   Note: ${existing.note}`);
+    console.log(`\n재승인이 필요하면 ${p.approval} 파일을 먼저 삭제하세요.`);
+    process.exit(0);
+  } catch (e) {
+    console.warn(`⚠️  기존 75_board_approval.json 파싱 실패: ${e.message}. 새로 발급합니다.`);
+  }
+}
+
+// 선결조건: QA 리포트 + 메타데이터 + 렌더 존재
+const required = [
+  { path: p.video, label: 'Rendered video',      rel: '55_render/video.mp4' },
+  { path: p.qa,    label: 'QA report',            rel: '60_qa_report.md' },
+  { path: p.meta,  label: 'Metadata',             rel: '70_publish_meta.json' },
+];
+
+const missing = required.filter(r => !existsSync(r.path));
+if (missing.length > 0) {
+  for (const r of missing) {
+    console.error(`❌ Missing: ${r.label} (${r.rel})`);
+    console.error(`   Expected at: ${r.path}`);
+  }
+  console.error(`\n   S10 승인은 S7~S9 완료 후에만 가능합니다.`);
+  process.exit(1);
+}
+
 // 메타/QA 간단 미리보기
-const meta = JSON.parse(readFileSync(join(episodeDir, '70_publish_meta.json'), 'utf-8'));
-const qa = readFileSync(join(episodeDir, '60_qa_report.md'), 'utf-8');
+const meta = JSON.parse(readFileSync(p.meta, 'utf-8'));
+const qa = readFileSync(p.qa, 'utf-8');
 
 console.log(`\n📋 Episode: ${values.episode}`);
 console.log(`   Title: ${meta.title || '(no title)'}`);
@@ -62,6 +117,13 @@ console.log(`   Publish At: ${meta.publishAt || 'ASAP'}`);
 console.log(`\n   QA Preview (first 10 lines):`);
 console.log(qa.split('\n').slice(0, 10).map(l => `     ${l}`).join('\n'));
 
+if (values['dry-run']) {
+  console.log(`\n🟡 Dry-run 모드 — 토큰 발급 생략. 모든 산출물 검사 통과.`);
+  console.log(`   (실제 승인 시 다음 위치에 75_board_approval.json 생성됨)`);
+  console.log(`   Approval path: ${p.approval}`);
+  process.exit(0);
+}
+
 // 토큰 발행
 const approval = {
   approved: true,
@@ -69,15 +131,14 @@ const approval = {
   approved_at: new Date().toISOString(),
   note: values.note || '',
   token: `BT-APPROVAL-${Date.now().toString(36).toUpperCase()}`,
+  platform: p.platform,
+  layout: p.isV2 ? 'v2' : 'v1',
 };
 
-writeFileSync(
-  join(episodeDir, '75_board_approval.json'),
-  JSON.stringify(approval, null, 2),
-  'utf-8'
-);
+writeFileSync(p.approval, JSON.stringify(approval, null, 2), 'utf-8');
 
 console.log(`\n✅ Approval token issued: ${approval.token}`);
 console.log(`   Approved by: ${approval.approved_by}`);
+console.log(`   Written to: ${p.approval}`);
 console.log(`\n다음 단계: node scripts/automation/run-episode.js --episode ${values.episode}`);
 console.log(`          (자동 재개 → S11 Publish)`);
