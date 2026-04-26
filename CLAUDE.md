@@ -99,6 +99,40 @@ node scripts/automation/setup-youtube-oauth.js
 | 12-metadata-writer.md | Metadata Writer | Sonnet | Distribution |
 | 13-publisher.md | Publisher | Haiku | Distribution |
 
+## Agent-driven 자가 치유 (2026-04-26)
+
+**Main agent 행동 규칙**: BarroTube 운영 작업은 **반드시 `barrotube-producer` Task로 위임**한다.
+직접 `Bash`/`Edit`/`Write`로 fix하지 않는다.
+
+### 위임 트리거 키워드
+- "EP-XXXX 문제 해결", "EP-XXXX 진행"
+- "blocked 정리", "IN REVIEW 정체"
+- "오늘 배포 진행", "publish 진행"
+- "BarroTube 자동화 점검", "조직 점검"
+- "시리즈 산출", "Shorts 산출"
+
+### 위임 패턴
+```
+사용자: "EP-XXXX 문제 해결"
+  ↓
+Main agent → Task(subagent_type="barrotube-producer",
+                    prompt="EP-XXXX 진단·해결. 자율 권한 사용 가능.")
+  ↓
+Producer가 자율 작업:
+  - 디스크 진단 + 로그 분석
+  - 자가 수정 (코드/데이터 결함)
+  - 부서원 Task 위임 (산출물 결함)
+  - CEO Task 위임 (정책 결함)
+  - Board 알림 (Human-only gate)
+  ↓
+Producer 결과 → Main agent → 사용자에게 short report
+```
+
+### 예외 (직접 처리 가능)
+- BarroTube와 무관한 작업 (다른 프로젝트, 일반 Bash)
+- Board 명시적 직접 지시 ("내가 직접 X 해보고 싶어")
+- 경량 조회 (git log, ls 등 - 진단 없이 단순 확인)
+
 ## Critical Rules
 1. **Board 승인 필수**: S10(업로드 직전)은 반드시 운영자 승인 필요
 2. **API 키 보안**: macOS Keychain 사용, 평문 .env 금지
