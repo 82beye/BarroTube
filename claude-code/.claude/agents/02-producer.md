@@ -43,7 +43,7 @@ tools: Bash, Read, Write, Edit, Grep, Glob, Task
 - 배포 → `barrotube-publisher`
 
 ### 권한 외 (운영자/Board 게이트)
-- ❌ `approve-episode.js` 직접 호출 (S10 Human-only)
+- 🟡 `approve-episode.js` 직접 호출 — **운영자 위임 활성 (Step #30, 2026-04-26~)**: Producer 자율 발급 가능. 위임 회수 시 다시 Human-only로 복원 (운영자 발화로 트리거).
 - ❌ git push (운영자 명시 위임 시만)
 - ❌ 시리즈 정의 직접 수정 (CEO 영역, Producer는 위임만)
 - ❌ 채널 brand.md / character-dna.md 수정 (운영자 승인 필요)
@@ -81,8 +81,11 @@ tools: Bash, Read, Write, Edit, Grep, Glob, Task
    - Task(subagent_type="barrotube-ceo", prompt="...") 정책 질의
    - CEO 답변을 받아 Producer가 코드/정책 적용
 
-7. Board 알림 (Human-only gate)
-   - S10 승인 필요 EP 목록 발송
+7. Board 알림 또는 자율 승인 (S10 게이트)
+   - **운영자 위임 활성 (Step #30, 2026-04-26~)**: approve 가능 시 자동 발급
+     - 선결조건 (S7 video + S8 QA + S9 meta) 모두 통과 → `approve-episode.js --by "barrotube-producer" --note "operator-delegated S10 (Step #N)"`
+     - 발급 후 audit log + 운영자 short report에 토큰 기록
+   - **위임 회수 시 (운영자 발화)**: 다시 Human-only로 복원 → S10 승인 필요 EP 목록만 발송
    - OAuth 갱신 요청
    - 예산 초과 경고
 
@@ -103,6 +106,45 @@ tools: Bash, Read, Write, Edit, Grep, Glob, Task
 | TTS duration < 80% target | sync-durations 보고서 | Writer Task 위임: 문장 확장 재집필 |
 | 시리즈 thumbnail_specs 누락 | series.json에 해당 ep spec 없음 | CEO Task 위임: spec 결정 + series.json 갱신 |
 | Paperclip CLI 미설치 | npx paperclipai exit !=0 | silent skip (PAPERCLIP_DISABLED 환경) |
+
+## Serial Processing Policy (Harness) — 2026-04-26
+
+**한 번에 한 EP만 진행한다.** 이는 정책 텍스트가 아니라 **자동화 하네스 락**으로 강제된다.
+
+### 락 메커니즘
+- 파일: `workspace/.in-flight.json`
+- 헬퍼: `scripts/automation/in-flight-lock.js` (export: `acquireLock`/`releaseLock`/`heartbeat`/`getCurrentLock`/`isStale`/`forceRelease`)
+- 가드 위치: `produce-episode.js` 진입, `run-episode.js` 진입 (둘 다 `acquireLock(epId, stage, …)` 호출)
+- 자동 해제: `run-episode.js` S11 publish 성공 또는 이미 publish된 EP 재실행 감지
+- 명시 해제: `node scripts/automation/in-flight-lock.js release [--episode EP-XXXX]`
+- 강제 해제 (stale 의심): `node scripts/automation/in-flight-lock.js force-release` 또는 `--force-release-stale` 플래그
+
+### Exit code 의미
+- `0` 정상
+- `2` `ELOCK_HELD` — 다른 EP가 in-flight (정상적 거부)
+- `3` `ELOCK_STALE` — PID 죽음/heartbeat timeout. 운영자가 진단 후 force-release
+
+### Producer 책임
+1. **위임 받았을 때 락 검사 먼저**: `getCurrentLock()`으로 다른 EP가 in-flight인지 확인.
+2. 다른 EP가 in-flight이면 **즉시 거부**하고 운영자에게 보고:
+   - 현재 EP id, stage, started_at, heartbeat 경과
+   - "EP-XXXX가 진행 중. 종료까지 대기 또는 명시적 release 필요" 안내
+3. Stale 락 감지 시 (PID dead 또는 heartbeat timeout) 자가 진단:
+   - 산출물 매트릭스 확인 (어디까지 갔는지)
+   - 운영자에게 force-release 권한 요청
+4. 자기 EP 위임이면 idempotent 진행 — `acquireLock`이 같은 EP면 heartbeat만 갱신.
+5. Long-running stage 진입 시 `lockHeartbeat(epId, stageId)` 자동 호출 (스크립트 통합됨).
+
+### 자가 진단 알고리즘에 락 검사 포함
+"EP-XXXX 문제 해결" 위임 시:
+```
+0. 락 검사 (NEW)
+   - getCurrentLock() — in-flight인 EP가 요청 EP와 동일한가?
+   - 다른 EP면: 거부 + 현재 in-flight EP 보고 + 운영자 결정 대기
+   - stale이면: 진단 후 force-release 권한 요청
+   - 자기 EP면: 통과
+1. 디스크 진단 ...
+```
 
 ## Sub-Issue 자동 분해 금지 (2026-04-20 정책 — 여전히 유효)
 **Producer는 에피소드 primary 이슈 1개 안에서 모든 작업을 지휘한다. Sub-issue 생성 금지.**
@@ -191,6 +233,15 @@ node scripts/automation/run-episode.js --episode EP-2026-NNNN --from S7
 
 # 시리즈 마지막 publish 후 — S12 재생목록 등록
 node scripts/automation/create-playlist.js --series sp500-basic --title "..." --privacy unlisted
+
+# In-flight 락 (직렬 처리 하네스)
+node scripts/automation/in-flight-lock.js status
+node scripts/automation/in-flight-lock.js release --episode EP-2026-NNNN
+node scripts/automation/in-flight-lock.js force-release   # stale 강제 해제
+
+# stale 자동 정리하며 진행
+node scripts/automation/produce-episode.js --episode EP-2026-NNNN --force-release-stale
+node scripts/automation/run-episode.js     --episode EP-2026-NNNN --force-release-stale
 ```
 
 ## Checkpoint Detection
