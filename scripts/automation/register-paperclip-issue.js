@@ -59,8 +59,30 @@ function extractTopic(briefContent) {
   return m ? m[1].trim().replace(/^"|"$/g, '') : '';
 }
 
+function recordPaperclipSkipInStatus(episodeId, reason) {
+  try {
+    const sp = join(WORKSPACE, episodeId, '.episode_status.json');
+    if (!existsSync(sp)) return;
+    const s = JSON.parse(readFileSync(sp, 'utf-8'));
+    // 기존 issue_id가 있으면 그대로 유지 (재등록 시도 흔적만 추가).
+    if (s.paperclip?.issue_id) return;
+    s.paperclip = {
+      ...(s.paperclip || {}),
+      registered: false,
+      skip_reason: reason,
+      detected_at: new Date().toISOString(),
+    };
+    s.last_updated = new Date().toISOString();
+    writeFileSync(sp, JSON.stringify(s, null, 2), 'utf-8');
+  } catch {/* non-fatal */}
+}
+
 function registerIssue(episodeId, { skipIfRegistered = true } = {}) {
-  if (!isPaperclipAvailable()) return null;  // 명시적 비활성: 호출자에게 단일 형태(null)로 통보
+  if (!isPaperclipAvailable()) {
+    // 명시적 비활성: 호출자에게 null 반환 + .episode_status.json 에 흔적 기록 (silent-skip 가시화)
+    recordPaperclipSkipInStatus(episodeId, 'paperclip_cli_unavailable');
+    return null;
+  }
   const epDir = join(WORKSPACE, episodeId);
   if (!existsSync(epDir)) {
     console.error(`❌ ${episodeId} 없음`);

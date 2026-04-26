@@ -110,9 +110,16 @@ function buildThumbnailPrompt({
     ? `Use this exact main message (pre-chosen): "${keywordHint}".`
     : `Choose the SINGLE most impactful keyword + number from the hook narration below (max 6 Korean characters + 1 number). Pick something that will stop a scroll on the YouTube feed.`;
 
+  // 시리즈 미소속(단발) 에피소드는 series badge 자체를 그리지 않음.
+  // episodeN/episodeM이 모두 정의돼 있고 seriesName이 비어있지 않을 때만 배지 표시.
+  const isSeriesEpisode = seriesName && episodeN !== undefined && episodeN !== null && episodeM;
+  const seriesBadgeLine = isSeriesEpisode
+    ? `Series badge (small, top-left corner): "${seriesName} ${episodeN}/${episodeM}" in clean small sans-serif.`
+    : `No series badge anywhere in the frame (this is a standalone episode, not part of a numbered series).`;
+
   const thumbnailSpec = `
 THUMBNAIL SPECIAL: this image is a YouTube thumbnail for the episode "${topic}".
-Series badge (small, top-left corner): "${seriesName} ${episodeN}/${episodeM}" in clean small sans-serif.
+${seriesBadgeLine}
 Main hook text (CENTER, huge, unmissable): ${keywordDirective}
 Render the main hook in extra-bold Korean-friendly sans-serif, keyword in black and number/percent in warm orange (#F4A261), BOTH with a thick white outline for contrast and a subtle drop shadow. The main hook must occupy roughly 25-35% of the frame height to be legible on a small YouTube feed thumbnail.
 Small bottom tagline (bottom-center, compact): "${BRAND_TAGLINE}".

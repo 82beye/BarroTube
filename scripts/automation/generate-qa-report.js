@@ -148,9 +148,14 @@ async function main() {
     val: `${scenes.length}/${spec.scene_count}`,
   });
 
-  // Images
+  // Images — v2(platforms/) baseDir 우선 → v1 epDir fallback
+  const imagesDir = existsSync(join(baseDir, '40_assets'))
+    ? join(baseDir, '40_assets/images')
+    : existsSync(join(epDir, '40_assets'))
+      ? join(epDir, '40_assets/images')
+      : join(epDir, 'assets/images');
   const imgCount = scenes.filter(s =>
-    existsSync(join(epDir, existsSync(join(epDir, '40_assets')) ? '40_assets/images' : 'assets/images', `scene_${s.scene_id}.png`))
+    existsSync(join(imagesDir, `scene_${s.scene_id}.png`))
   ).length;
   checks.push({
     item: 'Images',
@@ -158,10 +163,15 @@ async function main() {
     val: `${imgCount}/${scenes.length}`,
   });
 
-  // TTS + scene duration match
+  // TTS + scene duration match — v2(platforms/) baseDir 우선 → v1 epDir fallback
+  const ttsDir = existsSync(join(baseDir, '40_assets'))
+    ? join(baseDir, '40_assets/tts')
+    : existsSync(join(epDir, '40_assets'))
+      ? join(epDir, '40_assets/tts')
+      : join(epDir, 'assets/tts');
   const ttsChecks = [];
   for (const s of scenes) {
-    const ttsPath = join(epDir, existsSync(join(epDir, '40_assets')) ? '40_assets/tts' : 'assets/tts', `scene_${s.scene_id}.wav`);
+    const ttsPath = join(ttsDir, `scene_${s.scene_id}.wav`);
     if (!existsSync(ttsPath)) {
       ttsChecks.push({ id: s.scene_id, mark: FAIL, val: 'missing' });
       continue;
