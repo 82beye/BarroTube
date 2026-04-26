@@ -170,6 +170,8 @@ async function runStage(episodeDir, episodeId, stage, dryRun, opts = {}) {
             console.log(`  → 재업로드하려면 --force-republish`);
             updateStatus(episodeDir, episodeId, stage.id, 'completed', { youtube_url: prevUrl, skipped: 'already_published' });
             auditLog(episodeId, 'publish_skipped_duplicate', { stage: stage.id, videoId: prevVideoId });
+            // Paperclip 보드도 함께 close — 좀비 IN PROGRESS 재발 방지 (Step #29)
+            try { updateIssueStatus(episodeId, 'done', { comment: `Already published: ${prevUrl} (duplicate skip)` }); } catch {}
             // 이미 게시된 EP의 락은 release (idempotent re-run 정리)
             try { if (releaseLock(episodeId)) auditLog(episodeId, 'inflight_lock_released', { reason: 'duplicate_publish_skip' }); } catch {}
             return true;
