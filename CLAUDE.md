@@ -139,7 +139,7 @@ Producer 결과 → Main agent → 사용자에게 short report
 - 경량 조회 (git log, ls 등 - 진단 없이 단순 확인)
 
 ## Critical Rules
-1. **Board 승인 필수**: S10(업로드 직전)은 반드시 운영자 승인 필요
+1. **S10 Board 승인 정책 (2026-04-26~ 운영자 위임 활성)**: S10은 기본적으로 Human-only gate이지만, 운영자가 명시적으로 "Producer 자율 승인" 위임한 경우 Producer가 `approve-episode.js --by "barrotube-producer"`로 자율 발급 가능. 모든 자율 발급은 audit log에 `actor: barrotube-producer` + `delegation: operator-explicit`로 기록. 운영자가 정책 회수 발화 시 즉시 Human-only로 복원.
 2. **API 키 보안**: macOS Keychain 사용, 평문 .env 금지
 3. **도메인 화이트리스트**: 허용 도메인 외 fetch 차단
 4. **팩트체크 게이트**: HIGH 위험 → 재집필 (최대 2회)

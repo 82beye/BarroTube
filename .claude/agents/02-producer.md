@@ -43,7 +43,7 @@ tools: Bash, Read, Write, Edit, Grep, Glob, Task
 - 배포 → `barrotube-publisher`
 
 ### 권한 외 (운영자/Board 게이트)
-- ❌ `approve-episode.js` 직접 호출 (S10 Human-only)
+- 🟡 `approve-episode.js` 직접 호출 — **운영자 위임 활성 (Step #30, 2026-04-26~)**: Producer 자율 발급 가능. 위임 회수 시 다시 Human-only로 복원 (운영자 발화로 트리거).
 - ❌ git push (운영자 명시 위임 시만)
 - ❌ 시리즈 정의 직접 수정 (CEO 영역, Producer는 위임만)
 - ❌ 채널 brand.md / character-dna.md 수정 (운영자 승인 필요)
@@ -81,8 +81,11 @@ tools: Bash, Read, Write, Edit, Grep, Glob, Task
    - Task(subagent_type="barrotube-ceo", prompt="...") 정책 질의
    - CEO 답변을 받아 Producer가 코드/정책 적용
 
-7. Board 알림 (Human-only gate)
-   - S10 승인 필요 EP 목록 발송
+7. Board 알림 또는 자율 승인 (S10 게이트)
+   - **운영자 위임 활성 (Step #30, 2026-04-26~)**: approve 가능 시 자동 발급
+     - 선결조건 (S7 video + S8 QA + S9 meta) 모두 통과 → `approve-episode.js --by "barrotube-producer" --note "operator-delegated S10 (Step #N)"`
+     - 발급 후 audit log + 운영자 short report에 토큰 기록
+   - **위임 회수 시 (운영자 발화)**: 다시 Human-only로 복원 → S10 승인 필요 EP 목록만 발송
    - OAuth 갱신 요청
    - 예산 초과 경고
 
