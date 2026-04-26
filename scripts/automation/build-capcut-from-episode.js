@@ -16,6 +16,7 @@ import { parseArgs } from 'node:util';
 import { homedir } from 'node:os';
 import { parse as parseYAML } from 'yaml';
 import { buildCapCutProject } from '../../tools/capcut-builder/src/capcut-draft-builder.js';
+import { resolvePaths, detectPrimaryPlatform } from './paths.js';
 
 const CAPCUT_PROJECTS_DIR = join(homedir(), 'Movies/CapCut/User Data/Projects/com.lveditor.draft');
 
@@ -23,17 +24,20 @@ const { values } = parseArgs({
   options: {
     episode: { type: 'string', short: 'e' },
     name: { type: 'string', short: 'n' },
+    platform: { type: 'string' },
   },
 });
 
 if (!values.episode) {
-  console.error('Usage: build-capcut-from-episode.js --episode <dir> [--name <project>]');
+  console.error('Usage: build-capcut-from-episode.js --episode <dir> [--name <project>] [--platform long|shorts]');
   process.exit(1);
 }
 
 const episodeDir = resolve(values.episode);
-const scriptPath = join(episodeDir, '30_script.md');
-const assetsDir = join(episodeDir, 'assets');
+const platform = values.platform || detectPrimaryPlatform(episodeDir);
+const p = resolvePaths(episodeDir, platform);
+const scriptPath = p.script;
+const assetsDir = p.assetsDir;
 
 if (!existsSync(scriptPath)) {
   console.error(`❌ Missing ${scriptPath}`);

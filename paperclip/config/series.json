@@ -108,18 +108,26 @@
         "prev_series_playlist_to_ep01_uplift_target": 0.03
       },
       "branding_outputs": {
-        "intro_card_status": "pending",
-        "thumbnail_status": "pending",
-        "playlist_id": null,
-        "playlist_url": null,
+        "intro_card_status": "applied_all",
+        "thumbnail_status": "applied_all",
+        "playlist_id": "PLvDo3VC3fVmeZaVY-ffdkQmKS10PdUiXf",
+        "playlist_url": "https://www.youtube.com/playlist?list=PLvDo3VC3fVmeZaVY-ffdkQmKS10PdUiXf",
         "playlist_privacy": "unlisted",
         "playlist_record_path": "workspace/channels/econ-daily/nasdaq100-basic-playlist.json",
         "layout_version": "v2",
         "layout_note": "각 EP는 platforms/{long,shorts,tiktok,reels}/ 구조로 생성 예정. derived shorts는 부모 EP 안 platforms/shorts/에 합병.",
-        "video_ids": []
+        "video_ids": [
+          "LHnKHaFcT30",
+          "O3_xZGWjo-A",
+          "UwV0PPeqgM8",
+          "1EVGsA0fNxw",
+          "XhE46K6mtZo"
+        ],
+        "registered_at": "2026-04-25T12:31:00Z"
       },
-      "status": "planned",
-      "created_at": "2026-04-26"
+      "status": "completed",
+      "created_at": "2026-04-26",
+      "completed_at": "2026-04-25"
     }
   ],
   "planned_series": [],
