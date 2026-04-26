@@ -1,34 +1,189 @@
 #!/usr/bin/env node
 
 /**
- * BarroTube — 새 에피소드 생성 스크립트
- * Usage: node create-episode.js --channel <channel-id> --topic "<주제>" [--length <초>] [--notes "<요구사항>"]
+ * BarroTube — 새 에피소드 생성 스크립트 (v1.5 — 시리즈 모드 + v2 layout)
+ *
+ * 두 가지 모드:
+ *
+ * 1) 단발 (Line B — Shorts 단발 또는 Long 단발)
+ *    Usage: node create-episode.js --channel <id> --topic "<주제>" [--length 60] [--format shorts]
+ *    출력: episodeDir/00_brief.md (v1 평면) — produce-episode가 자동으로 v2 platforms/로 끌어올림.
+ *
+ * 2) 시리즈 (Line A — sp500-basic, nasdaq100-basic 등 시리즈 정의 기반)
+ *    Usage: node create-episode.js --channel <id> --series <series_id> --episode-slot N --brief <path>
+ *    동작:
+ *      - paperclip/config/series.json 에서 series_id 검증
+ *      - 입력 brief을 episodeDir/00_brief.md로 복사 (episode_id/created_at 갱신)
+ *      - episodeDir/series_link.json 생성 (시리즈 멤버십)
+ *      - v2 layout 미리 생성: platforms/{long|shorts}/40_assets/{images,tts}
  */
 
 import { parseArgs } from 'node:util';
-import { existsSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { parse as parseYAML, stringify as stringifyYAML } from 'yaml';
 import { registerIssue } from './register-paperclip-issue.js';
 
-const WORKSPACE = resolve(import.meta.dirname, '../../workspace');
+const ROOT = resolve(import.meta.dirname, '../..');
+const WORKSPACE = resolve(ROOT, 'workspace');
 
 function generateEpisodeId() {
   const year = new Date().getFullYear();
   const episodesDir = join(WORKSPACE, 'episodes');
+  if (!existsSync(episodesDir)) mkdirSync(episodesDir, { recursive: true });
+  const existing = readdirSync(episodesDir).filter(d => d.startsWith(`EP-${year}-`)).sort();
+  const lastNum = existing.length > 0 ? parseInt(existing[existing.length - 1].split('-')[2], 10) : 0;
+  return `EP-${year}-${String(lastNum + 1).padStart(4, '0')}`;
+}
 
-  if (!existsSync(episodesDir)) {
-    mkdirSync(episodesDir, { recursive: true });
+function loadSeriesConfig() {
+  const p = resolve(ROOT, 'paperclip/config/series.json');
+  if (!existsSync(p)) return null;
+  return JSON.parse(readFileSync(p, 'utf-8'));
+}
+
+function bootstrapV2Layout(epDir, format) {
+  const platform = format === 'long-3min' ? 'long' : 'shorts';
+  mkdirSync(join(epDir, 'platforms', platform, '40_assets', 'images'), { recursive: true });
+  mkdirSync(join(epDir, 'platforms', platform, '40_assets', 'tts'), { recursive: true });
+  return platform;
+}
+
+function writeStatus(epDir, episodeId, channel, actor) {
+  const status = {
+    episode_id: episodeId,
+    channel_id: channel,
+    created_at: new Date().toISOString(),
+    current_stage: 'S0',
+    status: 'created',
+    stage_history: [{
+      stage: 'S0', status: 'completed', timestamp: new Date().toISOString(), actor,
+    }],
+  };
+  writeFileSync(join(epDir, '.episode_status.json'), JSON.stringify(status, null, 2), 'utf-8');
+}
+
+function singleEpisode({ channel, topic, length, notes, format }) {
+  const channelDir = join(WORKSPACE, 'channels', channel);
+  if (!existsSync(channelDir)) { console.error(`❌ Channel not found: ${channel}`); process.exit(1); }
+  const episodeId = generateEpisodeId();
+  const episodeDir = join(WORKSPACE, 'episodes', episodeId);
+  const platform = bootstrapV2Layout(episodeDir, format);
+
+  const brief = `---
+episode_id: ${episodeId}
+channel_id: ${channel}
+created_at: ${new Date().toISOString()}
+topic: "${topic}"
+target_length_seconds: ${length}
+format: ${format}
+status: created
+---
+
+# Episode Brief
+
+## 주제
+${topic}
+
+## 채널
+${channel}
+
+## 목표 길이
+${length}초 (${Math.round(length / 60)}분)
+
+## 운영자 요구사항
+${notes || '없음'}
+`;
+  writeFileSync(join(episodeDir, '00_brief.md'), brief, 'utf-8');
+  writeStatus(episodeDir, episodeId, channel, 'board');
+
+  console.log(`✅ Episode created (single mode)`);
+  console.log(`   ID:       ${episodeId}`);
+  console.log(`   Channel:  ${channel}`);
+  console.log(`   Topic:    ${topic}`);
+  console.log(`   Format:   ${format} → platforms/${platform}/`);
+  console.log(`   Length:   ${length}s`);
+  console.log(`   Path:     ${episodeDir}`);
+
+  console.log(`\n📎 Registering Paperclip issue...`);
+  try {
+    const r = registerIssue(episodeId);
+    if (r) console.log(`   → ${r.identifier}`);
+    else console.log(`   ⚠ paperclip CLI 미설치 또는 등록 실패 (파이프라인은 계속 진행 가능)`);
+  } catch (e) { console.log(`   ⚠ ${e.message}`); }
+
+  console.log(`\n📋 Next: node scripts/automation/produce-episode.js --episode ${episodeId}`);
+}
+
+function seriesEpisode({ channel, seriesId, slot, briefPath }) {
+  const cfg = loadSeriesConfig();
+  if (!cfg) { console.error('❌ paperclip/config/series.json 없음'); process.exit(1); }
+  const series = (cfg.series || []).find(s => s.id === seriesId);
+  if (!series) {
+    const known = (cfg.series || []).map(s => s.id).join(', ');
+    console.error(`❌ Series not found: ${seriesId}. Known: ${known}`);
+    process.exit(1);
+  }
+  if (slot < 1 || slot > (series.total_episodes || 5)) {
+    console.error(`❌ episode-slot ${slot} out of range (1..${series.total_episodes || 5})`);
+    process.exit(1);
   }
 
-  const existing = readdirSync(episodesDir)
-    .filter(d => d.startsWith(`EP-${year}-`))
-    .sort();
+  const briefAbs = resolve(briefPath);
+  if (!existsSync(briefAbs)) { console.error(`❌ Brief not found: ${briefAbs}`); process.exit(1); }
+  const raw = readFileSync(briefAbs, 'utf-8');
+  const m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!m) { console.error('❌ Brief frontmatter parse fail'); process.exit(1); }
+  const fm = parseYAML(m[1]);
 
-  const lastNum = existing.length > 0
-    ? parseInt(existing[existing.length - 1].split('-')[2], 10)
-    : 0;
+  const episodeId = generateEpisodeId();
+  const episodeDir = join(WORKSPACE, 'episodes', episodeId);
+  const format = series.format || fm.format || 'long-3min';
+  const platform = bootstrapV2Layout(episodeDir, format);
 
-  return `EP-${year}-${String(lastNum + 1).padStart(4, '0')}`;
+  // brief frontmatter 갱신: episode_id, created_at 동기화
+  fm.episode_id = episodeId;
+  fm.channel_id = fm.channel_id || channel;
+  fm.created_at = new Date().toISOString();
+  fm.status = 'created';
+  // 시리즈 정보가 brief에 없으면 series.json에서 채워넣음
+  fm.series_id = fm.series_id || series.id;
+  fm.series_episode = fm.series_episode || slot;
+  fm.series_total = fm.series_total || series.total_episodes || 5;
+  fm.format = format;
+
+  const newBrief = `---\n${stringifyYAML(fm).trim()}\n---\n${m[2]}`;
+  writeFileSync(join(episodeDir, '00_brief.md'), newBrief, 'utf-8');
+
+  // series_link.json — episodeDir 직속, 시리즈 멤버십 1회 정의
+  const seriesLink = {
+    series_id: series.id,
+    series_episode: slot,
+    series_total: series.total_episodes || 5,
+    series_name: series.name,
+    parent_long_id: episodeId,
+  };
+  writeFileSync(join(episodeDir, 'series_link.json'), JSON.stringify(seriesLink, null, 2) + '\n', 'utf-8');
+
+  writeStatus(episodeDir, episodeId, channel, 'ceo-agent');
+
+  console.log(`✅ Series episode created`);
+  console.log(`   ID:       ${episodeId}`);
+  console.log(`   Series:   ${series.name} [${slot}/${series.total_episodes || 5}]`);
+  console.log(`   Channel:  ${channel}`);
+  console.log(`   Topic:    ${fm.topic}`);
+  console.log(`   Format:   ${format} → platforms/${platform}/`);
+  console.log(`   Brief:    ${briefAbs}`);
+  console.log(`   Path:     ${episodeDir}`);
+
+  console.log(`\n📎 Registering Paperclip issue...`);
+  try {
+    const r = registerIssue(episodeId);
+    if (r) console.log(`   → ${r.identifier}`);
+    else console.log(`   ⚠ paperclip CLI 미설치 또는 등록 실패 (파이프라인은 계속 진행 가능)`);
+  } catch (e) { console.log(`   ⚠ ${e.message}`); }
+
+  console.log(`\n📋 Next: node scripts/automation/produce-episode.js --episode ${episodeId}`);
 }
 
 function main() {
@@ -36,123 +191,46 @@ function main() {
     options: {
       channel: { type: 'string', short: 'c' },
       topic: { type: 'string', short: 't' },
-      length: { type: 'string', short: 'l', default: '480' },
+      length: { type: 'string', short: 'l' },
+      format: { type: 'string', short: 'f' },
       notes: { type: 'string', short: 'n', default: '' },
+      // 시리즈 모드
+      series: { type: 'string', short: 's' },
+      'episode-slot': { type: 'string' },
+      brief: { type: 'string', short: 'b' },
     },
   });
 
-  if (!values.channel || !values.topic) {
-    console.error('Usage: node create-episode.js --channel <channel-id> --topic "<주제>"');
-    console.error('Options:');
-    console.error('  --channel, -c  채널 ID (예: econ-daily)');
-    console.error('  --topic, -t    에피소드 주제');
-    console.error('  --length, -l   목표 길이(초, 기본 480)');
-    console.error('  --notes, -n    추가 요구사항');
+  if (!values.channel) {
+    console.error('Usage:');
+    console.error('  단발: node create-episode.js --channel <id> --topic "<주제>" [--format shorts|long-3min] [--length <초>]');
+    console.error('  시리즈: node create-episode.js --channel <id> --series <id> --episode-slot N --brief <path>');
     process.exit(1);
   }
 
-  // 채널 존재 확인
-  const channelDir = join(WORKSPACE, 'channels', values.channel);
-  if (!existsSync(channelDir)) {
-    console.error(`❌ Channel not found: ${values.channel}`);
-    console.error(`   Expected directory: ${channelDir}`);
-    process.exit(1);
-  }
-
-  const episodeId = generateEpisodeId();
-  const episodeDir = join(WORKSPACE, 'episodes', episodeId);
-  const targetLength = parseInt(values.length, 10);
-
-  // 디렉터리 생성
-  mkdirSync(join(episodeDir, '40_assets', 'images'), { recursive: true });
-  mkdirSync(join(episodeDir, '40_assets', 'tts'), { recursive: true });
-
-  // 00_brief.md 생성
-  const brief = `---
-episode_id: ${episodeId}
-channel_id: ${values.channel}
-created_at: ${new Date().toISOString()}
-topic: "${values.topic}"
-target_length_seconds: ${targetLength}
-status: created
----
-
-# Episode Brief
-
-## 주제
-${values.topic}
-
-## 채널
-${values.channel}
-
-## 목표 길이
-${targetLength}초 (${Math.round(targetLength / 60)}분)
-
-## 운영자 요구사항
-${values.notes || '없음'}
-
-## 워크플로우
-- [ ] S0: Brief 작성 ✅
-- [ ] S1: CEO → PD 티켓 생성
-- [ ] S2: Market Research
-- [ ] S3: Strategy
-- [ ] S4: Script
-- [ ] S5: Fact Check
-- [ ] S6: Asset Generation
-- [ ] S7: CapCut Composition
-- [ ] S8: QA Review
-- [ ] S9: Metadata
-- [ ] S10: Board Approval
-- [ ] S11: Publish
-`;
-
-  writeFileSync(join(episodeDir, '00_brief.md'), brief, 'utf-8');
-
-  // 상태 파일 초기화
-  const status = {
-    episode_id: episodeId,
-    channel_id: values.channel,
-    created_at: new Date().toISOString(),
-    current_stage: 'S0',
-    status: 'created',
-    stage_history: [
-      {
-        stage: 'S0',
-        status: 'completed',
-        timestamp: new Date().toISOString(),
-        actor: 'board',
-      },
-    ],
-  };
-
-  writeFileSync(
-    join(episodeDir, '.episode_status.json'),
-    JSON.stringify(status, null, 2),
-    'utf-8'
-  );
-
-  console.log(`✅ Episode created successfully!`);
-  console.log(`   ID:      ${episodeId}`);
-  console.log(`   Channel: ${values.channel}`);
-  console.log(`   Topic:   ${values.topic}`);
-  console.log(`   Length:  ${targetLength}s (${Math.round(targetLength / 60)}min)`);
-  console.log(`   Path:    ${episodeDir}`);
-
-  // Paperclip Issue 자동 등록 (S1: 티켓 생성)
-  console.log(`\n📎 Registering Paperclip issue...`);
-  try {
-    const registered = registerIssue(episodeId);
-    if (registered) {
-      console.log(`   → ${registered.identifier} (Producer 배정)`);
-      console.log(`   → Paperclip 대시보드에서 진행 추적 가능`);
-    } else {
-      console.log(`   ⚠ 등록 실패 — 수동 재시도: node scripts/automation/register-paperclip-issue.js --episode ${episodeId}`);
+  if (values.series) {
+    if (!values['episode-slot'] || !values.brief) {
+      console.error('❌ Series mode requires --episode-slot and --brief');
+      process.exit(1);
     }
-  } catch (e) {
-    console.log(`   ⚠ 등록 에러 (파이프라인 계속 진행 가능): ${e.message}`);
+    seriesEpisode({
+      channel: values.channel,
+      seriesId: values.series,
+      slot: parseInt(values['episode-slot'], 10),
+      briefPath: values.brief,
+    });
+  } else {
+    if (!values.topic) { console.error('❌ Single mode requires --topic'); process.exit(1); }
+    const format = values.format || 'shorts';
+    const defaultLength = format === 'long-3min' ? 180 : 60;
+    singleEpisode({
+      channel: values.channel,
+      topic: values.topic,
+      length: parseInt(values.length || String(defaultLength), 10),
+      notes: values.notes,
+      format,
+    });
   }
-
-  console.log(`\n📋 Next: PD가 S2(Research) 이후 워크플로우 지휘`);
 }
 
 main();

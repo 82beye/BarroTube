@@ -40,36 +40,59 @@ scripts/automation/run-episode.js
 ```
 체크포인트 기반 재시작. 각 스테이지는 해당 agent script 호출 or 산출물 파일 존재 확인.
 
-## Pipeline Stages (Shorts 기준)
-| ID | 단계 | 담당자 | 산출물 | 자동화 명령 |
+## Pipeline Stages (S0~S12, Long+Shorts 공통)
+모든 산출물은 v2 layout: `EP-NNNN/platforms/{long|shorts}/...` (paths.js 헬퍼가 v1 legacy 자동 fallback).
+
+| ID | 단계 | 담당자 | 산출물 (v2 경로) | 자동화 명령 |
 |----|------|--------|--------|-------------|
-| S0 | Brief | Board/CEO | 00_brief.md | 수동 or create-episode.js |
-| S1 | Ticket | CEO | Paperclip ticket | CEO agent (수동) |
-| S2 | Research | Market Researcher | 10_market_research.md | Claude agent 호출 |
-| S3 | Strategy | Strategist | 20_strategy.md | Claude agent 호출 |
-| S4 | Script | Writer | 30_script.md | Claude agent 호출 |
-| S5 | Factcheck | Fact Checker | 35_factcheck.md | Claude agent 호출 |
-| S6 | Assets | Asset PM | 40_assets/(images,tts) | 아래 S6-1/2 분할 |
-| S6-1 | TTS | Voice Engineer | assets/tts/*.wav | `generate-tts.js` |
-| S6-1b | Duration Sync | Voice Engineer | 30_script.md (revised) | `sync-durations.js` |
-| S6-2 | Images | Image Generator | assets/images/*.png | `generate-image-gemini.js` |
-| S7 | Render | CapCut Composer | 55_render/video.mp4 | `render-direct.js` |
+| S0 | Brief | Board/CEO | `EP/00_brief.md`, `EP/series_link.json` | 수동 or create-episode.js |
+| S1 | Ticket | CEO | Paperclip ticket | register-paperclip-issue.js |
+| S2 | Research | Market Researcher | `EP/platforms/{long}/10_market_research.md` | Claude agent 호출 |
+| S3 | Strategy | Strategist | `EP/platforms/{long}/20_strategy.md` | Claude agent 호출 |
+| S4 | Script | Writer | `EP/platforms/{long}/30_script.md` | `generate-script.js` |
+| S5 | Factcheck | Fact Checker | `EP/platforms/{long}/35_factcheck.md` | Claude agent 호출 |
+| S6a | TTS | Voice Engineer | `platforms/{long}/40_assets/tts/*.wav` | `generate-tts.js` |
+| S6b | Duration Sync | Voice Engineer | 30_script.md (revised) | `sync-durations.js` |
+| S6c | Scene Images | Image Generator | `platforms/{long}/40_assets/images/*.png` | `generate-image-gemini.js` |
+| **S6d** | **Intro Card** | **Image Generator** | `platforms/{long}/45_intro.png` | `generate-intro.js --episode <dir>` |
+| **S6e** | **Thumbnail** | **Image Generator** | `platforms/{long}/47_thumbnail.png` | `generate-thumbnail.js --episode <dir>` (series.json thumbnail_specs 자동 로드) |
+| S7 | Render | CapCut Composer | `platforms/{long}/55_render/video.mp4` | `render-direct.js` (인트로 2초 prepend 자동) |
 | S7b | CapCut Draft | CapCut Composer | ~/Movies/CapCut/... | `build-capcut-from-episode.js` |
-| S8 | QA | QA Reviewer | 60_qa_report.md | Claude agent |
-| S9 | Metadata | Metadata Writer | 70_publish_meta.json | Claude agent |
-| S10 | Board Approval | **Human only** | 75_board_approval.json | `approve-episode.js` (Human invoke) |
-| S11 | Publish | Publisher | 80_publish_result.json | `run-episode.js` → S11 자동 |
+| S8 | QA | QA Reviewer | `platforms/{long}/60_qa_report.md` | `generate-qa-report.js` |
+| S9 | Metadata | Metadata Writer | `platforms/{long}/70_publish_meta.json` | `generate-metadata.js` (썸네일 spec/playlist 자동 채움) |
+| S9b | SEO Enhance | Metadata Writer | meta SEO 보강 in place | `seo-enhance.js` |
+| S10 | Board Approval | **Human only** | `platforms/{long}/75_board_approval.json` | `approve-episode.js` (Human invoke) |
+| S11 | Publish | Publisher | `platforms/{long}/80_publish_result.json` | `run-episode.js --from S11` (썸네일 자동 감지) |
+| **S12** | **Playlist Register** | **Publisher** | `series.json` branding_outputs 갱신 | `create-playlist.js --series <id>` (시리즈 마지막 publish 후 트리거) |
+
+## v2 Layout 처리 원칙
+- 모든 자동화 스크립트는 `paths.js` 의 `resolvePaths(episodeDir, format)` 통해 경로 해석.
+- v2 (platforms/) 우선, v1 (평면) fallback. EP-0001~0009 같은 레거시 에피소드는 그대로 작동.
+- 시리즈 에피소드는 v2 layout 강제 (intro/thumbnail이 v2 가정).
+- **Producer는 명시적 v1 fallback을 절대 강제하지 않는다** — paths.js가 자동 처리.
 
 ## Execution
 ```bash
-# 새 에피소드 생성 (S0~S1)
+# 단발 에피소드 (Line B Shorts) — S0~S1
 node scripts/automation/create-episode.js --channel econ-daily --topic "주제"
+
+# 시리즈 에피소드 (Line A Long-3min) — S0~S1, brief을 시리즈 정의에서 흡수
+node scripts/automation/create-episode.js --channel econ-daily \
+  --series sp500-basic --episode-slot 1 \
+  --brief workspace/channels/econ-daily/series/sp500-basic/ep-01-brief.md
+
+# 경량 체인 S4~S9 (Long-3min/Shorts 모두 — 인트로/썸네일 자동 포함)
+node scripts/automation/produce-episode.js --episode EP-2026-NNNN
+node scripts/automation/produce-episode.js --episode EP-2026-NNNN --platform shorts  # derived shorts
 
 # 전체 실행 (체크포인트 자동 감지, 최종 S10에서 중단 대기)
 node scripts/automation/run-episode.js --episode EP-2026-NNNN
 
 # 특정 단계부터
 node scripts/automation/run-episode.js --episode EP-2026-NNNN --from S7
+
+# 시리즈 마지막 publish 후 — S12 재생목록 등록
+node scripts/automation/create-playlist.js --series sp500-basic --title "..." --privacy unlisted
 ```
 
 ## Checkpoint Detection
