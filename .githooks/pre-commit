@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# pre-commit — auto-sync derived agent prompts when SoT changes.
+#
+# Trigger : staged changes under `.claude/agents/`
+# Action  : run `node scripts/automation/sync-agents.js` and re-stage the
+#           derived files (`claude-code/.claude/agents/`,
+#           `paperclip/package/agents/{role}/AGENTS.md`).
+# Idempotent: if no .claude/agents/ files are staged, exits 0 immediately.
+#
+# Install : `git config core.hooksPath .githooks`
+#           or run `bash scripts/install-git-hooks.sh` once.
+#
+# Bypass  : `git commit --no-verify` (NOT recommended — drift will reappear).
+
+set -e
+
+# Detect staged changes under .claude/agents/ (any status: A/M/D/R/C).
+STAGED_AGENTS=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^\.claude/agents/' || true)
+
+if [ -z "$STAGED_AGENTS" ]; then
+  exit 0
+fi
+
+echo "[pre-commit] .claude/agents/ changed -- running sync-agents.js"
+
+# Resolve repo root so the hook works regardless of cwd / submodules.
+REPO_ROOT=$(git rev-parse --show-toplevel)
+SYNC_SCRIPT="$REPO_ROOT/scripts/automation/sync-agents.js"
+
+if [ ! -f "$SYNC_SCRIPT" ]; then
+  echo "[pre-commit] sync-agents.js not found at $SYNC_SCRIPT -- skipping"
+  exit 0
+fi
+
+if ! node "$SYNC_SCRIPT"; then
+  echo "[pre-commit] sync-agents.js failed; aborting commit" >&2
+  exit 1
+fi
+
+# Re-stage derived files so the commit includes the sync result.
+# IMPORTANT: only the files that sync-agents.js owns (mirror copies +
+# `{role}/AGENTS.md`). DO NOT `git add` the whole paperclip/package/agents/
+# tree — that would also stage unrelated edits to README.md, SOUL.md,
+# HEARTBEAT.md, TOOLS.md and silently mix them into the commit.
+git add -A "$REPO_ROOT/claude-code/.claude/agents" 2>/dev/null || true
+for role_dir in "$REPO_ROOT"/paperclip/package/agents/*/; do
+  agents_md="$role_dir/AGENTS.md"
+  if [ -f "$agents_md" ]; then
+    git add "$agents_md" 2>/dev/null || true
+  fi
+done
+
+echo "[pre-commit] sync completed and derived files re-staged"
+exit 0

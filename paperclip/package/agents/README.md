@@ -76,3 +76,49 @@ scripts/automation/sync-agents.js
 
 자동화·스케줄러에서 호출 가능하며 실행 후 `git status` 로 변경분을 확인한 뒤
 운영자가 commit/push를 결정한다.
+
+## npm 스크립트
+
+`package.json` 에 등록되어 있어 개발자는 다음을 사용할 수도 있다.
+
+```bash
+npm run sync:agents       # 실제 적용
+npm run sync:agents:dry   # dry-run 미리보기
+```
+
+## 자동 sync — git pre-commit hook (권장)
+
+`.claude/agents/` 하위 파일이 staged 변경에 포함되면 sync-agents.js를 자동
+실행하고, 결과 파생본(`claude-code/.claude/agents/`,
+`paperclip/package/agents/{role}/AGENTS.md`)을 같이 staged에 추가한다.
+
+### 신규 협업자 onboarding (1회 실행)
+
+```bash
+bash scripts/install-git-hooks.sh
+```
+
+내부적으로 `git config core.hooksPath .githooks` 를 설정한다. `core.hooksPath` 는
+local config 라 `git clone` 시 자동 적용되지 않으므로 협업자 개인이 한 번
+실행해야 한다. hook 본체(`.githooks/pre-commit`)는 git-tracked 이라 이후
+업데이트는 `git pull` 로 자연스럽게 따라간다.
+
+### 동작 흐름
+
+1. `.claude/agents/0N-{role}.md` 수정
+2. `git add .claude/agents/0N-{role}.md`
+3. `git commit -m "..."` → pre-commit hook 자동 실행
+4. sync-agents.js 가 mirror + paperclip 갱신
+5. 갱신된 파생본도 같은 commit 에 staged 로 포함됨
+
+### Bypass
+
+비상시 `git commit --no-verify` 로 hook 우회 가능 — drift 가 다시 발생하므로
+권장하지 않는다.
+
+### launchd 일일 자동 sync 는 의도적으로 도입하지 않음
+
+- 일일 작업은 *덮어쓰기 위험* 이 상존: 누군가 mirror/paperclip 측을 직접
+  편집한 경우 다음 cron 이 무조건 SoT 로 돌려놓는다 (silent revert).
+- pre-commit 트리거가 더 정확: 변경이 발생한 시점에만 sync.
+- 이 결정이 바뀌면 본 README 의 본 절을 업데이트한다.

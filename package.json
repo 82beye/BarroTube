@@ -14,7 +14,9 @@
     "budget:report": "node scripts/automation/budget-report.js",
     "secrets:audit": "node scripts/automation/config-loader.js audit",
     "notify:test": "node scripts/automation/notify.js episode_complete '{\"episode_id\":\"EP-TEST\",\"channel_id\":\"econ-daily\"}'",
-    "capcut-builder": "node tools/capcut-builder/bin/capcut-builder.js"
+    "capcut-builder": "node tools/capcut-builder/bin/capcut-builder.js",
+    "sync:agents": "node scripts/automation/sync-agents.js",
+    "sync:agents:dry": "node scripts/automation/sync-agents.js --dry-run"
   },
   "engines": {
     "node": ">=20.0.0"
